@@ -1,0 +1,1 @@
+<footer class="dashboard-footer"><span>&copy; <?= date('Y') ?> Sistema de Certificados</span><span>Desarrollado por <b>wcoscol</b></span></footer>

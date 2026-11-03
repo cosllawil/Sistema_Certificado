@@ -1,0 +1,255 @@
+@font-face {
+    font-family: "EB Garamond";
+    src: url("../fonts/EBGaramond.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "EB Garamond";
+    src: url("../fonts/EBGaramond-B.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "EB Garamond";
+    src: url("../fonts/EBGaramond-I.ttf") format("truetype");
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Lato";
+    src: url("../fonts/Lato.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Lato";
+    src: url("../fonts/Lato-B.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Lato";
+    src: url("../fonts/Lato-I.ttf") format("truetype");
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Lato";
+    src: url("../fonts/Lato-BI.ttf") format("truetype");
+    font-weight: 700;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Arimo";
+    src: url("../fonts/Arimo.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Arimo";
+    src: url("../fonts/Arimo-B.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Arimo";
+    src: url("../fonts/Arimo-I.ttf") format("truetype");
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Arimo";
+    src: url("../fonts/Arimo-BI.ttf") format("truetype");
+    font-weight: 700;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Carlito";
+    src: url("../fonts/Carlito.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Carlito";
+    src: url("../fonts/Carlito-B.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Carlito";
+    src: url("../fonts/Carlito-I.ttf") format("truetype");
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Carlito";
+    src: url("../fonts/Carlito-BI.ttf") format("truetype");
+    font-weight: 700;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Liberation Serif";
+    src: url("../fonts/LiberationSerif.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Liberation Serif";
+    src: url("../fonts/LiberationSerif-B.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Liberation Serif";
+    src: url("../fonts/LiberationSerif-I.ttf") format("truetype");
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Liberation Serif";
+    src: url("../fonts/LiberationSerif-BI.ttf") format("truetype");
+    font-weight: 700;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "FreeSerif";
+    src: url("../fonts/FreeSerif.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "FreeSerif";
+    src: url("../fonts/FreeSerif-B.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "FreeSerif";
+    src: url("../fonts/FreeSerif-I.ttf") format("truetype");
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "FreeSerif";
+    src: url("../fonts/FreeSerif-BI.ttf") format("truetype");
+    font-weight: 700;
+    font-style: italic;
+    font-display: swap;
+}
+
+/* Caligrafias ceremoniales. Instale TTF con tools/install_script_fonts.php para PDF y vista sin Internet. */
+@font-face {
+    font-family: "Great Vibes";
+    src: url("../fonts/GreatVibes-Regular.ttf") format("truetype");
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Alex Brush";
+    src: url("../fonts/AlexBrush-Regular.ttf") format("truetype");
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Pinyon Script";
+    src: url("../fonts/PinyonScript-Regular.ttf") format("truetype");
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Allura";
+    src: url("../fonts/Allura-Regular.ttf") format("truetype");
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Birthstone";
+    src: url("../fonts/Birthstone-Regular.ttf") format("truetype");
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Bonheur Royale";
+    src: url("../fonts/BonheurRoyale-Regular.ttf") format("truetype");
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Kings";
+    src: url("../fonts/Kings-Regular.ttf") format("truetype");
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Rouge Script";
+    src: url("../fonts/RougeScript-Regular.ttf") format("truetype");
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Tangerine";
+    src: url("../fonts/Tangerine-Regular.ttf") format("truetype");
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Yesteryear";
+    src: url("../fonts/Yesteryear-Regular.ttf") format("truetype");
+    font-display: swap;
+}
+
+@font-face { font-family: "Citadel Script"; src: url("../fonts/Citadel%20Script%20Regular.ttf") format("truetype"); font-display: swap; }
+@font-face { font-family: "Gladiola"; src: url("../fonts/Gladiola.ttf") format("truetype"); font-display: swap; }
+@font-face { font-family: "MADE Evolve Sans"; src: url("../fonts/MADE-Evolve-Sans-Regular.ttf") format("truetype"); font-display: swap; }
+@font-face { font-family: "Niconne"; src: url("../fonts/Niconne-Regular.ttf") format("truetype"); font-display: swap; }
+@font-face { font-family: "Amoresa Aged"; src: url("../fonts/Amoresa-Aged.ttf") format("truetype"); font-display: swap; }
+@font-face { font-family: "Amoresa Regular"; src: url("../fonts/Amoresa-Regular.ttf") format("truetype"); font-display: swap; }
+@font-face { font-family: "Fineday Style One"; src: url("../fonts/Fineday-StyleOne.ttf") format("truetype"); font-display: swap; }
+@font-face { font-family: "Fineday Style One Non-connect"; src: url("../fonts/Fineday-StyleOnenon-connect.ttf") format("truetype"); font-display: swap; }
+@font-face { font-family: "Fineday Style Two"; src: url("../fonts/Fineday-StyleTwo.ttf") format("truetype"); font-display: swap; }
+@font-face { font-family: "Fineday Style Two Non-connect"; src: url("../fonts/Fineday-StyleTwonon-connect.ttf") format("truetype"); font-display: swap; }

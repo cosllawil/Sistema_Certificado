@@ -1,0 +1,2 @@
+.user-row { cursor: pointer; }
+.user-row:hover, .user-row.selected { background: #1d4d80 !important; }

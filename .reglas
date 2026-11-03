@@ -1,0 +1,732 @@
+# PROMPT MAESTRO — SISTEMA WEB DE GESTIÓN E IMPRESIÓN DE CERTIFICADOS
+
+## 1. OBJETIVO DEL PROYECTO
+
+Actúa como un **arquitecto de software sénior, desarrollador Full Stack especializado en PHP 8.2, experto en arquitectura MVC, MySQL 8, seguridad informática y diseñador UX/UI profesional**.
+
+Tu misión es diseñar y desarrollar un Sistema Web de Registro, Gestión, Generación, Validación e Impresión de Certificados, con una interfaz administrativa moderna, elegante, intuitiva y completamente responsive.
+
+El sistema debe estar desarrollado utilizando buenas prácticas de ingeniería de software, principios SOLID, separación de responsabilidades y arquitectura modular.
+
+**REQUISITO OBLIGATORIO: NO GENERAR CÓDIGO ESPAGUETI.**
+
+No quiero un proyecto donde se mezclen HTML, SQL, JavaScript, CSS y lógica de negocio dentro de un mismo archivo PHP.
+
+Quiero un sistema profesional, mantenible, seguro y escalable.
+
+---
+
+## 2. TECNOLOGÍAS OBLIGATORIAS
+
+### Backend
+- PHP 8.2.
+- Arquitectura MVC.
+- Programación Orientada a Objetos (POO).
+- Composer y autoload PSR-4.
+- Servicios y repositorios.
+- MySQL 8 o MariaDB compatible.
+- PDO con consultas preparadas.
+- Enrutamiento centralizado.
+- Middleware de autenticación y autorización.
+- Validadores reutilizables.
+- Manejo centralizado de excepciones.
+- Variables de entorno mediante `.env`.
+
+### Frontend
+- HTML5 semántico.
+- Tailwind CSS mediante CDN para desarrollo y prototipado.
+- Compilación local de Tailwind para producción, sin dependencia del CDN.
+- JavaScript moderno ES6+.
+- Fetch API y AJAX.
+- Chart.js para gráficos estadísticos.
+- modal alerta Tailwind CSS para alertas y confirmaciones.
+- Lucide Icons para iconografía.
+- Componentes UI reutilizables.
+- Diseño responsive.
+
+### Persistencia
+Utilizar la base de datos para:
+
+- Sesiones de usuarios.
+- Caché de aplicación.
+- Colas de trabajos.
+- Trabajos fallidos.
+- Recuperación de contraseñas.
+- Roles y permisos.
+- Auditoría.
+- Notificaciones.
+- Historial de certificados.
+
+Implementar los controladores correspondientes para sesiones, caché y colas, evitando depender únicamente de archivos temporales.
+
+Los procesos en cola deben ejecutarse mediante un trabajador PHP CLI, con control de reintentos, bloqueos, errores y supervisión mediante el programador de tareas o cron.
+
+---
+
+## 3. DISEÑO UX/UI DEL DASHBOARD
+
+Crear un dashboard administrativo en **modo oscuro (Dark Mode)**, inspirado en aplicaciones SaaS modernas.
+
+### Estilo visual
+
+- Fondo principal: `#0B1120`.
+- Sidebar: `#111827`.
+- Tarjetas: `#1E293B`.
+- Color principal: `#2563EB`.
+- Color secundario: `#3B82F6`.
+- Texto principal: `#F8FAFC`.
+- Texto secundario: `#94A3B8`.
+- Bordes discretos.
+- Sombras suaves.
+- Esquinas redondeadas.
+- Tipografía Inter.
+- Animaciones suaves.
+- Interacciones modernas.
+- Diseño limpio, ordenado y sin elementos innecesarios.
+
+El dashboard debe permitir una navegación rápida y mantener una jerarquía visual clara.
+
+### Sidebar
+
+Implementar un menú lateral con las siguientes opciones:
+
+1. Dashboard.
+2. Registrar Certificado.
+3. Certificados.
+4. Participantes.
+5. Cursos / Eventos.
+6. Plantillas.
+7. Firmantes.
+8. Verificación de Certificados.
+9. Reportes.
+10. Usuarios.
+11. Roles y Permisos.
+12. Auditoría.
+13. Configuración.
+
+El sidebar debe:
+
+- Poder expandirse y contraerse.
+- Mostrar iconos y nombres.
+- Mantener el menú activo resaltado.
+- Adaptarse a dispositivos móviles.
+- Mostrar únicamente las opciones autorizadas según los permisos del usuario.
+
+### Dashboard principal
+
+#### Tarjetas estadísticas
+
+Mostrar cuatro tarjetas principales:
+
+- Certificados emitidos.
+- Certificados pendientes.
+- Certificados impresos.
+- Plantillas disponibles.
+
+Cada tarjeta debe incluir un icono, cantidad total, variación porcentual y pequeño gráfico de tendencia cuando existan datos suficientes.
+
+#### Gráficos con Chart.js
+
+Agregar:
+
+- Gráfico de barras: certificados emitidos por mes.
+- Gráfico circular: distribución por estado.
+- Gráfico de líneas: tendencia de emisión.
+- Filtros por fechas, cursos y estados.
+
+Los datos deben obtenerse desde la base de datos mediante endpoints del backend. No utilizar estadísticas inventadas ni valores fijos en producción.
+
+#### Acciones rápidas
+
+- Nuevo Certificado.
+- Generar PDF.
+- Imprimir Certificado.
+- Crear Plantilla.
+- Registrar Participante.
+- Consultar Certificado.
+
+#### Certificados recientes
+
+Tabla con:
+
+- Número de certificado.
+- Participante.
+- DNI.
+- Curso o evento.
+- Fecha de emisión.
+- Estado.
+- Acciones.
+
+Acciones: visualizar, editar, generar PDF, imprimir y anular según permisos.
+
+Incluir búsqueda, filtros, paginación y ordenamiento desde el servidor.
+
+---
+
+## 4. MÓDULO DE REGISTRO DE CERTIFICADOS
+
+Crear un formulario moderno, organizado por secciones.
+
+### Datos del certificado
+
+- Número correlativo automático.
+- Tipo de certificado.
+- Participante.
+- DNI.
+- Curso o evento.
+- Horas académicas.
+- Fecha de inicio.
+- Fecha de finalización.
+- Fecha de emisión.
+- Plantilla.
+- Firmante.
+- Código único de verificación.
+- Estado.
+- Observaciones.
+
+### Funcionalidades
+
+- Registrar.
+- Editar.
+- Guardar borrador.
+- Validar campos.
+- Generar certificado.
+- Visualizar vista previa.
+- Generar PDF.
+- Imprimir.
+- Anular certificado.
+- Consultar historial.
+- Verificar autenticidad.
+
+El número de certificado y el código de verificación deben generarse desde el backend.
+
+Prevenir duplicidades y garantizar la unicidad mediante índices de base de datos.
+
+### Vista previa en tiempo real
+
+Dividir la pantalla en dos columnas:
+
+**Izquierda:** formulario de registro.
+
+**Derecha:** vista previa del certificado.
+
+Cuando el usuario modifique los datos, actualizar la vista previa automáticamente sin recargar la página.
+
+---
+
+## 5. MÓDULO DE PLANTILLAS
+
+Crear un administrador de plantillas para certificados.
+
+Funciones:
+
+- Registrar plantilla.
+- Editar plantilla.
+- Subir fondo del certificado.
+- Configurar orientación horizontal o vertical.
+- Configurar tamaño A4 u otro formato permitido.
+- Insertar logotipo.
+- Posicionar nombre del participante.
+- Posicionar nombre del curso.
+- Posicionar fechas.
+- Posicionar horas académicas.
+- Agregar firmas autorizadas.
+- Agregar código QR.
+- Guardar configuración.
+- Previsualizar.
+- Activar o desactivar plantilla.
+
+Las coordenadas y configuraciones deben almacenarse en la base de datos.
+
+Implementar un servicio de renderizado que genere un resultado consistente entre la vista previa, el PDF y la impresión.
+
+---
+
+## 6. GENERACIÓN E IMPRESIÓN DE CERTIFICADOS
+
+Implementar un módulo de impresión profesional.
+
+Funciones obligatorias:
+
+- Generar PDF.
+- Descargar PDF.
+- Vista previa antes de imprimir.
+- Impresión individual.
+- Impresión por lotes.
+- Configuración de tamaño.
+- Orientación horizontal o vertical.
+- Márgenes de impresión.
+- Registro de impresión.
+- Reimpresión controlada.
+
+Utilizar una biblioteca PDF mantenida y compatible con PHP 8.2, instalada mediante Composer.
+
+Las operaciones masivas deben procesarse mediante colas en base de datos.
+
+Los documentos generados deben conservar una identificación única y estar protegidos contra accesos no autorizados.
+
+---
+
+## 7. VERIFICACIÓN MEDIANTE CÓDIGO QR
+
+Cada certificado emitido debe incorporar:
+
+- Número correlativo.
+- Código único de verificación.
+- Código QR.
+- URL pública de validación.
+
+El QR debe dirigir a una página de consulta que permita confirmar la autenticidad.
+
+Mostrar únicamente los datos públicos necesarios, tales como:
+
+- Número de certificado.
+- Nombre del titular, cuando corresponda.
+- Curso o evento.
+- Fecha de emisión.
+- Estado de validez.
+
+Los certificados anulados deben mostrar claramente su estado.
+
+No exponer información privada como documentos de identidad completos sin justificación y autorización.
+
+---
+
+## 8. LOGIN, AUTENTICACIÓN Y SEGURIDAD
+
+Implementar autenticación propia con PHP 8.2.
+
+### Funciones
+
+- Login con correo o usuario y contraseña.
+- Cierre de sesión.
+- Recuperación de contraseña mediante token temporal.
+- Restablecimiento seguro.
+- Cambio de contraseña.
+- Administración de sesiones activas.
+- Bloqueo temporal ante intentos fallidos.
+- Registro de accesos.
+- Redirección según rol.
+
+### Seguridad obligatoria
+
+- `password_hash()` y `password_verify()`.
+- Protección CSRF.
+- Protección XSS mediante escape de salida.
+- Prevención de SQL Injection con PDO.
+- Regeneración del ID de sesión al autenticarse.
+- Cookies HttpOnly, Secure cuando corresponda y SameSite.
+- Expiración de sesiones.
+- Limitación de intentos de login.
+- Validación del lado servidor.
+- Protección de rutas.
+- Política segura de archivos subidos.
+- Tokens de recuperación de un solo uso, almacenados mediante hash y con vencimiento.
+- HTTPS obligatorio en producción.
+
+Nunca almacenar contraseñas en texto plano.
+
+---
+
+## 9. ROLES Y PERMISOS (RBAC)
+
+Implementar control de acceso basado en roles y permisos.
+
+### Roles iniciales
+
+**Superadministrador**
+- Acceso completo.
+- Administrar usuarios.
+- Administrar roles.
+- Configurar sistema.
+- Consultar auditoría.
+
+**Administrador**
+- Administrar certificados.
+- Administrar participantes.
+- Administrar plantillas.
+- Consultar reportes.
+
+**Operador**
+- Registrar certificados.
+- Editar registros autorizados.
+- Generar PDF.
+- Imprimir.
+
+**Consultor**
+- Consultar certificados.
+- Visualizar reportes autorizados.
+
+### Permisos
+
+Definir permisos granulares como:
+
+- `certificados.ver`
+- `certificados.crear`
+- `certificados.editar`
+- `certificados.imprimir`
+- `certificados.anular`
+- `plantillas.administrar`
+- `participantes.administrar`
+- `reportes.ver`
+- `usuarios.administrar`
+- `roles.administrar`
+- `auditoria.ver`
+
+Los permisos se deben verificar en el backend mediante middleware o políticas, no solamente ocultando botones.
+
+Aplicar el principio de mínimo privilegio.
+
+---
+
+## 10. SOFT DELETES Y AUDITORÍA
+
+### Soft deletes
+
+Implementar eliminación lógica mediante `deleted_at` en las entidades que lo requieran.
+
+Funciones:
+
+- Eliminar lógicamente.
+- Restaurar.
+- Consultar eliminados.
+- Controlar permisos de restauración.
+
+No eliminar físicamente registros importantes sin un procedimiento autorizado.
+
+Los certificados emitidos deben conservar su trazabilidad; utilizar anulación o revocación en lugar de eliminación cuando corresponda.
+
+### Auditoría
+
+Registrar:
+
+- Usuario responsable.
+- Acción realizada.
+- Entidad afectada.
+- Identificador del registro.
+- Valores anteriores y nuevos cuando corresponda.
+- Fecha y hora.
+- Dirección IP.
+- Información técnica de sesión relevante.
+
+Auditar especialmente:
+
+- Inicio y cierre de sesión.
+- Creación de certificados.
+- Modificación.
+- Anulación.
+- Impresión.
+- Cambio de roles.
+- Cambio de permisos.
+- Modificación de plantillas.
+
+No almacenar contraseñas, tokens ni secretos dentro de los registros de auditoría.
+
+---
+
+## 11. ARQUITECTURA MVC OBLIGATORIA
+
+Utilizar la siguiente estructura como referencia:
+
+```text
+certificados/
+│
+├── app/
+│   ├── Controllers/
+│   │   ├── Auth/
+│   │   ├── DashboardController.php
+│   │   ├── CertificadoController.php
+│   │   ├── ParticipanteController.php
+│   │   ├── PlantillaController.php
+│   │   └── ReporteController.php
+│   │
+│   ├── Models/
+│   │
+│   ├── Services/
+│   │   ├── CertificadoService.php
+│   │   ├── PdfService.php
+│   │   ├── QrService.php
+│   │   └── AuditoriaService.php
+│   │
+│   ├── Repositories/
+│   ├── Middleware/
+│   ├── Requests/
+│   ├── Validators/
+│   ├── Policies/
+│   ├── Jobs/
+│   └── Views/
+│       ├── layouts/
+│       ├── components/
+│       ├── dashboard/
+│       ├── certificados/
+│       ├── plantillas/
+│       └── auth/
+│
+├── bootstrap/
+├── config/
+│   ├── database.php
+│   ├── auth.php
+│   ├── session.php
+│   ├── cache.php
+│   └── queue.php
+│
+├── database/
+│   ├── migrations/
+│   └── seeders/
+│
+├── public/
+│   ├── index.php
+│   └── assets/
+│       ├── css/
+│       ├── js/
+│       └── images/
+│
+├── routes/
+│   ├── web.php
+│   └── api.php
+│
+├── storage/
+│   ├── logs/
+│   ├── certificados/
+│   └── temp/
+│
+├── tests/
+├── bin/
+│   └── queue-worker.php
+│
+├── vendor/
+├── .env.example
+└── composer.json
+```
+
+### Normas obligatorias
+
+1. Los controladores deben ser delgados y coordinar las solicitudes HTTP.
+2. Los servicios deben contener la lógica de negocio.
+3. Los repositorios deben encapsular el acceso a datos.
+4. Los modelos deben representar entidades y sus reglas correspondientes.
+5. Las vistas solo deben renderizar información.
+6. No ejecutar consultas SQL directamente desde vistas.
+7. No colocar HTML dentro de controladores.
+8. No duplicar funciones.
+9. No utilizar variables globales innecesarias.
+10. No colocar lógica de negocio dentro de JavaScript.
+11. Utilizar inyección de dependencias.
+12. Mantener un estilo de código PSR-12.
+13. Separar los archivos JavaScript por módulo.
+14. Centralizar el manejo de errores.
+15. Utilizar transacciones en operaciones críticas.
+
+**No desarrollar toda la aplicación en `index.php` ni implementar todos los módulos dentro de uno o dos archivos.**
+
+---
+
+## 12. BASE DE DATOS MYSQL 8 / MARIADB
+
+Diseñar una base de datos relacional normalizada.
+
+Considerar inicialmente las siguientes tablas:
+
+### Seguridad
+
+- usuarios
+- roles
+- permisos
+- usuario_roles
+- rol_permisos
+- password_reset_tokens
+- sesiones
+
+### Certificados
+
+- participantes
+- cursos
+- certificados
+- tipos_certificado
+- plantillas
+- firmantes
+- certificado_firmantes
+- impresiones_certificado
+- verificaciones_certificado
+
+### Infraestructura
+
+- cache
+- cache_locks
+- jobs
+- failed_jobs
+- job_batches
+- auditoria
+- notificaciones
+- configuraciones
+
+Crear las tablas adicionales únicamente cuando estén justificadas por los requerimientos.
+
+### Reglas de base de datos
+
+- Claves primarias.
+- Claves foráneas.
+- Índices.
+- Restricciones de unicidad.
+- Integridad referencial.
+- Campos `created_at`, `updated_at` y `deleted_at` cuando correspondan.
+- Migraciones versionadas.
+- Seeders para roles y permisos.
+- Compatibilidad con MySQL 8 y la versión de MariaDB elegida.
+
+No utilizar SQL incompatible entre ambos motores sin ofrecer una alternativa.
+
+Evitar duplicidad de datos y consultas N+1.
+
+---
+
+## 13. RENDIMIENTO Y OPTIMIZACIÓN
+
+Implementar:
+
+- Paginación del lado servidor.
+- Consultas optimizadas.
+- Índices adecuados.
+- Caché en base de datos.
+- Invalidación de caché cuando cambien los datos.
+- Carga diferida cuando sea útil.
+- Consultas agregadas para estadísticas.
+- Procesamiento en segundo plano mediante trabajadores de cola.
+- Manejo de concurrencia para correlativos.
+- Registro de errores.
+- Prevención de solicitudes repetidas.
+- Separación de recursos estáticos.
+
+No utilizar consultas SQL innecesarias dentro de ciclos.
+
+---
+
+## 14. ENTORNO DE EJECUCIÓN
+
+El sistema debe funcionar en:
+
+- Windows 10/11.
+- Apache.
+- XAMPP o Laragon.
+- PHP 8.2.
+- MySQL 8 o MariaDB.
+- Navegadores modernos.
+
+Preparar instrucciones para instalación local, configuración de `.env`, migraciones, datos iniciales, creación del primer administrador, ejecución de colas y puesta en producción.
+
+El directorio público del servidor debe apuntar a `/public`, evitando que se expongan las carpetas internas.
+
+---
+
+## 15. PLAN DE DESARROLLO
+
+Desarrollar el proyecto de manera incremental:
+
+**FASE 1 — Arquitectura**
+- Estructura MVC.
+- Composer.
+- Router.
+- Conexión a base de datos.
+- Migraciones.
+- Manejo de errores.
+
+**FASE 2 — Seguridad**
+- Login.
+- Recuperación de contraseña.
+- Sesiones en base de datos.
+- Roles y permisos.
+- Middleware.
+- Auditoría.
+
+**FASE 3 — UX/UI**
+- Layout general.
+- Sidebar.
+- Navbar.
+- Dashboard oscuro.
+- Tarjetas estadísticas.
+- Chart.js.
+- Tablas dinámicas y filtros.
+
+**FASE 4 — Gestión**
+- Participantes.
+- Cursos.
+- Firmantes.
+- Plantillas.
+- Registro de certificados.
+
+**FASE 5 — Documentos**
+- Vista previa.
+- Generación PDF.
+- Impresión.
+- Código QR.
+- Verificación pública.
+
+**FASE 6 — Optimización**
+- Caché.
+- Colas.
+- Auditoría avanzada.
+- Pruebas.
+- Optimización.
+- Seguridad y despliegue.
+
+---
+
+## 16. ENTREGABLES OBLIGATORIOS
+
+No entregar únicamente fragmentos de código o ejemplos incompletos.
+
+Quiero:
+
+1. Proyecto PHP 8.2 funcional.
+2. Arquitectura MVC organizada.
+3. Scripts de migración SQL.
+4. Modelos, controladores, servicios y repositorios.
+5. Vistas responsive en modo oscuro.
+6. Dashboard funcional con Chart.js.
+7. Login y recuperación de contraseña.
+8. Roles y permisos aplicados.
+9. CRUD de participantes, cursos y certificados.
+10. Plantillas configurables.
+11. Generación PDF e impresión.
+12. Verificación QR.
+13. Auditoría y soft deletes.
+14. Sesiones, caché y colas en base de datos.
+15. Archivo `.env.example`.
+16. Instrucciones de instalación.
+17. Pruebas automatizadas y pruebas funcionales de los flujos críticos.
+
+Los módulos deben estar conectados entre sí y funcionar correctamente.
+
+## 17. INSTRUCCIONES FINALES PARA EL AGENTE
+
+Antes de generar código:
+
+- Analiza todos los requerimientos.
+- Define la arquitectura.
+- Diseña el modelo relacional y sus relaciones.
+- Define rutas, servicios, repositorios y políticas.
+- Identifica los módulos y sus dependencias.
+- Diseña la experiencia de usuario.
+- Determina el orden de implementación.
+
+Después, implementa el sistema por fases y comprueba que cada módulo funcione antes de avanzar.
+
+**REGLAS ESTRICTAS:**
+
+- NO generar código espagueti.
+- NO mezclar SQL, HTML y lógica de negocio.
+- NO duplicar componentes ni funciones.
+- NO utilizar contraseñas en texto plano.
+- NO omitir validaciones.
+- NO dejar rutas privadas sin autorización.
+- NO simular funcionalidades que deban ser reales.
+- NO introducir datos estadísticos ficticios en producción.
+- NO modificar módulos existentes innecesariamente.
+- NO eliminar código funcional sin justificarlo.
+- NO presentar como funcional algo que no ha sido probado.
+
+**RESULTADO ESPERADO:**
+
+Un Sistema Web de Gestión, Registro, Emisión, Verificación e Impresión de Certificados, construido con PHP 8.2, MVC y MySQL 8 o MariaDB, con dashboard UX/UI profesional en modo oscuro, arquitectura limpia, módulos independientes, seguridad robusta, excelente rendimiento y código completamente mantenible.
+
+**Prioridad absoluta: arquitectura profesional, buenas prácticas, funcionalidades reales y cero código espagueti.**

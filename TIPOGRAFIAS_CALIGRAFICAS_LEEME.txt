@@ -1,0 +1,22 @@
+TIPOGRAFÍAS PARA DIPLOMAS - INSTALACIÓN
+
+El selector ahora incluye Great Vibes, Alex Brush, Pinyon Script y Allura.
+Para emitir PDF con estas fuentes se necesitan sus archivos TTF originales, que NO se incluyen en este ZIP.
+
+1. Descarga cada fuente desde Google Fonts:
+   https://fonts.google.com/specimen/Great+Vibes
+   https://fonts.google.com/specimen/Alex+Brush
+   https://fonts.google.com/specimen/Pinyon+Script
+   https://fonts.google.com/specimen/Allura
+2. Coloca en assets/fonts/ estos archivos exactos:
+   GreatVibes-Regular.ttf
+   AlexBrush-Regular.ttf
+   PinyonScript-Regular.ttf
+   Allura-Regular.ttf
+3. Desde la carpeta raíz del proyecto ejecuta:
+   php tools/install_script_fonts.php
+4. Recarga el navegador (Ctrl+F5), selecciona la fuente del campo Participante y emite un diploma de prueba.
+
+NOTA: FPDF no maneja todas las ligaduras OpenType de las fuentes caligráficas; por eso puede diferir ligeramente de lo que muestra el navegador. Comprueba especialmente las uniones de letras y acentos.
+La configuración de tipografía continúa siendo independiente por campo.
+No se han cambiado tablas, coordenadas ni el diseño del formulario.

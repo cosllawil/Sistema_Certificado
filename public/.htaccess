@@ -1,0 +1,5 @@
+RewriteEngine On
+RewriteBase /Sistema_Certificado/public/
+RewriteRule ^dashboard/?$ dashboard.php [L,QSA]
+RewriteRule ^registrar_certificado/?$ registrar_certificado.php [L,QSA]
+RewriteRule ^login/?$ index.php [L,QSA]
