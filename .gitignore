@@ -2,3 +2,4 @@
 node_modules/
 vendor/
 storage/
+bd/bd_certificado.sql
