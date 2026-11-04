@@ -14,7 +14,7 @@
             <div class="field"><label>Plantilla</label><select name="plantilla_id" disabled>
                     <option value="">Sin plantilla</option><?php foreach ($templates as $r): ?><option value="<?= $r['id'] ?>" <?= ((int)($certificateEdit['plantilla_id'] ?? 0) === (int)$r['id']) ? 'selected' : '' ?>><?= e($r['nombre']) ?></option><?php endforeach; ?>
                 </select></div>
-            <div class="field wide"><label>Observaciones</label><textarea name="observaciones"><?= e((string)($certificateEdit['observaciones'] ?? '')) ?></textarea></div>
+            <div class="field wide"><label>Observaciones</label><textarea name="observaciones" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()" onchange="this.value=this.value.toUpperCase()" autocomplete="off"><?= e((string)($certificateEdit['observaciones'] ?? '')) ?></textarea></div>
         </div>
         <div class="form-actions"><a class="cancel-action" href="dashboard"><svg viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M6 6l12 12M18 6 6 18" />

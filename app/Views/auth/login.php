@@ -4,11 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Acceso al Sistema de Certificados">
+    <meta name="description" content="Acceso a CertiForma">
     <link rel="icon" type="image/png" href="assets/images/icono-birrete-diploma.png">
-    <title>Sistema de Certificados | Iniciar sesión</title>
-    <link rel="stylesheet" href="assets/css/login.css?v=6">
-    <link rel="stylesheet" href="assets/css/compact.css?v=12">
+    <title>CertiForma | Iniciar sesión</title>
+    <link rel="stylesheet" href="assets/css/login.css?v=7">
+    <link rel="stylesheet" href="assets/css/compact.css?v=14">
 </head>
 
 <body>
@@ -28,9 +28,9 @@
         <section class="form-panel">
             <div class="login-card">
                 <header class="login-header">
-                    <img class="graduation-icon" src="assets/images/icono-birrete-diploma.png" alt="Sistema de Certificados">
-                    <h2>Sistema de Certificados</h2>
-                    <p>Inicia sesión para acceder al sistema</p>
+                    <img class="graduation-icon" src="assets/images/icono-birrete-diploma.png" alt="CertiForma">
+                    <h2>CertiForma</h2>
+                    <p>Sistema de Gestión de Cursos y Certificados</p>
                 </header>
                 <form id="login-form" novalidate>
                     <div class="field" id="user-field"><label for="username">Usuario</label>

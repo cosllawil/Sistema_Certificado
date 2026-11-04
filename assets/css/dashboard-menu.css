@@ -154,6 +154,10 @@ body::-webkit-scrollbar-thumb:hover {
 .change-password-close { border:0; color:#cfe1f5; background:transparent; font-size:30px; cursor:pointer; }
 .change-password-dialog label { display:block; margin:14px 0; color:#c6d8eb; }
 .change-password-dialog input { display:block; width:100%; box-sizing:border-box; margin-top:7px; padding:12px; border:1px solid #31577f; border-radius:7px; color:#eef5ff; background:#0b1d33; font:inherit; }
+.change-password-dialog input { padding-left:44px; background-repeat:no-repeat; background-position:14px center; background-size:19px 19px; }
+.change-password-dialog input[name="current_password"] { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='10' width='14' height='10' rx='2'/%3E%3Cpath d='M8 10V7a4 4 0 0 1 8 0v3'/%3E%3C/svg%3E"); }
+.change-password-dialog input[name="new_password"] { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m12 3 7 3v5c0 4.5-3 7.8-7 10-4-2.2-7-5.5-7-10V6l7-3Z'/%3E%3Cpath d='m9 12 2 2 4-4'/%3E%3C/svg%3E"); }
+.change-password-dialog input[name="confirm_password"] { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8'/%3E%3Cpath d='m8 12 3 3 5-6'/%3E%3C/svg%3E"); }
 .change-password-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:24px; }
 .change-password-actions button { display:inline-flex; align-items:center; gap:8px; padding:9px 14px; border:0; border-radius:7px; color:#fff; background:#1683f7; font:inherit; font-size:15px; cursor:pointer; }
 .change-password-actions button svg { width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
@@ -283,6 +287,11 @@ body::-webkit-scrollbar-thumb:hover {
     position: relative;
     border-bottom: 0;
     margin-bottom: 12px
+}
+
+.sidebar .brand b {
+    font-size: 22px;
+    line-height: 1.1;
 }
 
 .sidebar .brand::after {

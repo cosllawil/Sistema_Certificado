@@ -1,7 +1,7 @@
 <?php
 
 declare(strict_types=1);
-$pageTitle = $pageTitle ?? 'Sistema de Certificados';
+$pageTitle = $pageTitle ?? 'CertiForma';
 $pageContent = $pageContent ?? '';
 $displayName = $displayName ?? 'Wilmer Coscol';
 $roleName = $roleName ?? 'Superadministrador';
@@ -17,10 +17,11 @@ if (empty($_SESSION['change_password_csrf'])) $_SESSION['change_password_csrf'] 
     <link rel="icon" type="image/png" href="assets/images/icono-birrete-diploma.png">
     <title><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></title>
     <link rel="stylesheet" href="assets/css/dashboard.css">
-    <link rel="stylesheet" href="assets/css/dashboard-menu.css?v=mobile-drawer-37">
+    <link rel="stylesheet" href="assets/css/register-certificate.css?v=3">
+    <link rel="stylesheet" href="assets/css/dashboard-menu.css?v=mobile-drawer-41">
     <script src="assets/js/dashboard.js?v=19" defer></script>
     <script src="assets/js/security.js?v=2" defer></script>
-    <link rel="stylesheet" href="assets/css/participants.css?v=109">
+    <link rel="stylesheet" href="assets/css/participants.css?v=129">
     <link rel="stylesheet" href="assets/css/users.css?v=1">
     <script src="assets/js/participants.js?v=132" defer></script>
     <script src="assets/js/select2-lite.js?v=3" defer></script>
@@ -28,7 +29,7 @@ if (empty($_SESSION['change_password_csrf'])) $_SESSION['change_password_csrf'] 
     <script src="assets/js/configuration.js?v=1" defer></script>
     <script src="assets/js/roles.js?v=1" defer></script>
     <script src="assets/js/audit.js?v=1" defer></script>
-<link rel="stylesheet" href="assets/css/certificate-fonts.css?v=5">
+    <link rel="stylesheet" href="assets/css/certificate-fonts.css?v=5">
 </head>
 
 <body data-change-password-csrf="<?= htmlspecialchars((string)$_SESSION['change_password_csrf'], ENT_QUOTES, 'UTF-8') ?>">

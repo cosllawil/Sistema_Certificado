@@ -1,18 +1,56 @@
 function openChangePasswordModal() {
   document.querySelector(".change-password-modal")?.remove();
-  const modal = document.createElement("div"); modal.className = "change-password-modal";
+  const modal = document.createElement("div");
+  modal.className = "change-password-modal";
   const token = document.body.dataset.changePasswordCsrf || "";
   modal.innerHTML = `<div class="change-password-dialog" role="dialog" aria-modal="true"><div class="change-password-header"><h2><svg class="modal-title-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Cambiar contraseña</h2><button type="button" class="participant-modal-close change-password-close">×</button></div><form method="post" action="cambiar_contrasena"><input type="hidden" name="_token" value="${token}"><label>Contraseña actual<input name="current_password" type="password" required></label><label>Nueva contraseña<input name="new_password" type="password" minlength="8" required></label><label>Confirmar nueva contraseña<input name="confirm_password" type="password" minlength="8" required></label><div class="change-password-actions"><button type="button" class="course-cancel change-password-cancel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>Cancelar</button><button type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11l3 3v13H5zM8 4v5h8V4M8 16h8"/></svg>Guardar contraseña</button></div></form></div>`;
   document.body.append(modal);
-  const close = () => modal.remove(); modal.querySelector(".change-password-close").addEventListener("click", close); modal.querySelector(".change-password-cancel").addEventListener("click", close); modal.addEventListener("click", (event) => { if (event.target === modal) close(); });
+  const close = () => modal.remove();
+  modal
+    .querySelector(".change-password-close")
+    .addEventListener("click", close);
+  modal
+    .querySelector(".change-password-cancel")
+    .addEventListener("click", close);
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) close();
+  });
   const passwordForm = modal.querySelector("form");
   passwordForm?.setAttribute("novalidate", "novalidate");
   passwordForm?.addEventListener("submit", (event) => {
-    const fields = [["current_password", "contraseña actual"], ["new_password", "nueva contraseña"], ["confirm_password", "confirmación de contraseña"]];
-    const missing = fields.find(([name]) => !passwordForm.elements[name].value.trim());
-    if (missing) { event.preventDefault(); if (typeof showParticipantAlert === "function") showParticipantAlert(`Completa el campo ${missing[1]}.`); passwordForm.elements[missing[0]].focus(); return; }
-    if (passwordForm.elements.new_password.value.length < 8) { event.preventDefault(); if (typeof showParticipantAlert === "function") showParticipantAlert("La nueva contraseña debe tener al menos 8 caracteres."); passwordForm.elements.new_password.focus(); return; }
-    if (passwordForm.elements.new_password.value !== passwordForm.elements.confirm_password.value) { event.preventDefault(); if (typeof showParticipantAlert === "function") showParticipantAlert("Las contraseñas nuevas no coinciden."); passwordForm.elements.confirm_password.focus(); }
+    const fields = [
+      ["current_password", "contraseña actual"],
+      ["new_password", "nueva contraseña"],
+      ["confirm_password", "confirmación de contraseña"],
+    ];
+    const missing = fields.find(
+      ([name]) => !passwordForm.elements[name].value.trim(),
+    );
+    if (missing) {
+      event.preventDefault();
+      if (typeof showParticipantAlert === "function")
+        showParticipantAlert(`Completa el campo ${missing[1]}.`);
+      passwordForm.elements[missing[0]].focus();
+      return;
+    }
+    if (passwordForm.elements.new_password.value.length < 8) {
+      event.preventDefault();
+      if (typeof showParticipantAlert === "function")
+        showParticipantAlert(
+          "La nueva contraseña debe tener al menos 8 caracteres.",
+        );
+      passwordForm.elements.new_password.focus();
+      return;
+    }
+    if (
+      passwordForm.elements.new_password.value !==
+      passwordForm.elements.confirm_password.value
+    ) {
+      event.preventDefault();
+      if (typeof showParticipantAlert === "function")
+        showParticipantAlert("Las contraseñas nuevas no coinciden.");
+      passwordForm.elements.confirm_password.focus();
+    }
   });
   modal.querySelector("input")?.focus();
 }
@@ -257,8 +295,16 @@ function openChangePasswordModal() {
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v9"/><path d="M18.4 6.6a9 9 1 1 1-12.8 0"/></svg>';
     dropdown.innerHTML =
       '<a href="auth/logout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6v18h8"/><path d="M11 12h10"/><path d="m17 8 4 4-4 4"/></svg>Cerrar sesión</a>';
-    dropdown.insertAdjacentHTML("beforeend", '<button type="button" class="change-password-trigger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Cambiar contraseña</button>');
-    dropdown.querySelector(".change-password-trigger")?.addEventListener("click", (event) => { event.stopPropagation(); openChangePasswordModal(); });
+    dropdown.insertAdjacentHTML(
+      "beforeend",
+      '<button type="button" class="change-password-trigger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Cambiar contraseña</button>',
+    );
+    dropdown
+      .querySelector(".change-password-trigger")
+      ?.addEventListener("click", (event) => {
+        event.stopPropagation();
+        openChangePasswordModal();
+      });
     profile.append(trigger, dropdown);
     const dropdownIcon = document
       .createRange()
@@ -468,7 +514,12 @@ function openChangePasswordModal() {
     if (!trend) return;
     const current = Number(trend[0] || 0);
     const previous = Number(trend[1] || 0);
-    const percent = previous === 0 ? (current > 0 ? 100 : 0) : ((current - previous) / previous) * 100;
+    const percent =
+      previous === 0
+        ? current > 0
+          ? 100
+          : 0
+        : ((current - previous) / previous) * 100;
     const color = percent >= 0 ? "#20e58a" : "#f87171";
     const arrow = percent >= 0 ? "↑" : "↓";
     const content = card.querySelector("div");

@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="icon" type="image/png" href="assets/images/icono-birrete-diploma.png">
     <title>Verificación de certificados</title>
-    <link rel="stylesheet" href="assets/css/verify-certificate.css?v=10">
+    <link rel="stylesheet" href="assets/css/verify-certificate.css?v=11">
     <link rel="stylesheet" href="assets/css/verify-icon.css?v=3">
     <link rel="stylesheet" href="assets/css/compact.css?v=15">
 </head>
@@ -59,14 +59,15 @@
                     </dl>
                 </div>
                 <div class="verification-actions"><a href="certificado_pdf?pdf=<?= (int)$certificate['id'] ?>" target="_blank">Ver certificado</a><a href="certificado_pdf?pdf=<?= (int)$certificate['id'] ?>&download=1">Descargar PDF</a></div>
-            </section><?php elseif ($searched): ?><section class="verification-card invalid">
-                <div class="verification-card-title"><span class="status-icon">×</span>
-                    <div>
-                        <h2><?= $certificate ? 'Certificado anulado' : 'Certificado no encontrado' ?></h2>
-                        <p><?= $certificate ? 'El certificado fue anulado y ya no es válido.' : 'El código ingresado no se encuentra registrado en el sistema.' ?></p>
+            </section><?php elseif ($searched): ?><div class="form-alert verification-form-alert" role="alert">
+                <div class="alert-card">
+                    <div class="alert-main">
+                        <div class="alert-icon">×</div>
+                        <div class="alert-content"><strong><?= $certificate ? 'Certificado anulado' : 'Certificado no encontrado' ?></strong><span><?= $certificate ? 'El certificado fue anulado y ya no es válido.' : 'El código ingresado no se encuentra registrado en el sistema.' ?></span></div>
                     </div>
+                    <div class="alert-actions"><button class="alert-confirm" type="button">✓&nbsp; Entendido</button></div>
                 </div>
-            </section><?php endif; ?><div class="verification-note"><b>ⓘ Importante:</b> El código se encuentra en la parte inferior del certificado emitido.</div>
+            </div><?php endif; ?><div class="verification-note"><b>ⓘ Importante:</b> El código se encuentra en la parte inferior del certificado emitido.</div>
     </main>
     <script src="assets/js/security.js" defer></script>
     <script src="assets/js/login.js?v=10" defer></script>

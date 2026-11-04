@@ -1258,6 +1258,154 @@
     text-transform: uppercase;
 }
 
+/* Iconos interiores del formulario de participantes */
+.participant-form .field > input,
+.participant-form .field > select {
+    padding-left: 44px;
+    background-repeat: no-repeat;
+    background-position: 14px center;
+    background-size: 19px 19px;
+}
+
+.participant-form .field > select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 5h16v14H4z'/%3E%3Cpath d='M8 9h8M8 13h5'/%3E%3C/svg%3E");
+}
+
+.participant-form input[name="numero_documento"] {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='14' rx='2'/%3E%3Cpath d='M7 10h4M7 14h7'/%3E%3C/svg%3E");
+}
+
+.participant-form input[name="nombres"],
+.participant-form input[name="apellidos"] {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='3'/%3E%3Cpath d='M5 20c.8-3.2 3.1-5 7-5s6.2 1.8 7 5'/%3E%3C/svg%3E");
+}
+
+.participant-form input[name="email"] {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='14' rx='2'/%3E%3Cpath d='m4 7 8 6 8-6'/%3E%3C/svg%3E");
+}
+
+.participant-form input[name="telefono"] {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 3h3l2 5-2 1c1 2.2 2.8 4 5 5l1-2 5 2v3c0 1-1 2-2 1C12 17 7 12 5 5c0-1 1-2 2-2Z'/%3E%3C/svg%3E");
+}
+
+.participant-form input[name="nro_registro_cas"] {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 3h9l3 3v15H6z'/%3E%3Cpath d='M9 11h6M9 15h6'/%3E%3C/svg%3E");
+}
+
+/* Iconos interiores del formulario de cursos */
+.course-form .field > input {
+    padding-left: 44px;
+    background-repeat: no-repeat;
+    background-position: 14px center;
+    background-size: 19px 19px;
+}
+.course-form .field > textarea { padding-left:44px; background-repeat:no-repeat; background-position:14px 17px; background-size:19px 19px; }
+
+.course-form input[name="codigo"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='4' width='16' height='16' rx='2'/%3E%3Cpath d='M8 8h8M8 12h8M8 16h5'/%3E%3C/svg%3E"); }
+.course-form input[name="nombre"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 7 8-3 8 3-8 3-8-3Z'/%3E%3Cpath d='M6 10v5c3 2 9 2 12 0v-5'/%3E%3C/svg%3E"); }
+.course-form input[name="horas_academicas"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='8'/%3E%3Cpath d='M12 8v5l3 2'/%3E%3C/svg%3E"); }
+.course-form input[name="fecha_inicio"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='5' width='16' height='15' rx='2'/%3E%3Cpath d='M8 3v4M16 3v4M4 10h16'/%3E%3C/svg%3E"); }
+.course-form input[name="fecha_fin"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='5' width='16' height='15' rx='2'/%3E%3Cpath d='M8 3v4M16 3v4M4 10h16M9 15h6'/%3E%3Cpath d='m13 13 2 2-2 2'/%3E%3C/svg%3E"); }
+.course-form input[type="date"]::-webkit-calendar-picker-indicator { opacity: 1; filter: invert(1); cursor:pointer; }
+.course-form textarea[name="descripcion"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 4h14v16H5z'/%3E%3Cpath d='M8 8h8M8 12h8M8 16h5'/%3E%3C/svg%3E"); }
+
+/* Iconos interiores del formulario de tipos de certificado */
+.type-form .field > input {
+    padding-left: 44px;
+    background-repeat: no-repeat;
+    background-position: 14px center;
+    background-size: 19px 19px;
+}
+.type-form .field > textarea { padding-left:44px; background-repeat:no-repeat; background-position:14px 17px; background-size:19px 19px; }
+
+.type-form input[name="codigo"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 7h11l5 5-8 8-8-8z'/%3E%3Ccircle cx='9' cy='11' r='1'/%3E%3C/svg%3E"); }
+.type-form input[name="nombre"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='3'/%3E%3Cpath d='M5 20c.8-3.2 3.1-5 7-5s6.2 1.8 7 5'/%3E%3C/svg%3E"); }
+.type-form textarea[name="descripcion"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m14 5 5 5-9 9-5 1 1-5 9-10Z'/%3E%3Cpath d='m12 7 5 5'/%3E%3C/svg%3E"); }
+
+/* Iconos interiores del formulario de plantillas */
+#template-modal .field > input:not([type="file"]),
+#template-modal .field > select {
+    padding-left: 44px;
+    background-repeat: no-repeat;
+    background-position: 14px center;
+    background-size: 19px 19px;
+}
+#template-modal .field > textarea { padding-left:44px; background-repeat:no-repeat; background-position:14px 17px; background-size:19px 19px; }
+#template-modal input[name="fecha_sesion"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='5' width='16' height='15' rx='2'/%3E%3Cpath d='M8 3v4M16 3v4M4 10h16'/%3E%3C/svg%3E"); }
+#template-modal input[name="fecha_inicio"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M21 12l-3-3M21 12l-3 3'/%3E%3C/svg%3E"); }
+#template-modal input[name="fecha_fin"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v18M3 12h18M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3'/%3E%3C/svg%3E"); }
+#template-modal input[name="nombre"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='3'/%3E%3Cpath d='M5 20c.8-3.2 3.1-5 7-5s6.2 1.8 7 5'/%3E%3C/svg%3E"); }
+#template-modal input[name="formato"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 5h16v14H4z'/%3E%3Cpath d='M8 9h8M8 13h5'/%3E%3C/svg%3E"); }
+#template-modal select[name="orientacion"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='6' width='16' height='12' rx='1'/%3E%3Cpath d='M8 3v3M16 18v3'/%3E%3C/svg%3E"); }
+#template-modal textarea[name="descripcion"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m14 5 5 5-9 9-5 1 1-5 9-10Z'/%3E%3Cpath d='m12 7 5 5'/%3E%3C/svg%3E"); }
+#template-modal input[type="date"]::-webkit-calendar-picker-indicator { opacity: 1; filter: invert(1); cursor:pointer; }
+
+/* Iconos interiores del formulario de firmantes */
+.signer-form .field > input:not([type="file"]) {
+    padding-left: 44px;
+    background-repeat: no-repeat;
+    background-position: 14px center;
+    background-size: 19px 19px;
+}
+.signer-form input[name="nombres"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='3'/%3E%3Cpath d='M5 20c.8-3.2 3.1-5 7-5s6.2 1.8 7 5'/%3E%3C/svg%3E"); }
+.signer-form input[name="apellidos"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='8' r='3'/%3E%3Ccircle cx='16' cy='9' r='2.5'/%3E%3Cpath d='M3 20c.8-3.2 3-5 6-5 3 0 5.2 1.8 6 5M16 14c2.3 0 4 1.2 5 3'/%3E%3C/svg%3E"); }
+.signer-form input[name="cargo"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='7' width='16' height='12' rx='2'/%3E%3Cpath d='M9 7V5h6v2M4 12h16M10 12v2h4v-2'/%3E%3C/svg%3E"); }
+
+/* Iconos interiores del formulario de usuarios */
+#user-modal .field > input,
+#user-modal .field > select {
+    padding-left: 44px;
+    background-repeat: no-repeat;
+    background-position: 14px center;
+    background-size: 19px 19px;
+}
+#user-modal input[name="nombres"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='3'/%3E%3Cpath d='M5 20c.8-3.2 3.1-5 7-5s6.2 1.8 7 5'/%3E%3C/svg%3E"); }
+#user-modal input[name="apellidos"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='8' r='3'/%3E%3Ccircle cx='16' cy='9' r='2.5'/%3E%3Cpath d='M3 20c.8-3.2 3-5 6-5 3 0 5.2 1.8 6 5M16 14c2.3 0 4 1.2 5 3'/%3E%3C/svg%3E"); }
+#user-modal input[name="email"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='14' rx='2'/%3E%3Cpath d='m4 7 8 6 8-6'/%3E%3C/svg%3E"); }
+#user-modal input[name="username"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 7 8-3 8 3-8 3-8-3Z'/%3E%3Cpath d='M6 10v5c3 2 9 2 12 0v-5'/%3E%3C/svg%3E"); }
+#user-modal select[name="rol_id"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3 4 7l8 4 8-4-8-4Z'/%3E%3Cpath d='M6 10v5c3 2 9 2 12 0v-5'/%3E%3C/svg%3E"); }
+#user-modal input[name="password"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='10' width='14' height='10' rx='2'/%3E%3Cpath d='M8 10V7a4 4 0 0 1 8 0v3'/%3E%3C/svg%3E"); }
+
+/* Iconos interiores del formulario de configuración */
+#configuration-modal .field > input,
+#configuration-modal .field > textarea {
+    padding-left: 44px;
+    background-repeat: no-repeat;
+    background-position: 14px 17px;
+    background-size: 19px 19px;
+}
+#configuration-modal input[name="clave_visible"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 5h16v14H4z'/%3E%3Cpath d='M8 9h8M8 13h5M8 17h8'/%3E%3C/svg%3E"); }
+#configuration-modal textarea[name="valor"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m14 5 5 5-9 9-5 1 1-5 9-10Z'/%3E%3Cpath d='m12 7 5 5'/%3E%3C/svg%3E"); }
+#configuration-modal .field > input { background-position:14px center; }
+
+/* Iconos interiores del formulario de roles */
+#role-modal .field > input,
+#role-modal .field > textarea {
+    padding-left: 44px;
+    background-repeat: no-repeat;
+    background-position: 14px 17px;
+    background-size: 19px 19px;
+}
+#role-modal input[name="nombre"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='3'/%3E%3Cpath d='M5 20c.8-3.2 3.1-5 7-5s6.2 1.8 7 5'/%3E%3C/svg%3E"); }
+#role-modal input[name="codigo"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 7h11l5 5-8 8-8-8z'/%3E%3Ccircle cx='9' cy='11' r='1'/%3E%3C/svg%3E"); }
+#role-modal textarea[name="descripcion"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m14 5 5 5-9 9-5 1 1-5 9-10Z'/%3E%3Cpath d='m12 7 5 5'/%3E%3C/svg%3E"); }
+#role-modal .field > input { background-position:14px center; }
+
+/* Iconos interiores de configurar plantilla */
+#template-config-modal .field > select,
+#template-config-modal .field > input[type="number"] {
+    padding-left: 44px;
+    background-repeat: no-repeat;
+    background-position: 14px center;
+    background-size: 19px 19px;
+}
+#template-config-modal select[name="fuente"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 19 10 5h4l5 14M7 14h10'/%3E%3C/svg%3E"); }
+#template-config-modal input[name="tamano"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 6h14M12 6v13M8 19h8'/%3E%3C/svg%3E"); }
+#template-config-modal #template-style-target { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8'%3E%3Cpath d='M4 5h16v14H4z'/%3E%3Cpath d='M8 9h8M8 13h5'/%3E%3C/svg%3E"); }
+#template-config-modal input[name="color"] { padding-left:44px; background-repeat:no-repeat; background-position:14px center; background-size:19px 19px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8'%3E%3Ccircle cx='12' cy='12' r='8'/%3E%3Cpath d='M8 14c2-3 6-3 8 0'/%3E%3C/svg%3E"); }
+#template-config-modal #template-font-style { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8'%3E%3Cpath d='M5 19 10 5h4l5 14M7 14h10'/%3E%3C/svg%3E"); }
+#template-config-modal #template-text-case { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8'%3E%3Cpath d='M5 7h14M5 12h10M5 17h6'/%3E%3Cpath d='m17 15 3 3-3 3'/%3E%3C/svg%3E"); }
+
 .reniec-loading {
     position: fixed;
     inset: 0;

@@ -411,7 +411,8 @@ td {
 th {
     color: #9cb2cf;
     background: #0c1d32;
-    font-weight: 600
+    font-weight: 600;
+    text-transform: uppercase
 }
 
 td {

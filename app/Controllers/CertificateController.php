@@ -24,7 +24,9 @@ final class CertificateController
             $courseQuery = $this->db->prepare('SELECT tipo_certificado_id, plantilla_id FROM cursos WHERE id=:id AND deleted_at IS NULL');
             $courseQuery->execute(['id' => (int) $_POST['curso_id']]);
             $courseConfig = $courseQuery->fetch() ?: [];
-            $data = ['p' => (int)$_POST['participante_id'], 'c' => (int)$_POST['curso_id'], 't' => (int)($courseConfig['tipo_certificado_id'] ?? 0), 'pl' => (int)($courseConfig['plantilla_id'] ?? 0) ?: null, 'h' => 0, 'fs' => null, 'fi' => null, 'ff' => null, 'o' => trim((string)($_POST['observaciones'] ?? '')) ?: null, 'u' => $userId];
+            $observaciones = trim((string)($_POST['observaciones'] ?? ''));
+            $observaciones = function_exists('mb_strtoupper') ? mb_strtoupper($observaciones, 'UTF-8') : strtoupper($observaciones);
+            $data = ['p' => (int)$_POST['participante_id'], 'c' => (int)$_POST['curso_id'], 't' => (int)($courseConfig['tipo_certificado_id'] ?? 0), 'pl' => (int)($courseConfig['plantilla_id'] ?? 0) ?: null, 'h' => 0, 'fs' => null, 'fi' => null, 'ff' => null, 'o' => $observaciones ?: null, 'u' => $userId];
             $editId = (int)($_POST['certificate_id'] ?? 0);
             if ($editId > 0) {
                 $q = $this->db->prepare('UPDATE certificados SET participante_id=:p,curso_id=:c,tipo_certificado_id=:t,plantilla_id=:pl,horas_academicas=:h,fecha_sesion=:fs,fecha_inicio=:fi,fecha_fin=:ff,observaciones=:o,updated_by=:u WHERE id=:id AND deleted_at IS NULL');

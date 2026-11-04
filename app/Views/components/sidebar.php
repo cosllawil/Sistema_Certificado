@@ -4,7 +4,7 @@ $sidebarUserId = (int)($_SESSION['auth_user']['id'] ?? 0);
 $can = static fn(string $permission): bool => $sidebarUserId > 0 && $sidebarAuthorization->allows($sidebarUserId, $permission);
 ?>
 <aside class="sidebar">
-    <div class="brand"><span class="brand-mark"></span><span><b>Sistema de<br>Certificados</b></span></div>
+    <div class="brand"><span class="brand-mark"></span><span><b>CertiForma</b></span></div>
     <nav class="menu">
         <?php if ($can('dashboard.ver')): ?><a href="dashboard">&#8962; <span>Dashboard</span></a><?php endif; ?>
         <?php if ($can('participantes.ver')): ?><a href="participantes">&#128101; <span>Participantes</span></a><?php endif; ?>

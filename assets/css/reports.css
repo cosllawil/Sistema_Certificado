@@ -1,0 +1,18 @@
+/* Estilos propios de la vista de reportes. */
+.report-page .report-filters,
+.report-page .report-table { }
+
+.report-filters .field > select,
+.report-filters .field > input {
+    padding-left: 44px;
+    background-repeat: no-repeat;
+    background-position: 14px center;
+    background-size: 19px 19px;
+}
+.report-filters select[name="curso_id"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8'%3E%3Cpath d='m4 7 8-3 8 3-8 3-8-3Z'/%3E%3Cpath d='M6 10v5c3 2 9 2 12 0v-5'/%3E%3C/svg%3E") !important; }
+.report-filters select[name="estado"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8'%3E%3Cpath d='M4 6h16M4 12h10M4 18h6'/%3E%3Ccircle cx='18' cy='12' r='2'/%3E%3C/svg%3E") !important; }
+.report-filters input[name="desde"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='5' width='16' height='15' rx='2'/%3E%3Cpath d='M8 3v4M16 3v4M4 10h16'/%3E%3C/svg%3E") !important; }
+.report-filters input[name="hasta"] { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='5' width='16' height='15' rx='2'/%3E%3Cpath d='M8 3v4M16 3v4M4 10h16'/%3E%3C/svg%3E") !important; }
+.report-filters input[type="date"]::-webkit-calendar-picker-indicator { opacity: 1; cursor:pointer; }
+.report-filters button[name="export"],
+.report-filters button[onclick="window.print()"] { background:#64748b !important; color:#fff; }

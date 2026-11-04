@@ -2,11 +2,25 @@ document.addEventListener("click", (event) => {
   const dashboardAction = event.target.closest(".recent .row-actions button");
   if (dashboardAction) {
     const row = dashboardAction.closest(".dashboard-certificate-row");
-    if (row && dashboardAction === row.querySelector(".row-actions button:first-child")) {
+    if (
+      row &&
+      dashboardAction === row.querySelector(".row-actions button:first-child")
+    ) {
       const viewer = document.querySelector("#dashboard-pdf-modal");
-      if (viewer) { viewer.querySelector("iframe").src = "certificado_pdf?pdf=" + row.dataset.certificateId + "&view=configured-v5&_=" + Date.now(); viewer.removeAttribute("hidden"); }
-    } else if (row && dashboardAction === row.querySelector(".row-actions button:nth-child(2)")) {
-      window.location.href = "registrar_certificado?edit=" + row.dataset.certificateId;
+      if (viewer) {
+        viewer.querySelector("iframe").src =
+          "certificado_pdf?pdf=" +
+          row.dataset.certificateId +
+          "&view=configured-v5&_=" +
+          Date.now();
+        viewer.removeAttribute("hidden");
+      }
+    } else if (
+      row &&
+      dashboardAction === row.querySelector(".row-actions button:nth-child(2)")
+    ) {
+      window.location.href =
+        "registrar_certificado?edit=" + row.dataset.certificateId;
     }
     return;
   }
@@ -24,7 +38,8 @@ document.addEventListener("click", (event) => {
   ) {
     const typeModal = document.querySelector("#type-modal");
     typeModal.querySelector("[name=type_id]").value = "";
-    typeModal.querySelector("[name=codigo]").value = typeModal.dataset.nextCode || "TC-001";
+    typeModal.querySelector("[name=codigo]").value =
+      typeModal.dataset.nextCode || "TC-001";
     typeModal.querySelector("[name=nombre]").value = "";
     typeModal.querySelector("[name=descripcion]").value = "";
     typeModal.removeAttribute("hidden");
@@ -38,7 +53,11 @@ document.addEventListener("click", (event) => {
     modal.querySelector("h2").innerHTML =
       '<svg class="modal-title-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m6 16 4-4 3 3 2-2 3 3M8 8h.01"/></svg>Nueva plantilla';
     modal.querySelector("[name=template_id]").value = "";
-    ["horas_academicas", "fecha_sesion", "fecha_inicio", "fecha_fin"].forEach((name) => { modal.querySelector(`[name=${name}]`).value = ""; });
+    ["horas_academicas", "fecha_sesion", "fecha_inicio", "fecha_fin"].forEach(
+      (name) => {
+        modal.querySelector(`[name=${name}]`).value = "";
+      },
+    );
     modal.removeAttribute("hidden");
     return;
   }
@@ -111,12 +130,19 @@ document.addEventListener("click", (event) => {
       modal.querySelector("[name=orientacion]").value =
         row.dataset.orientation || "horizontal";
       let config = {};
-      try { config = JSON.parse(row.dataset.config || "{}"); } catch (_) {}
+      try {
+        config = JSON.parse(row.dataset.config || "{}");
+      } catch (_) {}
       const data = config.datos || {};
-      ["horas_academicas", "fecha_sesion", "fecha_inicio", "fecha_fin"].forEach((name) => {
-        const key = name === "horas_academicas" ? "horas" : name;
-        modal.querySelector(`[name=${name}]`).value = key === "horas" && data[key] !== "" ? String(parseInt(data[key], 10) || 0) : (data[key] || "");
-      });
+      ["horas_academicas", "fecha_sesion", "fecha_inicio", "fecha_fin"].forEach(
+        (name) => {
+          const key = name === "horas_academicas" ? "horas" : name;
+          modal.querySelector(`[name=${name}]`).value =
+            key === "horas" && data[key] !== ""
+              ? String(parseInt(data[key], 10) || 0)
+              : data[key] || "";
+        },
+      );
       modal.removeAttribute("hidden");
       modal.querySelector("[name=nombre]").focus();
     }
@@ -173,8 +199,13 @@ document.addEventListener("click", (event) => {
     document.querySelector(
       ".participant-form",
     ).elements.numero_documento.disabled = true;
-    document.querySelector(".participant-form").elements.tipo_documento.value = "";
-    document.querySelector(".participant-form").elements.tipo_documento.dispatchEvent(new Event("change", { bubbles: true }));
+    document.querySelector(".participant-form").elements.tipo_documento.value =
+      "";
+    document
+      .querySelector(".participant-form")
+      .elements.tipo_documento.dispatchEvent(
+        new Event("change", { bubbles: true }),
+      );
     document.querySelector("#participant-modal-title").innerHTML =
       '<svg class="modal-title-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4 20a8 8 0 0 1 16 0"/></svg>Nuevo participante';
     modal.removeAttribute("hidden");
@@ -276,20 +307,26 @@ document.addEventListener("click", (event) => {
       checkbox.dispatchEvent(new Event("change", { bubbles: true }));
     }
     const editButton = document.querySelector(".certificate-edit");
-    if (editButton) editButton.disabled = certificateRow.dataset.state !== "borrador";
+    if (editButton)
+      editButton.disabled = certificateRow.dataset.state !== "borrador";
     return;
   }
   if (event.target.closest("#bulk-print-button")) {
-    const ids = [...document.querySelectorAll("input[name='ids[]']:checked")].map((box) => box.value);
+    const ids = [
+      ...document.querySelectorAll("input[name='ids[]']:checked"),
+    ].map((box) => box.value);
     const viewer = document.querySelector("#certificate-pdf-modal");
     if (ids.length && viewer) {
-      viewer.querySelector("iframe").src = "certificado_pdf?batch=" + ids.join(",") + "&_=" + Date.now();
+      viewer.querySelector("iframe").src =
+        "certificado_pdf?batch=" + ids.join(",") + "&_=" + Date.now();
       viewer.removeAttribute("hidden");
     }
     return;
   }
   if (event.target.closest(".pdf-viewer-close")) {
-    const viewer = event.target.closest(".pdf-viewer-modal") || document.querySelector("#certificate-pdf-modal");
+    const viewer =
+      event.target.closest(".pdf-viewer-modal") ||
+      document.querySelector("#certificate-pdf-modal");
     if (viewer) {
       viewer.setAttribute("hidden", "");
       const frame = viewer.querySelector("iframe");
@@ -384,7 +421,9 @@ document.addEventListener("click", (event) => {
       form.elements.course_id.value = selected.dataset.courseId;
       form.elements.codigo.value = selected.dataset.codigo;
       form.elements.nombre.value = selected.dataset.nombre;
-      form.elements.horas_academicas.value = String(parseInt(selected.dataset.horas, 10) || 0);
+      form.elements.horas_academicas.value = String(
+        parseInt(selected.dataset.horas, 10) || 0,
+      );
       form.elements.fecha_inicio.value = selected.dataset.inicio;
       form.elements.fecha_fin.value = selected.dataset.fin;
       form.elements.descripcion.value = selected.dataset.descripcion;
@@ -419,8 +458,11 @@ document.addEventListener("click", (event) => {
       form.elements.participant_id.value = selected.dataset.participantId;
       form.elements.action.value = "save";
       form.elements.numero_documento.disabled = false;
-      form.elements.tipo_documento.value = selected.getAttribute("data-tipo-documento") || "";
-      form.elements.tipo_documento.dispatchEvent(new Event("change", { bubbles: true }));
+      form.elements.tipo_documento.value =
+        selected.getAttribute("data-tipo-documento") || "";
+      form.elements.tipo_documento.dispatchEvent(
+        new Event("change", { bubbles: true }),
+      );
       const participantFields = {
         "tipo-documento": "tipo_documento",
         "numero-documento": "numero_documento",
@@ -430,9 +472,12 @@ document.addEventListener("click", (event) => {
         telefono: "telefono",
         cas: "nro_registro_cas",
       };
-      Object.entries(participantFields).filter(([attribute]) => attribute !== "tipo-documento").forEach(([attribute, field]) => {
-        form.elements[field].value = selected.getAttribute(`data-${attribute}`) || "";
-      });
+      Object.entries(participantFields)
+        .filter(([attribute]) => attribute !== "tipo-documento")
+        .forEach(([attribute, field]) => {
+          form.elements[field].value =
+            selected.getAttribute(`data-${attribute}`) || "";
+        });
       document.querySelector("#participant-modal-title").innerHTML =
         '<svg class="modal-title-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4 20a8 8 0 0 1 16 0"/></svg>Editar participante';
       document.querySelector("#participant-modal").removeAttribute("hidden");
@@ -746,9 +791,12 @@ function renderTemplatePositions(modal) {
       row.querySelector('[data-axis="y"]').value = defaultY;
       const previous = previousPositions[check.value];
       if (previous) {
-        if (previous.x !== undefined) row.querySelector('[data-axis="x"]').value = previous.x;
-        if (previous.y !== undefined) row.querySelector('[data-axis="y"]').value = previous.y;
-        if (previous.align !== undefined) row.querySelector('[data-axis="align"]').value = previous.align;
+        if (previous.x !== undefined)
+          row.querySelector('[data-axis="x"]').value = previous.x;
+        if (previous.y !== undefined)
+          row.querySelector('[data-axis="y"]').value = previous.y;
+        if (previous.align !== undefined)
+          row.querySelector('[data-axis="align"]').value = previous.align;
       }
       box.append(row);
     });
@@ -847,10 +895,20 @@ function renderTemplatePreview(modal) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  if (document.querySelector(".report-page") && window.history?.replaceState && window.location.search) {
+  if (
+    document.querySelector(".report-page") &&
+    window.history?.replaceState &&
+    window.location.search
+  ) {
     const cleanUrl = new URL(window.location.href);
-    ["curso_id", "estado", "desde", "hasta"].forEach((key) => cleanUrl.searchParams.delete(key));
-    window.history.replaceState({}, document.title, cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+    ["curso_id", "estado", "desde", "hasta"].forEach((key) =>
+      cleanUrl.searchParams.delete(key),
+    );
+    window.history.replaceState(
+      {},
+      document.title,
+      cleanUrl.pathname + cleanUrl.search + cleanUrl.hash,
+    );
   }
   const reportTable = document.querySelector(".report-table");
   if (reportTable) {
@@ -860,54 +918,120 @@ document.addEventListener("DOMContentLoaded", () => {
     const next = reportTable.querySelector(".report-next");
     const pageNumber = reportTable.querySelector(".report-page-number");
     const count = reportTable.querySelector(".report-count");
-    if (prev) prev.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span>Anterior</span>';
-    if (next) next.innerHTML = '<span>Siguiente</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>';
-    let page = 1; const perPage = 10;
+    if (prev)
+      prev.innerHTML =
+        '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span>Anterior</span>';
+    if (next)
+      next.innerHTML =
+        '<span>Siguiente</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>';
+    let page = 1;
+    const perPage = 10;
     const render = () => {
       const query = (search?.value || "").toLowerCase().trim();
-      const filtered = rows.filter((row) => row.textContent.toLowerCase().includes(query));
-      const pages = Math.max(1, Math.ceil(filtered.length / perPage)); page = Math.min(page, pages);
-      rows.forEach((row) => { row.hidden = true; });
+      const filtered = rows.filter((row) =>
+        row.textContent.toLowerCase().includes(query),
+      );
+      const pages = Math.max(1, Math.ceil(filtered.length / perPage));
+      page = Math.min(page, pages);
+      rows.forEach((row) => {
+        row.hidden = true;
+      });
       let emptyRow = reportTable.querySelector(".report-search-empty");
       if (!filtered.length) {
-        if (!emptyRow) { emptyRow = document.createElement("tr"); emptyRow.className = "report-search-empty"; emptyRow.innerHTML = '<td colspan="7"><span class="report-empty-icon">⌕</span><span>No se encontraron registros</span></td>'; reportTable.querySelector("tbody").append(emptyRow); }
+        if (!emptyRow) {
+          emptyRow = document.createElement("tr");
+          emptyRow.className = "report-search-empty";
+          emptyRow.innerHTML =
+            '<td colspan="7"><span class="report-empty-icon">⌕</span><span>No se encontraron registros</span></td>';
+          reportTable.querySelector("tbody").append(emptyRow);
+        }
         emptyRow.hidden = false;
       } else if (emptyRow) emptyRow.hidden = true;
-      filtered.slice((page - 1) * perPage, page * perPage).forEach((row) => { row.hidden = false; });
-      if (count) count.textContent = filtered.length ? `Mostrando ${(page - 1) * perPage + 1} a ${Math.min(page * perPage, filtered.length)} de ${filtered.length} registros` : "No se encontraron registros";
-      if (pageNumber) pageNumber.textContent = page; if (prev) prev.disabled = page <= 1; if (next) next.disabled = page >= pages;
+      filtered.slice((page - 1) * perPage, page * perPage).forEach((row) => {
+        row.hidden = false;
+      });
+      if (count)
+        count.textContent = filtered.length
+          ? `Mostrando ${(page - 1) * perPage + 1} a ${Math.min(page * perPage, filtered.length)} de ${filtered.length} registros`
+          : "No se encontraron registros";
+      if (pageNumber) pageNumber.textContent = page;
+      if (prev) prev.disabled = page <= 1;
+      if (next) next.disabled = page >= pages;
     };
-    search?.addEventListener("input", () => { page = 1; render(); }); prev?.addEventListener("click", () => { page--; render(); }); next?.addEventListener("click", () => { page++; render(); }); render();
+    search?.addEventListener("input", () => {
+      page = 1;
+      render();
+    });
+    prev?.addEventListener("click", () => {
+      page--;
+      render();
+    });
+    next?.addEventListener("click", () => {
+      page++;
+      render();
+    });
+    render();
   }
-  if (document.querySelector("#bulk-emit-modal") && window.history?.replaceState) {
+  if (
+    document.querySelector("#bulk-emit-modal") &&
+    window.history?.replaceState
+  ) {
     const cleanUrl = new URL(window.location.href);
     cleanUrl.searchParams.delete("emitidos");
-    window.history.replaceState({}, document.title, cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+    window.history.replaceState(
+      {},
+      document.title,
+      cleanUrl.pathname + cleanUrl.search + cleanUrl.hash,
+    );
   }
-  document.querySelectorAll("[data-close-bulk]").forEach((button) => button.addEventListener("click", () => document.querySelector("#bulk-emit-modal")?.remove()));
+  document
+    .querySelectorAll("[data-close-bulk]")
+    .forEach((button) =>
+      button.addEventListener("click", () =>
+        document.querySelector("#bulk-emit-modal")?.remove(),
+      ),
+    );
   const courseFilter = document.querySelector("#certificate-course-filter");
   const selectAll = document.querySelector("#certificate-select-all");
   const emitButton = document.querySelector("#bulk-emit-button");
   const printButton = document.querySelector("#bulk-print-button");
   const updateEmitButton = () => {
-    const selected = [...document.querySelectorAll("input[name='ids[]']:checked")];
-    const states = selected.map((box) => box.closest(".certificate-row")?.dataset.state);
-    const onlyDrafts = selected.length > 0 && states.every((state) => state === "borrador");
-    const onlyIssued = selected.length > 0 && states.every((state) => state === "emitido");
+    const selected = [
+      ...document.querySelectorAll("input[name='ids[]']:checked"),
+    ];
+    const states = selected.map(
+      (box) => box.closest(".certificate-row")?.dataset.state,
+    );
+    const onlyDrafts =
+      selected.length > 0 && states.every((state) => state === "borrador");
+    const onlyIssued =
+      selected.length > 0 && states.every((state) => state === "emitido");
     if (emitButton) emitButton.disabled = !onlyDrafts;
     if (printButton) printButton.disabled = !onlyIssued;
   };
-  document.querySelectorAll("input[name='ids[]']").forEach((box) => box.addEventListener("change", updateEmitButton));
+  document
+    .querySelectorAll("input[name='ids[]']")
+    .forEach((box) => box.addEventListener("change", updateEmitButton));
   updateEmitButton();
-  if (courseFilter) courseFilter.addEventListener("change", () => {
-    document.querySelectorAll(".certificate-row").forEach((row) => {
-      row.hidden = Boolean(courseFilter.value && row.dataset.course !== courseFilter.value);
+  if (courseFilter)
+    courseFilter.addEventListener("change", () => {
+      document.querySelectorAll(".certificate-row").forEach((row) => {
+        row.hidden = Boolean(
+          courseFilter.value && row.dataset.course !== courseFilter.value,
+        );
+      });
     });
-  });
-  if (selectAll) selectAll.addEventListener("change", () => {
-    document.querySelectorAll(".certificate-row:not([hidden]) input[name='ids[]']:not(:disabled)").forEach((box) => { box.checked = selectAll.checked; });
-    updateEmitButton();
-  });
+  if (selectAll)
+    selectAll.addEventListener("change", () => {
+      document
+        .querySelectorAll(
+          ".certificate-row:not([hidden]) input[name='ids[]']:not(:disabled)",
+        )
+        .forEach((box) => {
+          box.checked = selectAll.checked;
+        });
+      updateEmitButton();
+    });
 });
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -1021,13 +1145,18 @@ document.addEventListener("DOMContentLoaded", () => {
   if (configForm) {
     const configModal = document.querySelector("#template-config-modal");
     const templateFields = configForm.querySelector(".template-fields");
-    if (templateFields && !templateFields.querySelector('input[value="codigo_verificacion"]')) {
+    if (
+      templateFields &&
+      !templateFields.querySelector('input[value="codigo_verificacion"]')
+    ) {
       const label = document.createElement("label");
-      label.innerHTML = '<input type="checkbox" value="codigo_verificacion"> Código de verificación';
+      label.innerHTML =
+        '<input type="checkbox" value="codigo_verificacion"> Código de verificación';
       templateFields.append(label);
       try {
         const savedConfig = JSON.parse(configModal?.dataset.config || "{}");
-        label.querySelector('input[value="codigo_verificacion"]').checked = Boolean(savedConfig.campos?.codigo_verificacion?.visible);
+        label.querySelector('input[value="codigo_verificacion"]').checked =
+          Boolean(savedConfig.campos?.codigo_verificacion?.visible);
       } catch (_) {}
     }
     configForm
@@ -1187,8 +1316,7 @@ document.addEventListener("input", (event) => {
       .toUpperCase();
   }
   if (event.target.matches('.course-modal input[name="horas_academicas"]')) {
-    event.target.value = event.target.value
-      .replace(/[^0-9]/g, "");
+    event.target.value = event.target.value.replace(/[^0-9]/g, "");
   }
   if (event.target.matches('.course-modal textarea[name="descripcion"]')) {
     event.target.value = event.target.value.toUpperCase();
@@ -1204,8 +1332,7 @@ document.addEventListener("input", (event) => {
       .replace(/[^a-záéíóúüñ\s]/gi, "")
       .toUpperCase();
   if (event.target.matches('.course-modal input[name="horas_academicas"]'))
-    event.target.value = event.target.value
-      .replace(/[^0-9]/g, "");
+    event.target.value = event.target.value.replace(/[^0-9]/g, "");
   if (event.target.matches('.course-modal textarea[name="descripcion"]'))
     event.target.value = event.target.value.toUpperCase();
 });
@@ -1302,19 +1429,27 @@ function renderTemplatePreview(modal) {
   const today = new Date();
   const currentSystemDate = `Chimbote, ${today.getDate()} de ${months[today.getMonth()]} de ${today.getFullYear()}`;
   let templateData = {};
-  try { templateData = JSON.parse(modal.dataset.config || "{}").datos || {}; } catch (_) {}
+  try {
+    templateData = JSON.parse(modal.dataset.config || "{}").datos || {};
+  } catch (_) {}
   const formatTemplateDate = (value) => {
     if (!value) return "";
     const parts = String(value).split("-");
     if (parts.length !== 3) return String(value);
-    const date = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+    const date = new Date(
+      Number(parts[0]),
+      Number(parts[1]) - 1,
+      Number(parts[2]),
+    );
     return `${date.getDate()} de ${months[date.getMonth()]} de ${date.getFullYear()}`;
   };
   const samples = {
     participante: "KATHERINE OLIVERA ROJAS",
     registro_cas: "12345",
-    fecha_sesion: formatTemplateDate(templateData.fecha_sesion) || "Fecha de sesión",
-    fecha_inicio: formatTemplateDate(templateData.fecha_inicio) || "Fecha de inicio",
+    fecha_sesion:
+      formatTemplateDate(templateData.fecha_sesion) || "Fecha de sesión",
+    fecha_inicio:
+      formatTemplateDate(templateData.fecha_inicio) || "Fecha de inicio",
     fecha_fin: formatTemplateDate(templateData.fecha_fin) || "Fecha de fin",
     fecha_sistema: currentSystemDate,
     curso: "CURSO DE EJEMPLO",
@@ -1335,7 +1470,8 @@ function renderTemplatePreview(modal) {
         y = modal.querySelector(`[data-position="${key}"][data-axis="y"]`);
       const px = Number(x?.value || 100),
         py = Number(y?.value || 100);
-      item.style.left = (key === "participante" ? 55 : (px / PDF_W) * 100) + "%";
+      item.style.left =
+        (key === "participante" ? 55 : (px / PDF_W) * 100) + "%";
       item.style.top = (py / PDF_H) * 100 + "%";
       item.addEventListener("pointerdown", (e) => {
         e.preventDefault();
@@ -1553,7 +1689,8 @@ document.addEventListener("DOMContentLoaded", () => {
       data = JSON.parse(form.elements.configuracion_json.value || "{}");
     } catch (_) {}
     data.campos ||= {};
-    if (saved.datos && typeof saved.datos === "object") data.datos = { ...saved.datos, ...(data.datos || {}) };
+    if (saved.datos && typeof saved.datos === "object")
+      data.datos = { ...saved.datos, ...(data.datos || {}) };
     checks()
       .filter((c) => c.checked)
       .forEach((check) => {

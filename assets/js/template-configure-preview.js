@@ -1,10 +1,11 @@
-import * as pdfjsLib from 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs';
+import * as pdfjsLib from "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs";
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs';
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs";
 
-const canvas = document.querySelector('.template-preview-render');
-const frame = canvas?.closest('.template-preview-canvas');
-const pdfUrl = document.querySelector('.template-config-card')?.dataset.pdfUrl;
+const canvas = document.querySelector(".template-preview-render");
+const frame = canvas?.closest(".template-preview-canvas");
+const pdfUrl = document.querySelector(".template-config-card")?.dataset.pdfUrl;
 
 if (canvas && frame && pdfUrl) {
   try {
@@ -23,10 +24,12 @@ if (canvas && frame && pdfUrl) {
       const outputScale = pixelRatio;
       canvas.width = Math.ceil(viewport.width * outputScale);
       canvas.height = Math.ceil(viewport.height * outputScale);
-      const context = canvas.getContext('2d', { alpha: false });
-      const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null;
-      await page.render({ canvasContext: context, viewport, transform }).promise;
-      window.dispatchEvent(new Event('template-pdf-rendered'));
+      const context = canvas.getContext("2d", { alpha: false });
+      const transform =
+        outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null;
+      await page.render({ canvasContext: context, viewport, transform })
+        .promise;
+      window.dispatchEvent(new Event("template-pdf-rendered"));
     };
 
     await renderPage();
@@ -38,10 +41,11 @@ if (canvas && frame && pdfUrl) {
       renderPage().catch(console.error);
     }).observe(frame);
   } catch (error) {
-    console.error('No se pudo mostrar el PDF original:', error);
-    const warning = document.createElement('p');
-    warning.className = 'template-pdf-warning';
-    warning.textContent = 'No fue posible mostrar el PDF original. Comprueba el archivo de plantilla.';
+    console.error("No se pudo mostrar el PDF original:", error);
+    const warning = document.createElement("p");
+    warning.className = "template-pdf-warning";
+    warning.textContent =
+      "No fue posible mostrar el PDF original. Comprueba el archivo de plantilla.";
     frame.appendChild(warning);
   }
 }

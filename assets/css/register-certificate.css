@@ -42,6 +42,7 @@
 .field input,
 .field select,
 .field textarea {
+    text-transform: uppercase;
     width: 100%;
     padding: 11px;
     border: 1px solid #294665;
@@ -55,6 +56,15 @@
     min-height: 100px;
     resize: vertical
 }
+
+.form-card .field > select,
+.form-card .field > textarea { padding-left:44px; background-repeat:no-repeat; background-position:14px center; background-size:19px 19px; }
+.form-card select[name="participante_id"] { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8'%3E%3Ccircle cx='12' cy='8' r='3'/%3E%3Cpath d='M5 20c1-3 3-5 7-5s6 2 7 5'/%3E%3C/svg%3E") !important; }
+.form-card select[name="curso_id"] { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8'%3E%3Cpath d='m4 7 8-3 8 3-8 3-8-3Z'/%3E%3Cpath d='M6 10v5c3 2 9 2 12 0v-5'/%3E%3C/svg%3E") !important; }
+.form-card select[name="tipo_certificado_id"] { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8'%3E%3Cpath d='M12 3 4 7l8 4 8-4-8-4Z'/%3E%3Cpath d='M6 10v5c3 2 9 2 12 0v-5'/%3E%3C/svg%3E") !important; }
+.form-card select[name="plantilla_id"] { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8'%3E%3Cpath d='M5 4h10l4 4v12H5zM15 4v5h4M8 13h8M8 16h6'/%3E%3C/svg%3E") !important; }
+.form-card textarea[name="observaciones"] { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8'%3E%3Cpath d='m14 5 5 5-9 9-5 1 1-5 9-10Z'/%3E%3Cpath d='m12 7 5 5'/%3E%3C/svg%3E") !important; }
+.form-card .field > textarea { background-position:14px 17px; }
 
 .wide {
     grid-column: 1/-1

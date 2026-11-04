@@ -12,7 +12,7 @@ $pdfUrl = 'plantillas?pdf_template=' . (int)$template['id']; ?>
       <div class="field wide"><label>Campos visibles</label>
         <div class="template-fields"><?php foreach ([['participante', 'Participante'], ['registro_cas', 'Registro CAS'], ['curso', 'Curso'], ['tipo', 'Tipo de certificado'], ['fecha_sesion', 'Fecha de sesión'], ['fecha_inicio', 'Fecha de inicio'], ['fecha_fin', 'Fecha de fin'], ['fecha_sistema', 'Fecha del sistema'], ['horas', 'Horas académicas'], ['firmante', 'Firmante']] as [$key, $label]): ?><label><input type="checkbox" value="<?= $key ?>" <?= !empty($cfg['campos'][$key]) ? 'checked' : '' ?>> <?= $label ?></label><?php endforeach; ?></div>
       </div>
-      <div class="template-preview-wrap"><label>Vista previa del PDF original y posición de campos</label>
+      <div class="template-preview-wrap"><label>Vista previa del certificado</label>
         <div class="template-preview-canvas"><canvas class="template-preview-render" width="842" height="595"></canvas>
           <div class="template-preview-items"></div>
         </div>
