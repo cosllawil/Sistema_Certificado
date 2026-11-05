@@ -339,7 +339,7 @@ function openChangePasswordModal() {
       const modal = document.createElement("div");
       modal.className = "logout-modal";
       modal.innerHTML =
-        '<div class="logout-dialog" role="dialog" aria-modal="true" aria-labelledby="logout-title"><div class="logout-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v10M7.5 6.5a8 8 0 1 0 9 0"/></svg></div><h2 id="logout-title">Cerrar sesión</h2><p>¿Deseas cerrar tu sesión?</p><div class="logout-actions"><button type="button" class="logout-cancel">Cancelar</button><a href="auth/logout.php" class="logout-confirm">Cerrar sesión</a></div></div>';
+        '<div class="logout-dialog" role="dialog" aria-modal="true" aria-labelledby="logout-title"><div class="logout-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v10M7.5 6.5a8 8 0 1 0 9 0"/></svg></div><h2 id="logout-title">Cerrar sesión</h2><p>¿Deseas cerrar tu sesión?</p><div class="logout-actions"><button type="button" class="logout-cancel">Cancelar</button><a href="auth/logout" class="logout-confirm">Cerrar sesión</a></div></div>';
       modal.querySelector(".logout-cancel").innerHTML =
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m7 7 10 10M17 7 7 17"/></svg>Cancelar';
       modal.querySelector(".logout-confirm").innerHTML =

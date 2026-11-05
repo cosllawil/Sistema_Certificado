@@ -27,16 +27,6 @@ RewriteRule ^auth/login/?$ public/auth/login.php [L,QSA]
 RewriteRule ^auth/logout/?$ public/auth/logout.php [L,QSA]
 RewriteRule ^cambiar_contrasena/?$ public/cambiar_contrasena.php [L,QSA]
 
-# Ocultar la extensión cuando se accede directamente al archivo PHP.
-RewriteCond %{THE_REQUEST} \s/+Sistema_Certificado/dashboard\.php(?:[?\ ]|$) [NC]
-RewriteRule ^dashboard\.php$ /Sistema_Certificado/dashboard [R=301,L,NE]
-
-RewriteCond %{THE_REQUEST} \s/+Sistema_Certificado/index\.php(?:[?\ ]|$) [NC]
-RewriteRule ^index\.php$ /Sistema_Certificado/login [R=301,L,NE]
-
-RewriteCond %{THE_REQUEST} \s/+Sistema_Certificado/registrar_certificado\.php(?:[?\ ]|$) [NC]
-RewriteRule ^registrar_certificado\.php$ /Sistema_Certificado/registrar_certificado [R=301,L,NE]
-
 # Mantener los recursos reales (CSS, JS, imágenes, etc.).
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
@@ -47,8 +37,3 @@ RewriteRule ^dashboard/?$ dashboard.php [L,QSA]
 RewriteRule ^registrar_certificado/?$ registrar_certificado.php [L,QSA]
 RewriteRule ^login/?$ index.php [L,QSA]
 
-# Permitir que las rutas existentes de autenticación sigan funcionando.
-
-# Si se solicita un PHP directamente, llevarlo a su URL limpia.
-RewriteCond %{THE_REQUEST} \s/+Sistema_Certificado/([^?\ ]+)\.php(?:[?\ ]|$) [NC]
-RewriteRule ^(.+)\.php$ /Sistema_Certificado/$1 [R=301,L,NE]

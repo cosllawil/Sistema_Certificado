@@ -19,7 +19,7 @@ if (empty($_SESSION['change_password_csrf'])) $_SESSION['change_password_csrf'] 
     <link rel="stylesheet" href="assets/css/dashboard.css">
     <link rel="stylesheet" href="assets/css/register-certificate.css?v=3">
     <link rel="stylesheet" href="assets/css/dashboard-menu.css?v=mobile-drawer-42">
-    <script src="assets/js/dashboard.js?v=20" defer></script>
+    <script src="assets/js/dashboard.js?v=21" defer></script>
     <script src="assets/js/security.js?v=2" defer></script>
     <link rel="stylesheet" href="assets/css/participants.css?v=129">
     <link rel="stylesheet" href="assets/css/users.css?v=1">

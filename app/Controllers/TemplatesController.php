@@ -163,7 +163,7 @@ final class TemplatesController
             PRIMARY KEY (id),
             UNIQUE KEY uq_fuentes_nombre (nombre),
             KEY idx_fuentes_activo_orden (activo, orden, nombre)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci");
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
         $fonts = [
             'Helvetica',
@@ -205,7 +205,7 @@ final class TemplatesController
             PRIMARY KEY (id),
             UNIQUE KEY uq_estilos_letra_codigo (codigo),
             KEY idx_estilos_letra_activo_orden (activo, orden, nombre)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci");
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
         $styles = [
             ['', 'Normal'],
@@ -217,7 +217,7 @@ final class TemplatesController
         foreach ($styles as $order => [$code, $name]) {
             $insertStyle->execute(['codigo' => $code, 'nombre' => $name, 'orden' => ($order + 1) * 10]);
         }
-        $db->exec("CREATE TABLE IF NOT EXISTS transformaciones_texto (id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT, codigo VARCHAR(30) NOT NULL, nombre VARCHAR(120) NOT NULL, orden INT UNSIGNED NOT NULL DEFAULT 0, activo TINYINT(1) NOT NULL DEFAULT 1, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (id), UNIQUE KEY uq_transformaciones_texto_codigo (codigo), KEY idx_transformaciones_texto_activo_orden (activo, orden, nombre)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci");
+        $db->exec("CREATE TABLE IF NOT EXISTS transformaciones_texto (id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT, codigo VARCHAR(30) NOT NULL, nombre VARCHAR(120) NOT NULL, orden INT UNSIGNED NOT NULL DEFAULT 0, activo TINYINT(1) NOT NULL DEFAULT 1, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (id), UNIQUE KEY uq_transformaciones_texto_codigo (codigo), KEY idx_transformaciones_texto_activo_orden (activo, orden, nombre)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
         $transforms = [['none', 'Texto original'], ['uppercase', 'TODO EN MAYÚSCULAS'], ['title', 'Primeras Letras En Mayúscula'], ['lowercase', 'todo en minúsculas']];
         $insertTransform = $db->prepare('INSERT IGNORE INTO transformaciones_texto (codigo, nombre, orden) VALUES (:codigo, :nombre, :orden)');
         foreach ($transforms as $order => [$code, $name]) $insertTransform->execute(['codigo' => $code, 'nombre' => $name, 'orden' => ($order + 1) * 10]);
