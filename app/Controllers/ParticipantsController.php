@@ -11,6 +11,7 @@ final class ParticipantsController
             exit;
         }
         $db = databaseConnection();
+        $userId = (int)$_SESSION['auth_user']['id'];
         (new AuthorizationService($db))->require((int)$_SESSION['auth_user']['id'], 'participantes.ver');
         if (empty($_SESSION['participant_csrf'])) $_SESSION['participant_csrf'] = bin2hex(random_bytes(32));
         $error = null;
@@ -20,12 +21,16 @@ final class ParticipantsController
                 exit('Token de seguridad inválido.');
             }
             if (($_POST['action'] ?? '') === 'deactivate') {
-                (new Participant($db))->deactivate((int) ($_POST['participant_id'] ?? 0));
+                $participantId = (int) ($_POST['participant_id'] ?? 0);
+                (new Participant($db))->deactivate($participantId);
+                (new AuditService($db))->log($userId, 'Desactivar participante', 'participantes', $participantId);
                 header('Location: participantes');
                 exit;
             }
             if (($_POST['action'] ?? '') === 'activate') {
-                (new Participant($db))->activate((int) ($_POST['participant_id'] ?? 0));
+                $participantId = (int) ($_POST['participant_id'] ?? 0);
+                (new Participant($db))->activate($participantId);
+                (new AuditService($db))->log($userId, 'Activar participante', 'participantes', $participantId);
                 header('Location: participantes');
                 exit;
             }
@@ -52,8 +57,13 @@ final class ParticipantsController
                 $error = 'Completa los campos obligatorios: número de documento, nombres, apellidos y registro CAS.';
             } else {
                 $participantId = (int) ($_POST['participant_id'] ?? 0);
-                if ($participantId > 0) (new Participant($db))->update($participantId, $data);
-                else (new Participant($db))->create($data);
+                if ($participantId > 0) {
+                    (new Participant($db))->update($participantId, $data);
+                    (new AuditService($db))->log($userId, 'Editar participante', 'participantes', $participantId);
+                } else {
+                    $participantId = (new Participant($db))->create($data);
+                    (new AuditService($db))->log($userId, 'Crear participante', 'participantes', $participantId);
+                }
                 header('Location: participantes?ok=1');
                 exit;
             }

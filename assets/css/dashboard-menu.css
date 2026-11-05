@@ -463,6 +463,10 @@ body::-webkit-scrollbar-thumb:hover {
     align-items: center;
     gap: 8px
 }
+.notification-list { display:grid; gap:8px; margin-top:8px; max-height:220px; overflow:auto; }
+.notification-item { display:grid; gap:2px; padding:8px; border:1px solid #294665; border-radius:6px; background:#102943; }
+.notification-item b { color:#fff; font-size:12px; }
+.notification-item span,.notification-item small { color:#a9bdd7; font-size:11px; }
 
 .notification-empty svg {
     width: 18px;

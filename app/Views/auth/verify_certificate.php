@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="icon" type="image/png" href="assets/images/icono-birrete-diploma.png">
     <title>Verificación de certificados</title>
-    <link rel="stylesheet" href="assets/css/verify-certificate.css?v=11">
+    <link rel="stylesheet" href="assets/css/verify-certificate.css?v=14">
     <link rel="stylesheet" href="assets/css/verify-icon.css?v=3">
     <link rel="stylesheet" href="assets/css/compact.css?v=15">
 </head>

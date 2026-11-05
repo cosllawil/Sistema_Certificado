@@ -195,7 +195,7 @@
       return;
     }
 
-    fetch("/Sistema_Certificado/auth/login", {
+    fetch("auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

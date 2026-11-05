@@ -11,6 +11,7 @@ final class CoursesController
             exit;
         }
         $db = databaseConnection();
+        $userId = (int)$_SESSION['auth_user']['id'];
         (new AuthorizationService($db))->require((int)$_SESSION['auth_user']['id'], 'cursos.ver');
         if (empty($_SESSION['course_csrf'])) $_SESSION['course_csrf'] = bin2hex(random_bytes(32));
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -19,7 +20,9 @@ final class CoursesController
                 exit('Token inválido.');
             }
             if (in_array($_POST['action'] ?? '', ['activate', 'deactivate'], true)) {
-                (new Course($db))->setStatus((int)($_POST['course_id'] ?? 0), $_POST['action'] === 'activate' ? 'activo' : 'inactivo');
+                $courseId = (int)($_POST['course_id'] ?? 0);
+                (new Course($db))->setStatus($courseId, $_POST['action'] === 'activate' ? 'activo' : 'inactivo');
+                (new AuditService($db))->log($userId, $_POST['action'] === 'activate' ? 'Activar curso' : 'Desactivar curso', 'cursos', $courseId);
                 header('Location: cursos');
                 exit;
             }
@@ -37,8 +40,13 @@ final class CoursesController
                 }
             }
             $courseData = ['codigo' => $codigo, 'nombre' => strtoupper(trim((string)$_POST['nombre'])), 'descripcion' => strtoupper(trim((string)($_POST['descripcion'] ?? ''))) ?: null, 'horas' => (int)($_POST['horas_academicas'] ?? 0), 'inicio' => $_POST['fecha_inicio'] ?: null, 'fin' => $_POST['fecha_fin'] ?: null];
-            if ($courseId > 0) (new Course($db))->update($courseId, $courseData);
-            else (new Course($db))->create($courseData);
+            if ($courseId > 0) {
+                (new Course($db))->update($courseId, $courseData);
+                (new AuditService($db))->log($userId, 'Editar curso', 'cursos', $courseId);
+            } else {
+                $courseId = (new Course($db))->create($courseData);
+                (new AuditService($db))->log($userId, 'Crear curso', 'cursos', $courseId);
+            }
             header('Location: cursos');
             exit;
         }

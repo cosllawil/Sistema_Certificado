@@ -2,9 +2,9 @@
 .verification-input input{text-transform:uppercase}.verification-input input::placeholder{text-transform:none}
 .verification-page{overflow:hidden}@media(max-width:700px){.verification-page{overflow:auto}}
 
-.verification-input { height:52px; display:flex; align-items:center; }
+.verification-input { height:48px; display:flex; align-items:center; }
 .verification-input input { height:100%; padding:0; }
-.verification-search button { height:52px; }
+
 
 /* Fondo público igual al utilizado en el login. */
 .verification-page #space-background{background:linear-gradient(135deg,#0b2d4a 0%,#165784 52%,#2378bb 100%)}

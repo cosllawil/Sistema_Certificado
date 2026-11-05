@@ -6,7 +6,7 @@
     <div class="date-card">&#128197; <span>Hoy<br><b><?= date('d/m/Y') ?></b></span></div>
 </section>
 <script type="application/json" id="dashboard-data">
-    <?= json_encode(['monthly' => $summary['monthly'], 'statuses' => $summary['statuses'], 'trends' => $summary['trends'], 'notifications' => $summary['notifications'], 'permissions' => $permissions], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>
+    <?= json_encode(['monthly' => $summary['monthly'], 'statuses' => $summary['statuses'], 'trends' => $summary['trends'], 'notifications' => $summary['notifications'], 'notification_items' => $summary['notification_items'] ?? [], 'permissions' => $permissions], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>
 </script>
 <section class="stats">
     <article class="stat blue"><span class="stat-icon">&#128196;</span>

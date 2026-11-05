@@ -23,6 +23,9 @@ final class CertificatesController
                 $marks = implode(',', array_fill(0, count($ids), '?'));
                 $q = $db->prepare("UPDATE certificados SET estado='emitido', fecha_emision=CURDATE(), emitido_at=NOW(), codigo_verificacion=COALESCE(NULLIF(codigo_verificacion,''), CONCAT('CERT-', YEAR(CURDATE()), '-', UPPER(SUBSTRING(REPLACE(UUID(),'-',''),1,10)))) WHERE estado='borrador' AND id IN ($marks)");
                 $q->execute($ids);
+                foreach ($ids as $certificateId) {
+                    (new AuditService($db))->log((int)$_SESSION['auth_user']['id'], 'Emitir certificado', 'certificados', (int)$certificateId);
+                }
             }
             $_SESSION['certificados_emitidos'] = $ids;
             header('Location: certificados');

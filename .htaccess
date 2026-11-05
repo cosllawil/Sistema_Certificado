@@ -1,7 +1,6 @@
 RewriteEngine On
 
 # URLs limpias del sistema.
-RewriteBase /Sistema_Certificado/
 
 # Entrada MVC pública.
 RewriteRule ^$ public/index.php [L]

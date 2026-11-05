@@ -32,7 +32,8 @@ final class CertificateController
                 $q = $this->db->prepare('UPDATE certificados SET participante_id=:p,curso_id=:c,tipo_certificado_id=:t,plantilla_id=:pl,horas_academicas=:h,fecha_sesion=:fs,fecha_inicio=:fi,fecha_fin=:ff,observaciones=:o,updated_by=:u WHERE id=:id AND deleted_at IS NULL');
                 $q->execute([...$data, 'fs' => $_POST['fecha_sesion'] ?: null, 'fi' => $_POST['fecha_inicio'] ?: null, 'ff' => $_POST['fecha_fin'] ?: null, 'id' => $editId]);
             } else {
-                (new Certificate($this->db))->create($data);
+                $certificateId = (new Certificate($this->db))->create($data);
+                (new AuditService($this->db))->log($userId, 'Crear certificado', 'certificados', $certificateId);
             }
             header('Location: registrar_certificado?ok=1');
             exit;

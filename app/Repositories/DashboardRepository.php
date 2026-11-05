@@ -90,4 +90,14 @@ final class DashboardRepository
 
         return (int) $statement->fetchColumn();
     }
+
+    public function notifications(int $userId): array
+    {
+        $statement = $this->database->prepare(
+            'SELECT id, titulo, mensaje, created_at FROM notificaciones
+             WHERE usuario_id = :usuario_id ORDER BY created_at DESC LIMIT 10'
+        );
+        $statement->execute(['usuario_id' => $userId]);
+        return $statement->fetchAll();
+    }
 }

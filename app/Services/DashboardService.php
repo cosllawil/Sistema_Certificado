@@ -18,6 +18,7 @@ final class DashboardService
             'statuses' => $this->repository->statusSummary(),
             'trends' => $this->repository->monthlyTrends(),
             'notifications' => $this->repository->unreadNotifications($userId),
+            'notification_items' => $this->repository->notifications($userId),
         ];
     }
 }

@@ -61,6 +61,12 @@ function openChangePasswordModal() {
     document.querySelector("#dashboard-data")?.textContent || "{}",
   );
   const permissions = new Set(dashboardData.permissions || []);
+  const notificationContent = () => {
+    const items = dashboardData.notification_items || [];
+    if (!items.length)
+      return '<strong>Notificaciones</strong><span class="notification-empty">No tienes notificaciones nuevas.</span>';
+    return '<strong>Notificaciones</strong><div class="notification-list">' + items.map((item) => `<article class="notification-item"><b>${item.titulo || 'Notificación'}</b><span>${item.mensaje || ''}</span><small>${item.created_at || ''}</small></article>`).join('') + '</div>';
+  };
   document.addEventListener(
     "click",
     (event) => {
@@ -71,12 +77,7 @@ function openChangePasswordModal() {
         if (!current) {
           const panel = document.createElement("div");
           panel.className = "notification-dropdown";
-          panel.innerHTML =
-            '<strong>Notificaciones</strong><span class="notification-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9a6 6 0 0 1 12 0c0 7 3 7 3 9H3c0-2 3-2 3-9Z"/><path d="M10 21h4"/></svg>' +
-            (Number(dashboardData.notifications || 0)
-              ? "Tienes notificaciones pendientes."
-              : "No tienes notificaciones nuevas.") +
-            "</span>";
+          panel.innerHTML = notificationContent();
           bell.parentElement.append(panel);
         } else {
           current.hidden = !current.hidden;
@@ -248,12 +249,7 @@ function openChangePasswordModal() {
     const notificationBox = document.createElement("div");
     notificationBox.className = "notification-dropdown";
     notificationBox.hidden = true;
-    notificationBox.innerHTML =
-      '<strong>Notificaciones</strong><span class="notification-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9a6 6 0 0 1 12 0c0 7 3 7 3 9H3c0-2 3-2 3-9Z"/><path d="M10 21h4"/></svg>' +
-      (unreadNotifications
-        ? `Tienes ${unreadNotifications} alerta${unreadNotifications === 1 ? "" : "s"} pendiente${unreadNotifications === 1 ? "" : "s"}.`
-        : "No tienes notificaciones nuevas.") +
-      "</span>";
+    notificationBox.innerHTML = notificationContent();
     notification.parentElement?.append(notificationBox);
     const toggleNotifications = (event) => {
       event.stopPropagation();
