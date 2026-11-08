@@ -87,7 +87,7 @@
                 </svg>Vista previa del certificado</h2><button type="button" class="pdf-viewer-close">&times;</button>
         </div>
         <iframe title="Vista previa del certificado"></iframe>
-        <div class="modal-footer pdf-viewer-footer"><button type="button" class="participant-action modal-close-button pdf-viewer-close"><svg viewBox="0 0 24 24" aria-hidden="true">
+        <div class="modal-footer pdf-viewer-footer"><button type="button" class="participant-modal-cancel modal-close-button pdf-viewer-close"><svg viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M6 6l12 12M18 6 6 18" />
                 </svg>Cerrar</button></div>
     </div>

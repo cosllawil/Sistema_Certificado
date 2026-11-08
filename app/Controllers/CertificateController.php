@@ -21,7 +21,7 @@ final class CertificateController
                 http_response_code(419);
                 exit('Token de seguridad inválido.');
             }
-            $courseQuery = $this->db->prepare('SELECT tipo_certificado_id, plantilla_id FROM cursos WHERE id=:id AND deleted_at IS NULL');
+            $courseQuery = $this->db->prepare('SELECT c.tipo_certificado_id, COALESCE(c.plantilla_id, t.plantilla_id) AS plantilla_id FROM cursos c LEFT JOIN tipos_certificado t ON t.id=c.tipo_certificado_id WHERE c.id=:id AND c.deleted_at IS NULL');
             $courseQuery->execute(['id' => (int) $_POST['curso_id']]);
             $courseConfig = $courseQuery->fetch() ?: [];
             $observaciones = trim((string)($_POST['observaciones'] ?? ''));
@@ -31,6 +31,7 @@ final class CertificateController
             if ($editId > 0) {
                 $q = $this->db->prepare('UPDATE certificados SET participante_id=:p,curso_id=:c,tipo_certificado_id=:t,plantilla_id=:pl,horas_academicas=:h,fecha_sesion=:fs,fecha_inicio=:fi,fecha_fin=:ff,observaciones=:o,updated_by=:u WHERE id=:id AND deleted_at IS NULL');
                 $q->execute([...$data, 'fs' => $_POST['fecha_sesion'] ?: null, 'fi' => $_POST['fecha_inicio'] ?: null, 'ff' => $_POST['fecha_fin'] ?: null, 'id' => $editId]);
+                $certificateId = $editId;
             } else {
                 $certificateId = (new Certificate($this->db))->create($data);
                 (new AuditService($this->db))->log($userId, 'Crear certificado', 'certificados', $certificateId);

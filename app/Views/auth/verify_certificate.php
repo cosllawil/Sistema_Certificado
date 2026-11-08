@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="icon" type="image/png" href="assets/images/icono-birrete-diploma.png">
     <title>Verificación de certificados</title>
-    <link rel="stylesheet" href="assets/css/verify-certificate.css?v=14">
-    <link rel="stylesheet" href="assets/css/verify-icon.css?v=3">
+    <link rel="stylesheet" href="assets/css/verify-certificate.css?v=24">
+    <link rel="stylesheet" href="assets/css/verify-icon.css?v=7">
     <link rel="stylesheet" href="assets/css/compact.css?v=15">
 </head>
 
@@ -22,7 +22,7 @@
             <p>Consulta la autenticidad y validez de un certificado emitido por el Colegio de Abogados del Santa.</p>
         </header>
         <form class="verification-search" method="post" action="verificar">
-            <div class="verification-input"><input name="codigo" value="<?= e($code) ?>" placeholder="Ingrese el código de verificación (Ej.: CERT-2026-ABC123)" autocomplete="off"></div><button type="submit"><svg viewBox="0 0 24 24">
+            <div class="verification-input"><input name="codigo" value="<?= e($code) ?>" placeholder="Código de verificación" autocomplete="off"></div><button type="submit"><svg viewBox="0 0 24 24">
                     <circle cx="10.5" cy="10.5" r="6.5" />
                     <path d="m16 16 5 5" />
                 </svg>Verificar</button>
@@ -58,7 +58,7 @@
                         </div>
                     </dl>
                 </div>
-                <div class="verification-actions"><a href="certificado_pdf?pdf=<?= (int)$certificate['id'] ?>" target="_blank">Ver certificado</a><a href="certificado_pdf?pdf=<?= (int)$certificate['id'] ?>&download=1">Descargar PDF</a></div>
+                <div class="verification-actions"><a href="certificado_pdf?token=<?= urlencode((string)$verificationToken) ?>" target="_blank">Ver certificado</a><a href="certificado_pdf?token=<?= urlencode((string)$verificationToken) ?>&download=1">Descargar PDF</a></div>
             </section><?php elseif ($searched): ?><div class="form-alert verification-form-alert" role="alert">
                 <div class="alert-card">
                     <div class="alert-main">
@@ -71,7 +71,7 @@
     </main>
     <script src="assets/js/security.js" defer></script>
     <script src="assets/js/login.js?v=10" defer></script>
-    <script src="assets/js/verify-certificate.js?v=14" defer></script>
+    <script src="assets/js/verify-certificate.js?v=21" defer></script>
     <script type="module" src="assets/js/verify-preview.mjs?v=1"></script>
 </body>
 

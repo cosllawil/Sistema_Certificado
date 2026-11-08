@@ -1,4 +1,14 @@
 document.addEventListener("click", (event) => {
+  const clickedTypeRow = event.target.closest(".type-row");
+  if (
+    document.querySelector(".type-row") &&
+    !clickedTypeRow &&
+    !event.target.closest(".type-edit, .type-disable, .participant-action-new, .participant-modal")
+  ) {
+    document.querySelectorAll(".type-row.selected").forEach((row) => row.classList.remove("selected"));
+    document.querySelector(".type-edit")?.setAttribute("disabled", "");
+    document.querySelector(".type-disable")?.setAttribute("disabled", "");
+  }
   const dashboardAction = event.target.closest(".recent .row-actions button");
   if (dashboardAction) {
     const row = dashboardAction.closest(".dashboard-certificate-row");
@@ -6,6 +16,14 @@ document.addEventListener("click", (event) => {
       row &&
       dashboardAction === row.querySelector(".row-actions button:first-child")
     ) {
+      if (window.innerWidth <= 720) {
+        window.open(
+          "certificado_pdf?pdf=" + row.dataset.certificateId,
+          "_blank",
+          "noopener",
+        );
+        return;
+      }
       const viewer = document.querySelector("#dashboard-pdf-modal");
       if (viewer) {
         viewer.querySelector("iframe").src =
@@ -317,6 +335,14 @@ document.addEventListener("click", (event) => {
     ].map((box) => box.value);
     const viewer = document.querySelector("#certificate-pdf-modal");
     if (ids.length && viewer) {
+      if (window.innerWidth <= 720) {
+        window.open(
+          "certificado_pdf?batch=" + ids.join(",") + "&_=" + Date.now(),
+          "_blank",
+          "noopener",
+        );
+        return;
+      }
       viewer.querySelector("iframe").src =
         "certificado_pdf?batch=" + ids.join(",") + "&_=" + Date.now();
       viewer.removeAttribute("hidden");
@@ -366,7 +392,7 @@ document.addEventListener("click", (event) => {
       modal.querySelector("[name=config_template_id]").value =
         row.dataset.templateId;
       modal
-        .querySelectorAll(".template-fields input[type=checkbox]")
+        .querySelectorAll(".template-fields input[type=checkbox], .template-signature-toggle input[type=checkbox]")
         .forEach(
           (box) => (box.checked = Boolean(cfg.campos && cfg.campos[box.value])),
         );
@@ -426,6 +452,10 @@ document.addEventListener("click", (event) => {
       );
       form.elements.fecha_inicio.value = selected.dataset.inicio;
       form.elements.fecha_fin.value = selected.dataset.fin;
+      form.elements.tipo_certificado_id.value = selected.dataset.tipoCertificado || "";
+      form.elements.tipo_certificado_id.dispatchEvent(new Event("change", { bubbles: true }));
+      form.elements.plantilla_id.value = selected.dataset.plantilla || "";
+      form.elements.plantilla_id.dispatchEvent(new Event("change", { bubbles: true }));
       form.elements.descripcion.value = selected.dataset.descripcion;
       document.querySelector("#course-modal h2").innerHTML =
         '<svg class="modal-title-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h6"/></svg>Editar curso';
@@ -576,6 +606,7 @@ document.addEventListener("click", (event) => {
   }
 });
 
+
 document.addEventListener("click", (event) => {
   if (!document.querySelector(".certificate-row")) return;
   if (
@@ -622,13 +653,34 @@ document.addEventListener("submit", (event) => {
   }
   const signerForm = event.target.closest(".signer-form");
   if (signerForm) {
-    const missing = ["nombres", "apellidos", "cargo"].find(
+    const isNewSigner = !signerForm.elements.signer_id.value;
+    const requiredFields = isNewSigner ? ["tipo_documento", "numero_documento", "nombres", "apellidos", "cargo"] : ["nombres", "apellidos", "cargo"];
+    const missing = requiredFields.find(
       (name) => !signerForm.elements[name].value.trim(),
     );
     if (missing) {
       event.preventDefault();
-      showParticipantAlert("Completa los campos obligatorios.");
-      signerForm.elements[missing].focus();
+      const field = signerForm.elements[missing];
+      showParticipantAlert(`Completa el campo ${missing.replaceAll("_", " ")}.`);
+      field.focus();
+      return;
+    }
+    if (!isNewSigner) return;
+    const type = signerForm.elements.tipo_documento.value;
+    const number = signerForm.elements.numero_documento.value.trim();
+    const validNumber = type === "DNI" ? /^\d{8}$/.test(number) : type === "CE" ? /^\d{1,12}$/.test(number) : type === "PASAPORTE" ? /^[a-z0-9]{1,12}$/i.test(number) : /^[a-z0-9]{1,12}$/i.test(number);
+    if (!validNumber) {
+      event.preventDefault();
+      const field = signerForm.elements.numero_documento;
+      showParticipantAlert(type === "DNI" ? "El DNI debe tener exactamente 8 dígitos." : "El número de documento no es válido.");
+      field.focus();
+      return;
+    }
+    if (!signerForm.elements.signer_id.value && !signerForm.elements.firma.files.length) {
+      event.preventDefault();
+      const field = signerForm.elements.firma;
+      showParticipantAlert("Selecciona el archivo de firma.");
+      field.focus();
     }
     return;
   }
@@ -895,6 +947,23 @@ function renderTemplatePreview(modal) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  const courseModal = document.querySelector("#course-modal");
+  const courseType = courseModal?.querySelector('[name="tipo_certificado_id"]');
+  const courseTemplate = courseModal?.querySelector('[name="plantilla_id"]');
+  if (courseType && courseTemplate) {
+    const syncCourseTemplate = () => {
+      const selected = courseType.options[courseType.selectedIndex];
+      const templateId = selected?.dataset.templateId || "";
+      courseTemplate.value = templateId;
+      courseTemplate.dispatchEvent(new Event("change", { bubbles: true }));
+    };
+    courseType.addEventListener("change", syncCourseTemplate);
+    courseType.querySelectorAll("option").forEach((option) => {
+      const type = option.value;
+      const row = document.querySelector(`.type-row[data-type-id="${type}"]`);
+      if (row?.dataset.templateId) option.dataset.templateId = row.dataset.templateId;
+    });
+  }
   if (
     document.querySelector(".report-page") &&
     window.history?.replaceState &&
@@ -1131,6 +1200,13 @@ document.addEventListener("DOMContentLoaded", () => {
     templateForm
       .querySelector('button[type="submit"]')
       .addEventListener("click", () => {
+        if (!templateForm.elements.fecha_sesion.value.trim()) {
+          showParticipantAlert(
+            "Ingresa la fecha de sesión de la plantilla para continuar.",
+          );
+          templateForm.elements.fecha_sesion.focus();
+          return;
+        }
         if (!templateForm.elements.nombre.value.trim()) {
           showParticipantAlert(
             "Ingresa el nombre de la plantilla para continuar.",
@@ -1142,6 +1218,9 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
   const configForm = document.querySelector(".template-config-form");
+  const signatureToggle = configForm?.querySelector(".template-signature-toggle");
+  const visibleFields = configForm?.querySelector(".template-fields");
+  if (signatureToggle && visibleFields) visibleFields.append(signatureToggle);
   if (configForm) {
     const configModal = document.querySelector("#template-config-modal");
     const templateFields = configForm.querySelector(".template-fields");
@@ -1160,7 +1239,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } catch (_) {}
     }
     configForm
-      .querySelectorAll(".template-fields input[type=checkbox]")
+      .querySelectorAll(".template-fields input[type=checkbox], .template-signature-toggle input[type=checkbox]")
       .forEach((box) => {
         box.onchange = () => renderTemplatePositions(configModal);
       });
@@ -1195,17 +1274,14 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 document.addEventListener("change", (event) => {
-  if (!event.target.matches('.participant-form select[name="tipo_documento"]'))
+  if (!event.target.matches('.participant-form select[name="tipo_documento"], .signer-form select[name="tipo_documento"]'))
     return;
   const input = event.target.form.elements.numero_documento;
-  [
-    "numero_documento",
-    "nombres",
-    "apellidos",
-    "email",
-    "telefono",
-    "nro_registro_cas",
-  ].forEach((name) => {
+  input.value = "";
+  const names = event.target.form.classList.contains("participant-form")
+    ? ["nombres", "apellidos", "email", "telefono", "nro_registro_cas"]
+    : ["nombres", "apellidos"];
+  names.forEach((name) => {
     event.target.form.elements[name].value = "";
   });
   input.maxLength = event.target.value === "DNI" ? 8 : 12;
@@ -1292,7 +1368,7 @@ document.addEventListener("input", (event) => {
 });
 
 document.addEventListener("input", (event) => {
-  if (!event.target.matches('.participant-form input[name="numero_documento"]'))
+    if (!event.target.matches('.participant-form input[name="numero_documento"], .signer-form input[name="numero_documento"]'))
     return;
   const type = event.target.form.elements.tipo_documento.value;
   if (type === "DNI" || type === "CE") {
@@ -1341,7 +1417,7 @@ document.addEventListener(
   "blur",
   async (event) => {
     if (
-      !event.target.matches('.participant-form input[name="numero_documento"]')
+      !event.target.matches('.participant-form input[name="numero_documento"], .signer-form input[name="numero_documento"]')
     )
       return;
     const form = event.target.form;
@@ -1449,23 +1525,39 @@ function renderTemplatePreview(modal) {
     fecha_sesion:
       formatTemplateDate(templateData.fecha_sesion) || "Fecha de sesión",
     fecha_inicio:
-      formatTemplateDate(templateData.fecha_inicio) || "Fecha de inicio",
-    fecha_fin: formatTemplateDate(templateData.fecha_fin) || "Fecha de fin",
+      formatTemplateDate(modal.dataset.previewStart || templateData.fecha_inicio) || "Fecha de inicio",
+    fecha_fin: formatTemplateDate(modal.dataset.previewEnd || templateData.fecha_fin) || "Fecha de fin",
     fecha_sistema: currentSystemDate,
-    curso: "CURSO DE EJEMPLO",
-    tipo: "TIPO DE CERTIFICADO",
-    horas: templateData.horas || "Horas académicas",
+    curso: modal.dataset.previewCourse || "CURSO DE EJEMPLO",
+    tipo: modal.dataset.previewType || "TIPO DE CERTIFICADO",
+    horas: (() => {
+      const value = modal.dataset.previewHours || templateData.horas || "";
+      const number = Number(value);
+      return value !== "" && Number.isFinite(number)
+        ? String(number).replace(/\.0+$/, "")
+        : value || "Horas académicas";
+    })(),
     codigo_verificacion: "CERT-2026-8F4K92",
-    firmante: "FIRMANTE",
+    firmante: modal.dataset.previewSigner || "FIRMANTE",
   };
   modal
-    .querySelectorAll('.template-fields input[type="checkbox"]:checked')
+        .querySelectorAll('.template-fields input[type="checkbox"]:checked, .template-signature-toggle input[type="checkbox"]:checked')
     .forEach((check) => {
       const key = check.value,
         item = document.createElement("span");
       item.className = "template-preview-item";
       item.dataset.field = key;
-      item.textContent = samples[key] || check.parentElement.textContent.trim();
+      if (key === "firma" && modal.dataset.previewSignature) {
+        item.textContent = "";
+        item.style.width = "90px";
+        item.style.height = "45px";
+        item.style.backgroundImage = `url("${modal.dataset.previewSignature}")`;
+        item.style.backgroundPosition = "center";
+        item.style.backgroundRepeat = "no-repeat";
+        item.style.backgroundSize = "contain";
+      } else {
+        item.textContent = samples[key] || check.parentElement.textContent.trim();
+      }
       const x = modal.querySelector(`[data-position="${key}"][data-axis="x"]`),
         y = modal.querySelector(`[data-position="${key}"][data-axis="y"]`);
       const px = Number(x?.value || 100),
@@ -1533,6 +1625,8 @@ document.addEventListener("DOMContentLoaded", () => {
         color: previous.color || defaults.color,
         estilo: previous.estilo || "",
         transformacion: previous.transformacion || "none",
+        ancho: Number(previous.ancho) || 90,
+        alto: Number(previous.alto) || 45,
       };
     }
     return styles[field];
@@ -1549,6 +1643,10 @@ document.addEventListener("DOMContentLoaded", () => {
     style.color = form.elements.color.value;
     style.estilo = styleSelect.value;
     style.transformacion = caseSelect.value;
+    if (active === "firma") {
+      style.ancho = Math.max(20, Math.min(300, Number(form.elements.firma_ancho.value) || 90));
+      style.alto = Math.max(10, Math.min(200, Number(form.elements.firma_alto.value) || 45));
+    }
   }
   function loadControls(field) {
     active = field;
@@ -1558,6 +1656,9 @@ document.addEventListener("DOMContentLoaded", () => {
     form.elements.color.value = style.color;
     styleSelect.value = style.estilo;
     caseSelect.value = style.transformacion || "none";
+    form.elements.firma_ancho.value = style.ancho;
+    form.elements.firma_alto.value = style.alto;
+    form.querySelectorAll(".signature-size-control").forEach((field) => { field.hidden = active !== "firma"; });
     paint();
   }
   function paint() {
@@ -1598,6 +1699,12 @@ document.addEventListener("DOMContentLoaded", () => {
       node.style.color = style.color;
       node.style.fontWeight = style.estilo.includes("B") ? "bold" : "normal";
       node.style.fontStyle = style.estilo.includes("I") ? "italic" : "normal";
+      if (name === "firma") {
+        node.style.width = `${style.ancho * scale}px`;
+        node.style.height = `${style.alto * scale}px`;
+        node.style.minWidth = "0";
+        node.style.minHeight = "0";
+      }
       if (name === "participante") {
         // Eje central igual que el generador PDF; cada nombre puede ser mas largo o corto.
         node.style.left = "55%";
@@ -1649,6 +1756,8 @@ document.addEventListener("DOMContentLoaded", () => {
     form.elements.fuente,
     form.elements.tamano,
     form.elements.color,
+    form.elements.firma_ancho,
+    form.elements.firma_alto,
     styleSelect,
     caseSelect,
   ].forEach((control) => {
@@ -1702,6 +1811,7 @@ document.addEventListener("DOMContentLoaded", () => {
           color: style.color,
           estilo: style.estilo,
           transformacion: style.transformacion,
+          ...(check.value === "firma" ? { ancho: style.ancho, alto: style.alto } : {}),
         });
       });
     form.elements.configuracion_json.value = JSON.stringify(data);
@@ -1758,3 +1868,35 @@ document.addEventListener("DOMContentLoaded", () => {
   buildOptions();
   paint();
 });
+document.addEventListener("click", (event) => {
+  if (window.innerWidth > 720) return;
+  const action = event.target.closest(".recent .row-actions button:first-child");
+  if (!action) return;
+  const row = action.closest(".dashboard-certificate-row");
+  const id = row?.dataset.certificateId;
+  if (!id) return;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  window.open(`certificado_pdf?pdf=${encodeURIComponent(id)}`, "_blank", "noopener");
+}, true);
+document.addEventListener("click", (event) => {
+  if (window.innerWidth > 720) return;
+  const button = event.target.closest("#bulk-print-button");
+  if (!button) return;
+  const ids = [...document.querySelectorAll("input[name='ids[]']:checked")].map((box) => box.value);
+  if (!ids.length) return;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  fetch(new URL("certificado_token", document.baseURI).href, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "same-origin",
+    body: JSON.stringify({ ids }),
+  })
+    .then((response) => response.json().then((data) => ({ response, data })))
+    .then(({ response, data }) => {
+      if (!response.ok || !data.url) throw new Error(data.error || "No se pudo generar el token.");
+      window.location.href = data.url.replace("certificado_pdf", "certificado_viewer");
+    })
+    .catch((error) => window.alert(error.message));
+}, true);

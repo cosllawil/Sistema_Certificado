@@ -16,10 +16,14 @@
 }
 
 .sidebar .menu a[href="dashboard"] {
+    order: -13;
+}
+
+.sidebar .menu a[href="plantillas"] {
     order: -12;
 }
 
-.sidebar .menu a[href="participantes"] {
+.sidebar .menu a[href="tipos_certificado"] {
     order: -11;
 }
 
@@ -27,11 +31,7 @@
     order: -10;
 }
 
-.sidebar .menu a[href="tipos_certificado"] {
-    order: -9;
-}
-
-.sidebar .menu a[href="plantillas"] {
+.sidebar .menu a[href="participantes"] {
     order: -9;
 }
 
@@ -225,6 +225,19 @@ body::-webkit-scrollbar-thumb:hover {
     text-decoration: none
 }
 
+.logout-actions svg {
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+    vertical-align: -3px;
+}
+
+.logout-cancel svg {
+    width: 18px;
+    height: 18px;
+    stroke-width: 2.4;
+}
+
 .logout-cancel {
     border: 1px solid #385675;
     color: #c9d9ec;
@@ -337,7 +350,8 @@ body::-webkit-scrollbar-thumb:hover {
     padding: 12px;
     border: 1px solid #1d3b63;
     border-radius: 12px;
-    background: #14345e
+    background: #14345e;
+    z-index: 5
 }
 
 .sidebar-profile-avatar {
@@ -610,6 +624,12 @@ body::-webkit-scrollbar-thumb:hover {
     display: block;
     width: 22px;
     height: 22px
+}
+
+.audit-menu-icon::before,
+.audit-menu-icon::after {
+    content: none !important;
+    display: none !important;
 }
 
 .menu a.active .menu-icon {
@@ -1583,7 +1603,9 @@ body::-webkit-scrollbar-thumb:hover {
 
     .sidebar .brand {
         justify-content: flex-start;
-        min-height: 76px;
+        height: 107px;
+        min-height: 107px;
+        flex: 0 0 107px;
         padding: 14px 18px;
         border-bottom: 1px solid #203957;
     }
@@ -1638,11 +1660,28 @@ body::-webkit-scrollbar-thumb:hover {
         background: #14345e !important;
     }
 
+    /* Reserva opaca para que el menú no se dibuje detrás de la card. */
+    .sidebar::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        height: 112px;
+        background: #0b1d33;
+        z-index: 10;
+        pointer-events: none;
+    }
+
     .mobile-menu-open .sidebar-profile {
         z-index: 100;
         background: #14345e !important;
         isolation: isolate;
         box-shadow: 0 -16px 0 #0b1d33, 0 -12px 18px #0b1d33;
+    }
+
+    .mobile-menu-open .sidebar .menu {
+        padding-bottom: 120px;
     }
 
     .mobile-menu-open .sidebar-profile::before {
@@ -1652,6 +1691,17 @@ body::-webkit-scrollbar-thumb:hover {
         right: -14px;
         top: -15px;
         border-top: 1px solid #203957;
+    }
+
+    .mobile-menu-open .sidebar-profile::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        right: -14px;
+        bottom: -16px;
+        left: -14px;
+        z-index: -1;
+        background: #0b1d33;
     }
 
     .topbar {

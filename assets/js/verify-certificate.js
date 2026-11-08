@@ -51,11 +51,20 @@ document.addEventListener("DOMContentLoaded", () => {
       event.preventDefault();
       const code =
         document.querySelector(".code-badge")?.textContent.trim() || "";
+      const viewerUrl = event.currentTarget.href.replace(/&download=1$/, "");
+      if (window.innerWidth <= 720) {
+        window.location.href = viewerUrl.replace("certificado_pdf", "certificado_viewer");
+        return;
+      }
       const modal = document.createElement("div");
       modal.className = "verification-pdf-modal";
-      const viewerUrl = event.currentTarget.href.replace(/&download=1$/, "");
       modal.innerHTML = `<div class="verification-pdf-dialog" role="dialog" aria-modal="true"><header><h2><svg viewBox="0 0 24 24"><path d="M5 3h11l3 3v15H5z"/><path d="M8 9h8M8 13h6M8 17h5"/></svg>Vista previa del certificado</h2><button type="button" class="verification-pdf-close">×</button></header><div class="verification-pdf-body"><iframe title="Vista previa del certificado" src="${viewerUrl}&verificar=1&codigo=${encodeURIComponent(code)}"></iframe></div><footer><button type="button" class="verification-pdf-close">×&nbsp; Cerrar</button></footer></div>`;
       document.body.append(modal);
+      const closeButton = modal.querySelector("footer button.verification-pdf-close");
+      if (closeButton) {
+        closeButton.className = "participant-modal-cancel verification-pdf-close";
+        closeButton.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>Cerrar';
+      }
       modal
         .querySelectorAll(".verification-pdf-close")
         .forEach((button) =>

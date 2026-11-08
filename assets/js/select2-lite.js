@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   document
     .querySelectorAll(
-      ".form-card select, .participant-form select, #template-modal select, #certificate-course-filter",
+      ".form-card select, .participant-form select, .signer-form select.user-document-type, #template-modal select, #type-modal select, #course-modal select, #user-modal select.user-document-type, #certificate-course-filter",
     )
     .forEach((select) => {
       if (select.closest(".select2-lite")) return;

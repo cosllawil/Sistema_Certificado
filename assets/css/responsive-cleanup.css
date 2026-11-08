@@ -1,0 +1,164 @@
+.change-password-actions button {
+  height: 36px !important;
+  min-height: 36px !important;
+  padding: 0 16px !important;
+  line-height: 1 !important;
+  box-sizing: border-box !important;
+}
+
+.logout-actions .logout-cancel {
+  color: #fff !important;
+  background: #dc2626 !important;
+  border-color: #dc2626 !important;
+}
+
+.pdf-viewer-footer .modal-close-button {
+  height: 38px !important;
+  min-height: 38px !important;
+  padding: 8px 14px !important;
+  line-height: 1 !important;
+  box-sizing: border-box !important;
+}
+
+.modal-footer .modal-close-button {
+  height: 44px !important;
+  min-height: 44px !important;
+  padding: 0 16px !important;
+  line-height: 1 !important;
+  box-sizing: border-box !important;
+}
+
+.modal-footer .participant-modal-cancel {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  padding: 0 14px !important;
+  font: inherit !important;
+  line-height: 36px !important;
+  border: 0 !important;
+  border-radius: 7px !important;
+  color: #fff !important;
+  background: #ef2b2b !important;
+  box-sizing: border-box !important;
+  transform: none !important;
+}
+
+.pdf-viewer-footer .modal-close-button svg,
+.modal-footer .modal-close-button svg {
+  width: 17px !important;
+  height: 17px !important;
+  fill: none !important;
+  stroke: currentColor !important;
+  stroke-width: 1.8 !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+}
+
+@media (max-width: 720px) {
+  .pdf-viewer-modal {
+    align-items: center !important;
+    justify-items: center !important;
+    padding: 12px !important;
+  }
+
+  .pdf-viewer-card {
+    width: 100% !important;
+    max-width: 420px !important;
+    height: min(680px, calc(100vh - 24px)) !important;
+    margin: 0 auto !important;
+  }
+
+  .participant-actions {
+    gap: 8px;
+  }
+
+  .participant-actions:has(.course-edit),
+  .participant-actions:has(.type-edit),
+  .participant-actions:has(.template-edit),
+  .participant-actions:has(.signer-edit),
+  .participant-actions:has(.certificate-edit),
+  .participant-actions:has(.user-edit),
+  .participant-actions:has(.role-edit),
+  .form-page:has(.configuration-edit) > .participant-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .participant-actions:has(.course-edit) .participant-action,
+  .participant-actions:has(.type-edit) .participant-action,
+  .participant-actions:has(.template-edit) .participant-action,
+  .participant-actions:has(.signer-edit) .participant-action,
+  .participant-actions:has(.certificate-edit) .participant-action,
+  .participant-actions:has(.user-edit) .participant-action,
+  .participant-actions:has(.role-edit) .participant-action,
+  .form-page:has(.configuration-edit) .configuration-edit {
+    width: 100%;
+    min-height: 44px;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+
+  .panel.recent > .panel-heading,
+  .report-page .report-table > .panel-heading,
+  .users-table-heading,
+  .configuration-table-heading {
+    display: block;
+  }
+
+  .panel.recent > .panel-heading .table-search,
+  .panel.recent > .panel-heading .table-search input,
+  .report-page .report-table .table-search,
+  .report-page .report-table .table-search input,
+  .users-table-heading .table-search,
+  .users-table-heading .table-search input,
+  .configuration-table-heading .table-search,
+  .configuration-table-heading .table-search input {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .report-page .report-filters .form-actions.wide {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .report-page .report-table .table-wrap {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .report-page .report-pagination {
+    justify-content: flex-end;
+  }
+
+  .template-config-view .template-config-card,
+  .template-config-view .template-config-form,
+  .template-config-view .template-preview-wrap,
+  .template-config-view .template-preview-wrap img,
+  .template-config-view .template-preview-wrap canvas {
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .template-config-view .template-config-form .form-actions {
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+  }
+
+  .template-config-view .template-config-form .form-actions button {
+    flex: 0 1 auto;
+    width: auto;
+    min-height: 36px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+}

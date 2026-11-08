@@ -9,7 +9,7 @@
           </svg>Nuevo certificado</a><button type="button" class="participant-action participant-action-edit certificate-edit" disabled><svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="m4 16-.8 4.8L8 20l11-11a2.8 2.8 0 0 0-4-4Z" />
             <path d="m13.5 6.5 4 4" />
-          </svg>Editar certificado</button><button type="button" id="bulk-print-button" class="participant-action" disabled><svg viewBox="0 0 24 24" aria-hidden="true">
+          </svg>Editar certificado</button><button type="button" id="bulk-print-button" class="participant-action"><svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M6 3h9l3 3v15H6zM9 13h6M9 17h6" />
           </svg>Imprimir seleccionados</button><button type="submit" id="bulk-emit-button" form="bulk-emit-form" class="participant-action" style="background:#16a34a" disabled><svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="m5 12 4 4L19 6" />
@@ -59,8 +59,8 @@ if ($emittedIds): ?><div class="bulk-emit-modal" id="bulk-emit-modal">
         <h2><svg class="modal-title-icon" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M6 3h9l3 3v15H6zM15 3v5h5M9 13h6M9 17h6" />
           </svg>Certificados emitidos</h2><button type="button" class="participant-modal-close" data-close-bulk>&times;</button>
-      </div><iframe class="bulk-emit-pdf" src="certificado_pdf?batch=<?= implode(',', $emittedIds) ?>" title="Certificados emitidos"></iframe>
-      <div class="modal-footer"><button type="button" class="participant-action modal-close-button" data-close-bulk><svg viewBox="0 0 24 24" aria-hidden="true">
+      </div><?php $batchPayload = 'batch|' . (time() + 300) . '|' . implode(',', array_map('intval', $emittedIds)); $batchSecret = (string)(getenv('APP_KEY') ?: 'Sistema_Certificado_pdf_token_v1'); $batchSignature = hash_hmac('sha256', $batchPayload, $batchSecret); $batchToken = rtrim(strtr(base64_encode($batchPayload . '|' . $batchSignature), '+/', '-_'), '='); ?><iframe class="bulk-emit-pdf" src="certificado_pdf?token=<?= urlencode($batchToken) ?>" title="Certificados emitidos"></iframe>
+      <div class="modal-footer"><button type="button" class="participant-modal-cancel modal-close-button" data-close-bulk><svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M6 6l12 12M18 6 6 18" />
           </svg>Cerrar</button></div>
     </div>
@@ -72,7 +72,7 @@ if ($emittedIds): ?><div class="bulk-emit-modal" id="bulk-emit-modal">
           <path d="M6 3h9l3 3v15H6zM15 3v5h5M9 13h6M9 17h6" />
         </svg>Vista previa del certificado</h2><button type="button" class="pdf-viewer-close">&times;</button>
     </div><iframe title="Vista previa del certificado"></iframe>
-    <div class="modal-footer pdf-viewer-footer"><button type="button" class="participant-action modal-close-button pdf-viewer-close"><svg viewBox="0 0 24 24" aria-hidden="true">
+    <div class="modal-footer pdf-viewer-footer"><button type="button" class="participant-modal-cancel modal-close-button pdf-viewer-close"><svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M6 6l12 12M18 6 6 18" />
         </svg>Cerrar</button></div>
   </div>

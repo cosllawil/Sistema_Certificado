@@ -83,6 +83,61 @@ document.addEventListener("DOMContentLoaded", () => {
     syncRoleOptions();
   }
   form?.setAttribute("autocomplete", "new-password");
+  const documentType = form?.elements.tipo_documento;
+  const documentNumber = form?.elements.numero_documento;
+  const syncDocumentState = () => {
+    const enabled = Boolean(documentType?.value);
+    documentNumber.disabled = !enabled;
+    documentNumber.maxLength = documentType?.value === "DNI" ? 8 : 12;
+    documentNumber.inputMode =
+      documentType?.value === "DNI" || documentType?.value === "CE"
+        ? "numeric"
+        : "text";
+    if (!enabled) documentNumber.value = "";
+  };
+  documentType?.addEventListener("change", () => {
+    documentNumber.value = "";
+    syncDocumentState();
+    if (documentType.value) {
+      requestAnimationFrame(() => documentNumber.focus());
+    }
+  });
+  syncDocumentState();
+  documentNumber?.addEventListener("input", () => {
+    if (documentType.value === "DNI" || documentType.value === "CE") {
+      documentNumber.value = documentNumber.value.replace(/\D/g, "");
+    } else if (documentType.value === "PASAPORTE") {
+      documentNumber.value = documentNumber.value.replace(/[^a-z0-9]/gi, "");
+    }
+  });
+  documentNumber?.addEventListener("blur", async () => {
+    if (documentType.value !== "DNI" || !/^\d{8}$/.test(documentNumber.value.trim())) return;
+    const loading = document.createElement("div");
+    loading.className = "reniec-loading";
+    loading.innerHTML = '<div class="reniec-loading-card"><span class="reniec-spinner"></span><span>Buscando en RENIEC<span class="reniec-dots">...</span></span></div>';
+    document.body.append(loading);
+    try {
+      const response = await fetch(`reniec?numero=${encodeURIComponent(documentNumber.value.trim())}`, { headers: { Accept: "application/json" } });
+      const result = await response.json();
+      if (result.success) {
+        form.elements.nombres.value = result.nombres || "";
+        form.elements.apellidos.value = [
+          result.apellidoPaterno,
+          result.apellidoMaterno,
+        ]
+          .filter(Boolean)
+          .join(" ");
+        form.elements.nombres.dispatchEvent(new Event("input", { bubbles: true }));
+        form.elements.apellidos.dispatchEvent(new Event("input", { bubbles: true }));
+      } else if (typeof showParticipantAlert === "function") {
+        showParticipantAlert(result.message || "No se encontraron datos para ese DNI.");
+      }
+    } catch {
+      if (typeof showParticipantAlert === "function") showParticipantAlert("No se pudo consultar RENIEC.");
+    } finally {
+      loading.remove();
+    }
+  });
   ["nombres", "apellidos", "email", "username"].forEach((name) =>
     form?.elements[name]?.setAttribute("autocomplete", "new-password"),
   );
@@ -156,6 +211,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelector("[data-user-new]")?.addEventListener("click", () => {
     form.reset();
     form.elements.user_id.value = "";
+    syncDocumentState();
     form.elements.rol_id.value = "";
     form.elements.rol_id.dispatchEvent(new Event("change"));
     title.innerHTML = icon + "Nuevo usuario";

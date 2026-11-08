@@ -70,6 +70,7 @@
         <form class="template-config-form" method="post" action="plantillas"><input type="hidden" name="_token" value="<?= htmlspecialchars((string)($_SESSION['template_csrf'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"><input type="hidden" name="config_template_id"><input type="hidden" name="configuracion_json">
             <div class="form-grid">
                 <div class="field wide"><label>Campos visibles</label>
+                    <label><input type="checkbox" name="mostrar_firma" value="firma"> Firma</label>
                     <div class="template-fields"><label><input type="checkbox" value="participante"> Participante</label><label><input type="checkbox" value="registro_cas"> Registro CAS</label><label><input type="checkbox" value="curso"> Curso</label><label><input type="checkbox" value="tipo"> Tipo de certificado</label><label><input type="checkbox" value="fecha_sesion"> Fecha de sesión</label><label><input type="checkbox" value="fecha_inicio"> Fecha de inicio</label><label><input type="checkbox" value="fecha_fin"> Fecha de fin</label><label><input type="checkbox" value="horas"> Horas académicas</label><label><input type="checkbox" value="firmante"> Firmante</label></div>
                 </div>
                 <div class="field"><label>Tipo de letra</label><select name="fuente">
@@ -92,11 +93,11 @@
         </div>
         <form method="post" action="plantillas" enctype="multipart/form-data" autocomplete="off" novalidate><input type="hidden" name="template_id">
             <div class="form-grid">
-                <div class="field"><label>Horas académicas</label><input name="horas_academicas" type="text" inputmode="decimal" autocomplete="off"></div>
                 <div class="field"><label>Fecha de sesión</label><input name="fecha_sesion" type="date"></div>
+                <div class="field"><label>Nombre de plantilla</label><input name="nombre" required></div>
+                <div class="field"><label>Horas académicas</label><input name="horas_academicas" type="text" inputmode="decimal" autocomplete="off"></div>
                 <div class="field"><label>Fecha de inicio</label><input name="fecha_inicio" type="date"></div>
                 <div class="field"><label>Fecha de fin</label><input name="fecha_fin" type="date"></div>
-                <div class="field"><label>Nombre </label><input name="nombre" required></div>
                 <div class="field"><label>Formato</label><input name="formato" value="A4"></div>
                 <div class="field"><label>Orientación</label><select name="orientacion">
                         <option value="horizontal">Horizontal</option>

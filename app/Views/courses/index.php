@@ -30,7 +30,7 @@
                         <th>Estado</th>
                     </tr>
                 </thead>
-                <tbody><?php foreach ($courses as $course): ?><tr class="course-row" data-course-id="<?= (int)$course['id'] ?>" data-codigo="<?= htmlspecialchars($course['codigo'], ENT_QUOTES, 'UTF-8') ?>" data-nombre="<?= htmlspecialchars($course['nombre'], ENT_QUOTES, 'UTF-8') ?>" data-horas="<?= htmlspecialchars((string)$course['horas_academicas'], ENT_QUOTES, 'UTF-8') ?>" data-inicio="<?= htmlspecialchars((string)($course['fecha_inicio'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" data-fin="<?= htmlspecialchars((string)($course['fecha_fin'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" data-descripcion="<?= htmlspecialchars((string)($course['descripcion'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
+                <tbody><?php foreach ($courses as $course): ?><tr class="course-row" data-course-id="<?= (int)$course['id'] ?>" data-codigo="<?= htmlspecialchars($course['codigo'], ENT_QUOTES, 'UTF-8') ?>" data-nombre="<?= htmlspecialchars($course['nombre'], ENT_QUOTES, 'UTF-8') ?>" data-horas="<?= htmlspecialchars((string)$course['horas_academicas'], ENT_QUOTES, 'UTF-8') ?>" data-inicio="<?= htmlspecialchars((string)($course['fecha_inicio'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" data-fin="<?= htmlspecialchars((string)($course['fecha_fin'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" data-descripcion="<?= htmlspecialchars((string)($course['descripcion'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" data-tipo-certificado="<?= (int)($course['tipo_certificado_id'] ?? 0) ?>" data-plantilla="<?= (int)($course['plantilla_id'] ?? 0) ?>">
                             <td><?= htmlspecialchars($course['codigo'], ENT_QUOTES, 'UTF-8') ?></td>
                             <td><?= htmlspecialchars($course['nombre'], ENT_QUOTES, 'UTF-8') ?></td>
                             <td><?= (int)$course['horas_academicas'] ?></td>
@@ -56,10 +56,11 @@
         <form class="course-form" method="post" action="cursos" autocomplete="off" novalidate><input type="hidden" name="_token" value="<?= htmlspecialchars($_SESSION['course_csrf'], ENT_QUOTES, 'UTF-8') ?>"><input type="hidden" name="course_id" value=""><input type="hidden" name="action" value="save">
             <div class="form-grid">
                 <div class="field"><label>Código </label><input name="codigo" value="<?= e($nextCourseCode ?? '1') ?>" readonly required></div>
-                <div class="field"><label>Nombre </label><input name="nombre" required></div>
+                <div class="field"><label>Nombre del curso</label><input name="nombre" required></div>
                 <div class="field"><label>Horas académicas</label><input name="horas_academicas" type="text" inputmode="numeric" placeholder="0"></div>
                 <div class="field"><label>Fecha de inicio </label><input name="fecha_inicio" type="date"></div>
                 <div class="field"><label>Fecha de fin </label><input name="fecha_fin" type="date"></div>
+                <div class="field"><label>Tipo de certificado</label><select name="tipo_certificado_id"><option value="">Seleccionar tipo</option><?php foreach (($certificateTypes ?? []) as $type): ?><option value="<?= (int)$type['id'] ?>" data-template-id="<?= (int)($type['plantilla_id'] ?? 0) ?>"><?= e($type['nombre']) ?></option><?php endforeach; ?></select></div>
                 <div class="field wide"><label>Descripción</label><textarea name="descripcion"></textarea></div>
             </div>
             <div class="form-actions"><button type="button" class="course-cancel" onclick="document.getElementById('course-modal').setAttribute('hidden','')"><svg viewBox="0 0 24 24" aria-hidden="true">

@@ -7,6 +7,10 @@
       </svg>Editar configuración</button></div>
   <div class="panel recent">
     <div class="table-wrap">
+      <div class="panel-heading configuration-table-heading">
+        <h2>Listado de configuración</h2>
+        <div class="table-search"><input type="search" class="data-search" placeholder="Buscar configuración..."></div>
+      </div>
       <table>
         <thead>
           <tr>

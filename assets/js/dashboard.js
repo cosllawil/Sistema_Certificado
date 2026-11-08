@@ -379,7 +379,7 @@ function openChangePasswordModal() {
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19h16M6 19V8h12v11M9 8V5h6v3M9 12h6M9 15h6"/></svg>',
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 4 7v5c0 5 3.5 8 8 9 4.5-1 8-4 8-9V7l-8-4Z"/><path d="m9 12 2 2 4-4"/></svg>',
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h8v3H8zM6 5H4v16h16V5h-2"/><path d="M8 12l2 2 5-5M8 18h8"/></svg>',
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M9 4.5h6M9 9h6M9 13h6M9 17h3"/></svg>',
   ];
   document
     .querySelectorAll(".menu .menu-icon")
@@ -414,6 +414,62 @@ function openChangePasswordModal() {
     if (routes[label.textContent.trim()])
       link.href = routes[label.textContent.trim()];
   });
+
+  const auditLink = document.querySelector('.menu a[href="auditoria"]');
+  if (auditLink) {
+    const auditIcon = auditLink.querySelector('.menu-icon');
+    if (auditIcon) {
+      auditIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M9 4.5h6M9 9h6M9 13h6M9 17h3"/></svg>';
+    }
+  }
+
+  const rolesLink = document.querySelector('.menu a[href="roles"]');
+  if (rolesLink) {
+    const rolesIcon = rolesLink.querySelector('.menu-icon');
+    if (rolesIcon) {
+      rolesIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 7v5c0 5 3.5 8 8 9 4.5-1 8-4 8-9V7l-8-4Z"/><path d="m9 12 2 2 4-4"/></svg>';
+    }
+  }
+
+  const coursesLink = document.querySelector('.menu a[href="cursos"]');
+  if (coursesLink) {
+    const coursesIcon = coursesLink.querySelector('.menu-icon');
+    if (coursesIcon) {
+      coursesIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5M3 16l9 5 9-5"/></svg>';
+    }
+  }
+
+  const certificateTypesLink = document.querySelector('.menu a[href="tipos_certificado"]');
+  if (certificateTypesLink) {
+    const certificateTypesIcon = certificateTypesLink.querySelector('.menu-icon');
+    if (certificateTypesIcon) {
+      certificateTypesIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h10l4 4v14H5z"/><path d="M15 3v5h5M8 12h8M8 16h5"/><circle cx="16" cy="16" r="2.5"/><path d="m14.5 18 1.5-1 1.5 1"/></svg>';
+    }
+  }
+
+  const participantsLink = document.querySelector('.menu a[href="participantes"]');
+  if (participantsLink) {
+    const participantsIcon = participantsLink.querySelector('.menu-icon');
+    if (participantsIcon) {
+      participantsIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20c.6-4 2.6-6 6-6s5.4 2 6 6M16 11a3 3 0 1 0 0-6M16 14c2.8 0 4.5 2 5 6"/></svg>';
+    }
+  }
+
+  const templatesLink = document.querySelector('.menu a[href="plantillas"]');
+  if (templatesLink) {
+    const templatesIcon = templatesLink.querySelector('.menu-icon');
+    if (templatesIcon) {
+      templatesIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v5h5M9 12h6M9 16h6"/><path d="M3 6v15a2 2 0 0 0 2 2h12"/></svg>';
+    }
+  }
+
+  const reportsLink = document.querySelector('.menu a[href="reportes"]');
+  if (reportsLink) {
+    const reportsIcon = reportsLink.querySelector('.menu-icon');
+    if (reportsIcon) {
+      reportsIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>';
+    }
+  }
 
   const trendData = dashboardData.trends || {};
   const trendKeys = ["certificates", "pending", "printed", "templates"];

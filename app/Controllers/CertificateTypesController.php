@@ -12,6 +12,7 @@ final class CertificateTypesController
             exit;
         }
         $db = databaseConnection();
+        require_once __DIR__ . '/../Models/Template.php';
         (new AuthorizationService($db))->require((int)$_SESSION['auth_user']['id'], 'certificados.ver');
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (isset($_POST['codigo'])) {
@@ -25,13 +26,14 @@ final class CertificateTypesController
                 }
                 if ($code === '' || $name === '') $_SESSION['type_error'] = 'Ingresa el código y el nombre para continuar.';
                 elseif ($model->codeExists($code, $id)) $_SESSION['type_error'] = 'El código del tipo de certificado ya existe.';
-                elseif ($id > 0) $model->update($id, ['codigo' => $code, 'nombre' => $name, 'descripcion' => strtoupper(trim((string) ($_POST['descripcion'] ?? ''))) ?: null]);
-                else $model->create(['codigo' => $code, 'nombre' => $name, 'descripcion' => strtoupper(trim((string) ($_POST['descripcion'] ?? ''))) ?: null]);
+                elseif ($id > 0) $model->update($id, ['codigo' => $code, 'nombre' => $name, 'descripcion' => strtoupper(trim((string) ($_POST['descripcion'] ?? ''))) ?: null, 'plantilla_id' => (int)($_POST['plantilla_id'] ?? 0) ?: null]);
+                else $model->create(['codigo' => $code, 'nombre' => $name, 'descripcion' => strtoupper(trim((string) ($_POST['descripcion'] ?? ''))) ?: null, 'plantilla_id' => (int)($_POST['plantilla_id'] ?? 0) ?: null]);
             } else (new CertificateType($db))->setStatus((int) ($_POST['type_id'] ?? 0), (int) ($_POST['activo'] ?? 0));
             header('Location: tipos_certificado');
             exit;
         }
         $types = (new CertificateType($db))->all();
+        $templates = (new Template($db))->active();
         $nextTypeNumber = (int)$db->query("SELECT COALESCE(MAX(CAST(SUBSTRING(codigo, 4) AS UNSIGNED)), 0) FROM tipos_certificado WHERE codigo LIKE 'TC-%'")->fetchColumn() + 1;
         $nextTypeCode = 'TC-' . str_pad((string)$nextTypeNumber, 3, '0', STR_PAD_LEFT);
         $typeError = $_SESSION['type_error'] ?? null;

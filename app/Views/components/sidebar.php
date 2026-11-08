@@ -18,7 +18,10 @@ $can = static fn(string $permission): bool => $sidebarUserId > 0 && $sidebarAuth
         <?php if ($can('usuarios.administrar')): ?><a href="usuarios">&#128100; <span>Usuarios</span></a><?php endif; ?>
         <?php if ($can('configuracion.administrar')): ?><a href="configuracion">&#9881; <span>Configuración</span></a><?php endif; ?>
         <?php if ($can('roles.administrar')): ?><a href="roles">&#128221; <span>Roles y permisos</span></a><?php endif; ?>
-        <?php if ($can('auditoria.ver')): ?><a href="auditoria">&#128337; <span>Auditoría</span></a><?php endif; ?>
+        <?php if ($can('auditoria.ver')): ?><a href="auditoria"><span class="menu-icon audit-menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="5" y="4" width="14" height="16" rx="2"></rect>
+                        <path d="M9 4.5h6M9 9h6M9 13h6M9 17h3"></path>
+                    </svg></span><span>Auditoría</span></a><?php endif; ?>
     </nav>
     <div class="sidebar-profile"><span class="sidebar-profile-avatar">WC</span><span class="sidebar-profile-info"><b><?= e($displayName) ?></b><small><?= e($roleName) ?></small></span><span class="sidebar-profile-logout" aria-label="Cerrar sesión"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />

@@ -19,12 +19,17 @@ final class SignersController
             exit;
         }
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nombres'])) {
+            $tipoDocumento = strtoupper(trim((string)($_POST['tipo_documento'] ?? '')));
+            $numeroDocumento = trim((string)($_POST['numero_documento'] ?? ''));
             $nombres = strtoupper(trim((string)$_POST['nombres']));
             $apellidos = strtoupper(trim((string)$_POST['apellidos']));
             $cargo = strtoupper(trim((string)$_POST['cargo']));
+            $signerId = (int)($_POST['signer_id'] ?? 0);
             $firma = null;
-            if ($nombres === '' || $apellidos === '' || $cargo === '') $_SESSION['signer_error'] = 'Completa los campos obligatorios.';
+            $documentValid = $tipoDocumento === 'DNI' ? preg_match('/^\d{8}$/', $numeroDocumento) : ($tipoDocumento === 'CE' ? preg_match('/^\d{1,12}$/', $numeroDocumento) : preg_match('/^[a-z0-9]{1,12}$/i', $numeroDocumento));
+            if ((!$signerId && ($tipoDocumento === '' || $numeroDocumento === '' || !$documentValid)) || $nombres === '' || $apellidos === '' || $cargo === '') $_SESSION['signer_error'] = 'Completa correctamente los datos del documento, nombres, apellidos y cargo.';
             elseif (!preg_match('/^[\p{L} ]+$/u', $nombres) || !preg_match('/^[\p{L} ]+$/u', $apellidos) || !preg_match('/^[\p{L} ]+$/u', $cargo)) $_SESSION['signer_error'] = 'Nombres, apellidos y cargo solo deben contener letras.';
+            elseif (!$signerId && empty($_FILES['firma']['name'])) $_SESSION['signer_error'] = 'La firma es obligatoria para un nuevo firmante.';
             elseif (!empty($_FILES['firma']['name'])) {
                 $ext = strtolower(pathinfo($_FILES['firma']['name'], PATHINFO_EXTENSION));
                 if (!in_array($ext, ['png', 'jpg', 'jpeg', 'svg'], true) || $_FILES['firma']['error'] !== UPLOAD_ERR_OK) $_SESSION['signer_error'] = 'La firma debe ser una imagen válida.';
@@ -37,7 +42,7 @@ final class SignersController
                 }
             }
             if (!isset($_SESSION['signer_error'])) {
-                $id = (int)($_POST['signer_id'] ?? 0);
+                $id = $signerId;
                 if ($id > 0) {
                     $q = $db->prepare('UPDATE firmantes SET nombres=:nombres,apellidos=:apellidos,cargo=:cargo,firma_path=COALESCE(:firma_path,firma_path) WHERE id=:id');
                     $q->execute(['nombres' => $nombres, 'apellidos' => $apellidos, 'cargo' => $cargo, 'firma_path' => $firma, 'id' => $id]);

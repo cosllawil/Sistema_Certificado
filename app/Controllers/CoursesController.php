@@ -11,6 +11,8 @@ final class CoursesController
             exit;
         }
         $db = databaseConnection();
+        require_once __DIR__ . '/../Models/CertificateType.php';
+        require_once __DIR__ . '/../Models/Template.php';
         $userId = (int)$_SESSION['auth_user']['id'];
         (new AuthorizationService($db))->require((int)$_SESSION['auth_user']['id'], 'cursos.ver');
         if (empty($_SESSION['course_csrf'])) $_SESSION['course_csrf'] = bin2hex(random_bytes(32));
@@ -39,7 +41,14 @@ final class CoursesController
                     exit;
                 }
             }
-            $courseData = ['codigo' => $codigo, 'nombre' => strtoupper(trim((string)$_POST['nombre'])), 'descripcion' => strtoupper(trim((string)($_POST['descripcion'] ?? ''))) ?: null, 'horas' => (int)($_POST['horas_academicas'] ?? 0), 'inicio' => $_POST['fecha_inicio'] ?: null, 'fin' => $_POST['fecha_fin'] ?: null];
+            $typeId = (int)($_POST['tipo_certificado_id'] ?? 0) ?: null;
+            $templateId = null;
+            if ($typeId) {
+                $templateQuery = $db->prepare('SELECT plantilla_id FROM tipos_certificado WHERE id=:id AND activo=1');
+                $templateQuery->execute(['id' => $typeId]);
+                $templateId = (int)($templateQuery->fetchColumn() ?: 0) ?: null;
+            }
+            $courseData = ['codigo' => $codigo, 'nombre' => strtoupper(trim((string)$_POST['nombre'])), 'descripcion' => strtoupper(trim((string)($_POST['descripcion'] ?? ''))) ?: null, 'horas' => (int)($_POST['horas_academicas'] ?? 0), 'inicio' => $_POST['fecha_inicio'] ?: null, 'fin' => $_POST['fecha_fin'] ?: null, 'tipo_certificado_id' => $typeId, 'plantilla_id' => $templateId];
             if ($courseId > 0) {
                 (new Course($db))->update($courseId, $courseData);
                 (new AuditService($db))->log($userId, 'Editar curso', 'cursos', $courseId);
@@ -51,6 +60,8 @@ final class CoursesController
             exit;
         }
         $courses = (new Course($db))->all();
+        $certificateTypes = (new CertificateType($db))->active();
+        $templates = (new Template($db))->active();
         $nextCourseCode = (string)(((int)$db->query('SELECT COALESCE(MAX(CAST(codigo AS UNSIGNED)), 0) FROM cursos')->fetchColumn()) + 1);
         ob_start();
         require dirname(__DIR__) . '/Views/courses/index.php';

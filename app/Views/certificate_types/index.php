@@ -29,7 +29,7 @@
                         <th>Estado</th>
                     </tr>
                 </thead>
-                <tbody><?php foreach ($types as $type): ?><tr class="type-row" data-type-id="<?= (int)$type['id'] ?>" data-active="<?= (int)$type['activo'] ?>" data-code="<?= htmlspecialchars((string)$type['codigo'], ENT_QUOTES, 'UTF-8') ?>" data-name="<?= htmlspecialchars((string)$type['nombre'], ENT_QUOTES, 'UTF-8') ?>" data-description="<?= htmlspecialchars((string)($type['descripcion'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
+                <tbody><?php foreach ($types as $type): ?><tr class="type-row" data-type-id="<?= (int)$type['id'] ?>" data-active="<?= (int)$type['activo'] ?>" data-code="<?= htmlspecialchars((string)$type['codigo'], ENT_QUOTES, 'UTF-8') ?>" data-name="<?= htmlspecialchars((string)$type['nombre'], ENT_QUOTES, 'UTF-8') ?>" data-description="<?= htmlspecialchars((string)($type['descripcion'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" data-plantilla="<?= (int)($type['plantilla_id'] ?? 0) ?>">
                             <td><?= htmlspecialchars((string)$type['codigo'], ENT_QUOTES, 'UTF-8') ?></td>
                             <td><?= htmlspecialchars($type['nombre'], ENT_QUOTES, 'UTF-8') ?></td>
                             <td><?= htmlspecialchars((string)($type['descripcion'] ?? '—'), ENT_QUOTES, 'UTF-8') ?></td>
@@ -53,7 +53,8 @@
         <form class="type-form" method="post" action="tipos_certificado" autocomplete="off" novalidate><input type="hidden" name="type_id">
             <div class="form-grid">
                 <div class="field"><label>Código </label><input name="codigo" value="<?= e($nextTypeCode ?? 'TC-001') ?>" readonly required></div>
-                <div class="field"><label>Nombre </label><input name="nombre" required></div>
+                <div class="field"><label>Nombre del certificado</label><input name="nombre" required></div>
+                <div class="field wide"><label>Plantilla asociada</label><select name="plantilla_id"><option value="">Seleccionar plantilla</option><?php foreach (($templates ?? []) as $template): ?><option value="<?= (int)$template['id'] ?>"><?= e($template['nombre']) ?></option><?php endforeach; ?></select></div>
                 <div class="field wide"><label>Descripción</label><textarea name="descripcion"></textarea></div>
             </div>
             <div class="form-actions"><button type="button" class="course-cancel"><svg viewBox="0 0 24 24" aria-hidden="true">
@@ -65,6 +66,18 @@
         </form>
     </div>
 </div>
+<script>
+document.addEventListener('click', function (event) {
+    if (!event.target.closest('.type-edit')) return;
+    const row = document.querySelector('.type-row.selected');
+    const select = document.querySelector('#type-modal select[name="plantilla_id"]');
+    if (!row || !select) return;
+    select.value = row.dataset.plantilla || '';
+    select.dispatchEvent(new Event('change', { bubbles: true }));
+    const trigger = select.closest('.select2-lite')?.querySelector('.select2-trigger');
+    if (trigger) trigger.textContent = select.selectedOptions[0]?.textContent || 'Seleccionar plantilla';
+});
+</script>
 <div class="participant-modal participant-confirm" id="type-confirm" hidden>
     <div class="participant-modal-card participant-confirm-card">
         <h2>Desactivar tipo de certificado</h2>

@@ -8,10 +8,10 @@
             <div class="field"><label>Curso </label><select name="curso_id" required>
                     <option value="">Seleccionar curso</option><?php foreach ($courses as $r): ?><option value="<?= $r['id'] ?>" data-tipo-certificado="<?= (int)($r['tipo_certificado_id'] ?? 0) ?>" data-plantilla="<?= (int)($r['plantilla_id'] ?? 0) ?>" <?= ((int)($certificateEdit['curso_id'] ?? 0) === (int)$r['id']) ? 'selected' : '' ?>><?= e($r['codigo'] . ' - ' . $r['nombre']) ?></option><?php endforeach; ?>
                 </select></div>
-            <div class="field"><label>Tipo de certificado </label><select name="tipo_certificado_id" required disabled>
+            <div class="field"><label>Tipo de certificado (automático)</label><select name="tipo_certificado_id" required disabled>
                     <option value="">Seleccionar tipo</option><?php foreach ($types as $r): ?><option value="<?= $r['id'] ?>" <?= ((int)($certificateEdit['tipo_certificado_id'] ?? 0) === (int)$r['id']) ? 'selected' : '' ?>><?= e($r['nombre']) ?></option><?php endforeach; ?>
                 </select></div>
-            <div class="field"><label>Plantilla</label><select name="plantilla_id" disabled>
+            <div class="field"><label>Plantilla (automática)</label><select name="plantilla_id" disabled>
                     <option value="">Sin plantilla</option><?php foreach ($templates as $r): ?><option value="<?= $r['id'] ?>" <?= ((int)($certificateEdit['plantilla_id'] ?? 0) === (int)$r['id']) ? 'selected' : '' ?>><?= e($r['nombre']) ?></option><?php endforeach; ?>
                 </select></div>
             <div class="field wide"><label>Observaciones</label><textarea name="observaciones" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()" onchange="this.value=this.value.toUpperCase()" autocomplete="off"><?= e((string)($certificateEdit['observaciones'] ?? '')) ?></textarea></div>

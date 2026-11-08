@@ -51,6 +51,8 @@
         </div>
         <form class="signer-form" method="post" action="firmantes" enctype="multipart/form-data" autocomplete="off" novalidate><input type="hidden" name="signer_id">
             <div class="form-grid">
+                <div class="field"><label>Tipo de documento</label><select class="user-document-type" name="tipo_documento"><option value="">---Seleccione Tipo de documento---</option><option value="DNI">DNI</option><option value="CE">CE</option><option value="PASAPORTE">PASAPORTE</option><option value="OTRO">OTRO</option></select></div>
+                <div class="field"><label>Número de documento</label><input name="numero_documento" inputmode="numeric" autocomplete="off" disabled></div>
                 <div class="field"><label>Nombres </label><input name="nombres" required></div>
                 <div class="field"><label>Apellidos </label><input name="apellidos" required></div>
                 <div class="field"><label>Cargo </label><input name="cargo" required></div>

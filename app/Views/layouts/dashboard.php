@@ -18,14 +18,15 @@ if (empty($_SESSION['change_password_csrf'])) $_SESSION['change_password_csrf'] 
     <title><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></title>
     <link rel="stylesheet" href="assets/css/dashboard.css">
     <link rel="stylesheet" href="assets/css/register-certificate.css?v=3">
-    <link rel="stylesheet" href="assets/css/dashboard-menu.css?v=mobile-drawer-42">
-    <script src="assets/js/dashboard.js?v=21" defer></script>
+    <link rel="stylesheet" href="assets/css/dashboard-menu.css?v=mobile-drawer-60">
+    <script src="assets/js/dashboard.js?v=28" defer></script>
     <script src="assets/js/security.js?v=2" defer></script>
-    <link rel="stylesheet" href="assets/css/participants.css?v=129">
+    <link rel="stylesheet" href="assets/css/participants.css?v=136">
+    <link rel="stylesheet" href="assets/css/responsive-cleanup.css?v=19">
     <link rel="stylesheet" href="assets/css/users.css?v=1">
-    <script src="assets/js/participants.js?v=132" defer></script>
-    <script src="assets/js/select2-lite.js?v=3" defer></script>
-    <script src="assets/js/users.js?v=1" defer></script>
+    <script src="assets/js/participants.js?v=164" defer></script>
+    <script src="assets/js/select2-lite.js?v=7" defer></script>
+    <script src="assets/js/users.js?v=6" defer></script>
     <script src="assets/js/configuration.js?v=1" defer></script>
     <script src="assets/js/roles.js?v=1" defer></script>
     <script src="assets/js/audit.js?v=1" defer></script>

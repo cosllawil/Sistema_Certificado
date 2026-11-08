@@ -95,6 +95,13 @@ final class TemplatesController
                 header('Location: plantillas');
                 exit;
             }
+            $previewTypeName = (string)($db->query('SELECT nombre FROM tipos_certificado ORDER BY activo DESC, nombre LIMIT 1')->fetchColumn() ?: 'TIPO DE CERTIFICADO');
+            $previewCourseName = (string)($db->query('SELECT nombre FROM cursos WHERE deleted_at IS NULL ORDER BY estado="activo" DESC, nombre LIMIT 1')->fetchColumn() ?: 'CURSO DE EJEMPLO');
+            $previewCourse = $db->query('SELECT nombre,horas_academicas,fecha_inicio,fecha_fin FROM cursos WHERE deleted_at IS NULL ORDER BY estado="activo" DESC, nombre LIMIT 1')->fetch() ?: [];
+            $previewSignerName = (string)($db->query('SELECT CONCAT(nombres, " ", apellidos) FROM firmantes WHERE deleted_at IS NULL ORDER BY estado="activo" DESC, apellidos, nombres LIMIT 1')->fetchColumn() ?: 'FIRMANTE');
+            $previewSignerId = (int)($db->query('SELECT id FROM firmantes WHERE deleted_at IS NULL AND estado="activo" AND firma_path IS NOT NULL AND firma_path <> "" ORDER BY apellidos,nombres LIMIT 1')->fetchColumn() ?: 0);
+            $previewSignerSignature = (string)($db->query('SELECT firma_path FROM firmantes WHERE id=' . $previewSignerId . ' LIMIT 1')->fetchColumn() ?: '');
+            if ($previewSignerSignature !== '') $previewSignerSignature = '/Sistema_Certificado/' . ltrim($previewSignerSignature, '/');
             ob_start();
             require dirname(__DIR__) . '/Views/templates/configure.php';
             $pageContent = ob_get_clean();
@@ -126,7 +133,12 @@ final class TemplatesController
                     }
                 }
                 if (!isset($_SESSION['template_error'])) {
-                    $config = ['datos' => ['fecha_sesion' => (string)($_POST['fecha_sesion'] ?? '')]];
+                    $config = ['datos' => [
+                        'horas' => (string)($_POST['horas_academicas'] ?? ''),
+                        'fecha_sesion' => (string)($_POST['fecha_sesion'] ?? ''),
+                        'fecha_inicio' => (string)($_POST['fecha_inicio'] ?? ''),
+                        'fecha_fin' => (string)($_POST['fecha_fin'] ?? ''),
+                    ]];
                     $data = ['nombre' => $name, 'descripcion' => trim((string)($_POST['descripcion'] ?? '')) ?: null, 'fondo_path' => $path, 'formato' => strtoupper(trim((string)($_POST['formato'] ?? 'A4'))), 'orientacion' => ($_POST['orientacion'] ?? 'horizontal'), 'configuracion_json' => json_encode($config, JSON_UNESCAPED_UNICODE)];
                     $id = (int)($_POST['template_id'] ?? 0);
                     if ($id > 0) (new Template($db))->update($id, $data);
