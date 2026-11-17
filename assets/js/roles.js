@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+  if (!document.querySelector(".role-row, [data-role-new], #role-modal")) return;
   const rows = [...document.querySelectorAll(".role-row")];
   const modal = document.querySelector("#role-modal");
   const form = modal?.querySelector("form");
@@ -13,6 +14,17 @@ document.addEventListener("DOMContentLoaded", () => {
   if (buttons?.[1])
     buttons[1].innerHTML =
       '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11l3 3v13H5zM8 4v5h8V4M8 16h8"/></svg>Guardar rol';
+  form?.addEventListener("submit", (event) => {
+    const saveButton = form.querySelector('button[type="submit"]');
+    if (saveButton.dataset.saving === "1") {
+      event.preventDefault();
+      return;
+    }
+    saveButton.dataset.saving = "1";
+    saveButton.disabled = true;
+    saveButton.classList.add("template-submit-loading");
+    saveButton.innerHTML = '<span class="template-submit-spinner" aria-hidden="true"></span><span>Guardando...</span>';
+  });
   let selected = null;
   document
     .querySelectorAll("[data-role-close]")

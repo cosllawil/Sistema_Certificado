@@ -1,4 +1,4 @@
-<?php if (!empty($templateError)): ?><div class="server-form-alert" data-message="<?= htmlspecialchars((string)$templateError, ENT_QUOTES, 'UTF-8') ?>"></div><?php endif; ?>
+<?php if (!empty($templateError)): ?><div class="server-form-alert" data-message="<?= htmlspecialchars((string)$templateError, ENT_QUOTES, 'UTF-8') ?>"></div><?php endif; ?><?php if (!empty($templateSuccess)): ?><div class="server-success-alert" data-message="<?= htmlspecialchars((string)$templateSuccess, ENT_QUOTES, 'UTF-8') ?>"></div><?php endif; ?>
 <section class="form-page">
     <div class="panel-heading">
         <div>
@@ -34,7 +34,7 @@
                         <th>Estado</th>
                     </tr>
                 </thead>
-                <tbody><?php foreach ($templates as $template): ?><tr class="template-row" data-template-id="<?= (int)$template['id'] ?>" data-active="<?= (int)$template['activo'] ?>" data-name="<?= htmlspecialchars((string)$template['nombre'], ENT_QUOTES, 'UTF-8') ?>" data-description="<?= htmlspecialchars((string)($template['descripcion'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" data-format="<?= htmlspecialchars((string)$template['formato'], ENT_QUOTES, 'UTF-8') ?>" data-orientation="<?= htmlspecialchars((string)$template['orientacion'], ENT_QUOTES, 'UTF-8') ?>" data-fondo="<?= htmlspecialchars((string)($template['fondo_path'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" data-config="<?= htmlspecialchars((string)($template['configuracion_json'] ?? '{}'), ENT_QUOTES, 'UTF-8') ?>">
+                <tbody><?php foreach ($templates as $template): ?><tr class="template-row" data-template-id="<?= (int)$template['id'] ?>" data-active="<?= (int)$template['activo'] ?>" data-participants-assigned="<?= (int)($template['participantes_asignados'] ?? 0) ?>" data-name="<?= htmlspecialchars((string)$template['nombre'], ENT_QUOTES, 'UTF-8') ?>" data-description="<?= htmlspecialchars((string)($template['descripcion'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" data-format="<?= htmlspecialchars((string)$template['formato'], ENT_QUOTES, 'UTF-8') ?>" data-orientation="<?= htmlspecialchars((string)$template['orientacion'], ENT_QUOTES, 'UTF-8') ?>" data-fondo="<?= htmlspecialchars((string)($template['fondo_path'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" data-config="<?= htmlspecialchars((string)($template['configuracion_json'] ?? '{}'), ENT_QUOTES, 'UTF-8') ?>">
                             <td><?= htmlspecialchars($template['nombre'], ENT_QUOTES, 'UTF-8') ?></td>
                             <td><?= htmlspecialchars((string)($template['descripcion'] ?? '—'), ENT_QUOTES, 'UTF-8') ?></td>
                             <td><?= htmlspecialchars($template['formato'], ENT_QUOTES, 'UTF-8') ?></td>
@@ -70,7 +70,7 @@
         <form class="template-config-form" method="post" action="plantillas"><input type="hidden" name="_token" value="<?= htmlspecialchars((string)($_SESSION['template_csrf'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"><input type="hidden" name="config_template_id"><input type="hidden" name="configuracion_json">
             <div class="form-grid">
                 <div class="field wide"><label>Campos visibles</label>
-                    <label><input type="checkbox" name="mostrar_firma" value="firma"> Firma</label>
+                    <label><input type="checkbox" name="mostrar_firma" value="firma"> Firma 1</label>
                     <div class="template-fields"><label><input type="checkbox" value="participante"> Participante</label><label><input type="checkbox" value="registro_cas"> Registro CAS</label><label><input type="checkbox" value="curso"> Curso</label><label><input type="checkbox" value="tipo"> Tipo de certificado</label><label><input type="checkbox" value="fecha_sesion"> Fecha de sesión</label><label><input type="checkbox" value="fecha_inicio"> Fecha de inicio</label><label><input type="checkbox" value="fecha_fin"> Fecha de fin</label><label><input type="checkbox" value="horas"> Horas académicas</label><label><input type="checkbox" value="firmante"> Firmante</label></div>
                 </div>
                 <div class="field"><label>Tipo de letra</label><select name="fuente">

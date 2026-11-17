@@ -28,8 +28,8 @@ final class UsersController
                 header('Location: usuarios');
                 exit;
             }
-            $data = ['nombres' => mb_convert_case(trim((string)($_POST['nombres'] ?? '')), MB_CASE_TITLE, 'UTF-8'), 'apellidos' => mb_convert_case(trim((string)($_POST['apellidos'] ?? '')), MB_CASE_TITLE, 'UTF-8'), 'email' => strtoupper(trim((string)($_POST['email'] ?? ''))), 'username' => trim((string)($_POST['username'] ?? '')), 'password_hash' => trim((string)($_POST['password'] ?? ''))];
-            if ($data['nombres'] === '' || $data['apellidos'] === '' || $data['email'] === '' || $data['username'] === '' || $roleId <= 0 || ($id === 0 && $data['password_hash'] === '')) {
+            $data = ['tipo_documento' => strtoupper(trim((string)($_POST['tipo_documento'] ?? ''))), 'numero_documento' => trim((string)($_POST['numero_documento'] ?? '')), 'nombres' => mb_convert_case(trim((string)($_POST['nombres'] ?? '')), MB_CASE_TITLE, 'UTF-8'), 'apellidos' => mb_convert_case(trim((string)($_POST['apellidos'] ?? '')), MB_CASE_TITLE, 'UTF-8'), 'email' => strtoupper(trim((string)($_POST['email'] ?? ''))), 'username' => trim((string)($_POST['username'] ?? '')), 'password_hash' => trim((string)($_POST['password'] ?? ''))];
+            if (!in_array($data['tipo_documento'], ['DNI', 'CE', 'PASAPORTE', 'OTRO'], true) || $data['numero_documento'] === '' || $data['nombres'] === '' || $data['apellidos'] === '' || $data['email'] === '' || $data['username'] === '' || $roleId <= 0 || ($id === 0 && $data['password_hash'] === '')) {
                 $_SESSION['user_error'] = 'Completa los campos obligatorios.';
             } else {
                 $wasEdit = $id > 0;
@@ -38,6 +38,7 @@ final class UsersController
                 else $id = $userModel->create($data);
                 $userModel->assignRole($id, $roleId);
                 (new AuditService($db))->log((int)$_SESSION['auth_user']['id'], $wasEdit ? 'Editar usuario' : 'Crear usuario', 'usuarios', $id, null, ['username' => $data['username'], 'rol_id' => $roleId]);
+                $_SESSION['user_success'] = $wasEdit ? 'Los datos del usuario se actualizaron correctamente.' : 'El usuario se registró correctamente.';
                 header('Location: usuarios');
                 exit;
             }
@@ -50,7 +51,8 @@ final class UsersController
         foreach ($users as &$user) $user['ultimo_acceso_at'] = !empty($user['ultimo_acceso_at']) ? date('d/m/Y H:i', strtotime((string)$user['ultimo_acceso_at'])) : 'Nunca';
         unset($user);
         $userError = $_SESSION['user_error'] ?? null;
-        unset($_SESSION['user_error']);
+        $userSuccess = $_SESSION['user_success'] ?? null;
+        unset($_SESSION['user_error'], $_SESSION['user_success']);
         ob_start();
         require dirname(__DIR__) . '/Views/users/index.php';
         $pageContent = ob_get_clean();

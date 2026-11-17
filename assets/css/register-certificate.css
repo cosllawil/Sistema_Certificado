@@ -136,3 +136,4 @@
         grid-column: auto
     }
 }
+.select2-multi .select2-option{display:flex;align-items:center;gap:9px}.select2-multi .select2-option input[type="checkbox"]{width:16px!important;height:16px;margin:0;padding:0;accent-color:#1683f7}.certificate-single-participant [data-participant-count]{display:none!important}

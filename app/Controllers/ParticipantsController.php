@@ -11,14 +11,49 @@ final class ParticipantsController
             exit;
         }
         $db = databaseConnection();
+        require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
+        require_once dirname(__DIR__) . '/Services/ParticipantImportService.php';
         $userId = (int)$_SESSION['auth_user']['id'];
         (new AuthorizationService($db))->require((int)$_SESSION['auth_user']['id'], 'participantes.ver');
         if (empty($_SESSION['participant_csrf'])) $_SESSION['participant_csrf'] = bin2hex(random_bytes(32));
+        if (isset($_GET['download_template'])) {
+            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx((new ParticipantImportService())->template());
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment; filename="plantilla_participantes.xlsx"');
+            $writer->save('php://output');
+            exit;
+        }
         $error = null;
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!hash_equals((string) $_SESSION['participant_csrf'], (string) ($_POST['_token'] ?? ''))) {
                 http_response_code(419);
                 exit('Token de seguridad inválido.');
+            }
+            if (($_POST['action'] ?? '') === 'import_preview') {
+                try {
+                    $file = $_FILES['archivo_excel'] ?? null;
+                    if (!$file || $file['error'] !== UPLOAD_ERR_OK) throw new RuntimeException('Selecciona un archivo Excel válido.');
+                    $rows = (new ParticipantImportService())->read($file['tmp_name']);
+                    $_SESSION['participant_import_rows'] = (new ParticipantImportService())->validate($rows, $db);
+                } catch (Throwable $exception) {
+                    $_SESSION['participant_import_error'] = $exception->getMessage();
+                }
+                header('Location: participantes?import_preview=1#importar');
+                exit;
+            }
+            if (($_POST['action'] ?? '') === 'import_confirm') {
+                $rows = $_SESSION['participant_import_rows'] ?? [];
+                $model = new Participant($db);
+                $count = 0;
+                foreach ($rows as $row) {
+                    if (!empty($row['_errors'])) continue;
+                    $model->create(['tipo' => $row['tipo_documento'], 'numero' => $row['numero_documento'], 'nombres' => $row['nombres'], 'apellidos' => $row['apellidos'], 'email' => $row['email'] ?: null, 'telefono' => $row['telefono'] ?: null, 'cas' => $row['nro_registro_cas'] ?: null]);
+                    $count++;
+                }
+                unset($_SESSION['participant_import_rows']);
+                $_SESSION['participant_import_success'] = "Se importaron {$count} participantes válidos.";
+                header('Location: participantes');
+                exit;
             }
             if (($_POST['action'] ?? '') === 'deactivate') {
                 $participantId = (int) ($_POST['participant_id'] ?? 0);
@@ -57,6 +92,7 @@ final class ParticipantsController
                 $error = 'Completa los campos obligatorios: número de documento, nombres, apellidos y registro CAS.';
             } else {
                 $participantId = (int) ($_POST['participant_id'] ?? 0);
+                $isParticipantEdit = $participantId > 0;
                 if ($participantId > 0) {
                     (new Participant($db))->update($participantId, $data);
                     (new AuditService($db))->log($userId, 'Editar participante', 'participantes', $participantId);
@@ -64,11 +100,21 @@ final class ParticipantsController
                     $participantId = (new Participant($db))->create($data);
                     (new AuditService($db))->log($userId, 'Crear participante', 'participantes', $participantId);
                 }
-                header('Location: participantes?ok=1');
+                $_SESSION['participant_success'] = $isParticipantEdit ? 'Los datos del participante se actualizaron correctamente.' : 'El participante se registró correctamente.';
+                header('Location: participantes');
                 exit;
             }
         }
         $participants = (new Participant($db))->all();
+        $showImportPreview = isset($_GET['import_preview']) && $_GET['import_preview'] === '1';
+        if (!$showImportPreview) {
+            unset($_SESSION['participant_import_rows'], $_SESSION['participant_import_error']);
+        }
+        $importRows = $showImportPreview ? ($_SESSION['participant_import_rows'] ?? []) : [];
+        $importError = $showImportPreview ? ($_SESSION['participant_import_error'] ?? null) : null;
+        $importSuccess = $_SESSION['participant_import_success'] ?? null;
+        $participantSuccess = $_SESSION['participant_success'] ?? null;
+        unset($_SESSION['participant_import_error'], $_SESSION['participant_import_success'], $_SESSION['participant_success']);
         ob_start();
         require dirname(__DIR__) . '/Views/participants/index.php';
         $pageContent = ob_get_clean();

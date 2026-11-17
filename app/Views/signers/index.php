@@ -1,4 +1,4 @@
-<?php if (!empty($signerError)): ?><div class="server-form-alert" data-message="<?= htmlspecialchars((string)$signerError, ENT_QUOTES, 'UTF-8') ?>"></div><?php endif; ?>
+<?php if (!empty($signerError)): ?><div class="server-form-alert" data-message="<?= htmlspecialchars((string)$signerError, ENT_QUOTES, 'UTF-8') ?>"></div><?php endif; ?><?php if (!empty($signerSuccess)): ?><div class="server-success-alert" data-message="<?= e($signerSuccess) ?>"></div><?php endif; ?>
 <section class="form-page">
     <div class="panel-heading">
         <div>
@@ -25,18 +25,20 @@
                     <tr>
                         <th>Nombre</th>
                         <th>Cargo</th>
+                        <th>Curso</th>
                         <th>Firma</th>
                         <th>Estado</th>
                     </tr>
                 </thead>
-                <tbody><?php foreach ($signers as $signer): ?><tr class="signer-row" data-signer-id="<?= (int)$signer['id'] ?>" data-active="<?= $signer['estado'] === 'activo' ? '1' : '0' ?>" data-nombres="<?= htmlspecialchars($signer['nombres'], ENT_QUOTES, 'UTF-8') ?>" data-apellidos="<?= htmlspecialchars($signer['apellidos'], ENT_QUOTES, 'UTF-8') ?>" data-cargo="<?= htmlspecialchars($signer['cargo'], ENT_QUOTES, 'UTF-8') ?>">
+                <tbody><?php foreach ($signers as $signer): ?><tr class="signer-row" data-signer-id="<?= (int)$signer['id'] ?>" data-active="<?= $signer['estado'] === 'activo' ? '1' : '0' ?>" data-tipo-documento="<?= htmlspecialchars((string)($signer['tipo_documento'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" data-numero-documento="<?= htmlspecialchars((string)($signer['numero_documento'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" data-nombres="<?= htmlspecialchars($signer['nombres'], ENT_QUOTES, 'UTF-8') ?>" data-apellidos="<?= htmlspecialchars($signer['apellidos'], ENT_QUOTES, 'UTF-8') ?>" data-cargo="<?= htmlspecialchars($signer['cargo'], ENT_QUOTES, 'UTF-8') ?>" data-curso-id="<?= (int)$signer['curso_id'] ?>">
                             <td><?= htmlspecialchars($signer['nombres'] . ' ' . $signer['apellidos'], ENT_QUOTES, 'UTF-8') ?></td>
                             <td><?= htmlspecialchars($signer['cargo'], ENT_QUOTES, 'UTF-8') ?></td>
+                            <td><?= htmlspecialchars($signer['curso'], ENT_QUOTES, 'UTF-8') ?></td>
                             <td><?= $signer['firma_path'] ? 'Registrada' : 'No registrada' ?></td>
                             <td><span class="badge <?= $signer['estado'] === 'activo' ? 'activo' : 'pendiente' ?>"><?= $signer['estado'] === 'activo' ? 'Activado' : 'Desactivado' ?></span></td>
                         </tr><?php endforeach;
                             if (!$signers): ?><tr>
-                            <td colspan="4" class="empty">No hay firmantes registrados.</td>
+                            <td colspan="5" class="empty">No hay firmantes registrados.</td>
                         </tr><?php endif; ?></tbody>
             </table>
         </div>
@@ -56,7 +58,8 @@
                 <div class="field"><label>Nombres </label><input name="nombres" required></div>
                 <div class="field"><label>Apellidos </label><input name="apellidos" required></div>
                 <div class="field"><label>Cargo </label><input name="cargo" required></div>
-                <div class="field"><label>Firma</label><label class="file-upload"><input type="file" name="firma" accept="image/png,image/jpeg,image/svg+xml"><span class="file-upload-button"><svg viewBox="0 0 24 24">
+                <div class="field"><label>Curso</label><select name="curso_id" required><option value="">---Seleccione curso---</option><?php foreach ($courses as $course): ?><option value="<?= (int)$course['id'] ?>"><?= htmlspecialchars($course['nombre'], ENT_QUOTES, 'UTF-8') ?></option><?php endforeach; ?></select></div>
+                <div class="field signature-field"><label>Firma</label><label class="file-upload"><input type="file" name="firma" accept="image/png,image/jpeg,image/svg+xml"><span class="file-upload-button"><svg viewBox="0 0 24 24">
                                 <path d="M12 16V4M7 9l5-5 5 5M5 20h14" />
                             </svg>Subir firma</span><span class="file-upload-name">Ningún archivo seleccionado</span></label></div>
             </div>

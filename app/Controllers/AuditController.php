@@ -16,7 +16,6 @@ final class AuditController
         ob_start();
         require dirname(__DIR__) . '/Views/audit/index.php';
         $pageContent = ob_get_clean();
-        $pageTitle = 'AuditorÃ­a | Sistema de Certificados';
         $pageTitle = 'Auditoría | Sistema de Certificados';
         $displayName = 'Wilmer Coscol';
         $roleName = (string)($_SESSION['auth_user']['role'] ?? '');

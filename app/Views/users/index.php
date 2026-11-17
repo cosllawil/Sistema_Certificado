@@ -1,4 +1,4 @@
-<?php $csrf = e((string)($_SESSION['user_csrf'] ?? '')); ?>
+<?php $csrf = e((string)($_SESSION['user_csrf'] ?? '')); ?><?php if (!empty($userSuccess)): ?><div class="server-success-alert" data-message="<?= e($userSuccess) ?>"></div><?php endif; ?>
 <section class="form-page">
     <div class="panel-heading">
         <div>
@@ -30,7 +30,7 @@
                         <th>Último acceso</th>
                     </tr>
                 </thead>
-                <tbody><?php foreach ($users as $user): ?><tr class="user-row" data-user-id="<?= (int)$user['id'] ?>" data-status="<?= e($user['estado']) ?>" data-nombres="<?= e($user['nombres']) ?>" data-apellidos="<?= e($user['apellidos']) ?>" data-email="<?= e($user['email']) ?>" data-username="<?= e($user['username']) ?>" data-role-id="<?= (int)($user['rol_id'] ?? 0) ?>">
+                <tbody><?php foreach ($users as $user): ?><tr class="user-row" data-user-id="<?= (int)$user['id'] ?>" data-status="<?= e($user['estado']) ?>" data-tipo-documento="<?= e($user['tipo_documento']) ?>" data-numero-documento="<?= e($user['numero_documento']) ?>" data-nombres="<?= e($user['nombres']) ?>" data-apellidos="<?= e($user['apellidos']) ?>" data-email="<?= e($user['email']) ?>" data-username="<?= e($user['username']) ?>" data-role-id="<?= (int)($user['rol_id'] ?? 0) ?>">
                             <td><?= e($user['nombres'] . ' ' . $user['apellidos']) ?></td>
                             <td><?= e($user['username']) ?></td>
                             <td><?= e($user['email']) ?></td>

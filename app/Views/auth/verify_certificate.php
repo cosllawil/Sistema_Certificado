@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <link rel="icon" type="image/png" href="assets/images/icono-birrete-diploma.png">
+    <link rel="icon" type="image/png" href="assets/images/favicon.png">
     <title>Verificación de certificados</title>
     <link rel="stylesheet" href="assets/css/verify-certificate.css?v=24">
     <link rel="stylesheet" href="assets/css/verify-icon.css?v=7">
@@ -19,7 +19,7 @@
                     <circle cx="10.5" cy="10.5" r="6.5" />
                     <path d="m16 16 5 5" />
                 </svg>Verificación de certificados</h1>
-            <p>Consulta la autenticidad y validez de un certificado emitido por el Colegio de Abogados del Santa.</p>
+            <p><?= e($branding['branding.verificacion'] ?? 'Consulta la autenticidad y validez de un certificado emitido por el Colegio de Abogados del Santa.') ?></p>
         </header>
         <form class="verification-search" method="post" action="verificar">
             <div class="verification-input"><input name="codigo" value="<?= e($code) ?>" placeholder="Código de verificación" autocomplete="off"></div><button type="submit"><svg viewBox="0 0 24 24">

@@ -1,4 +1,4 @@
-<?php if (!empty($typeError)): ?><div class="server-form-alert" data-message="<?= htmlspecialchars((string) $typeError, ENT_QUOTES, 'UTF-8') ?>"></div><?php endif; ?>
+<?php if (!empty($typeError)): ?><div class="server-form-alert" data-message="<?= htmlspecialchars((string) $typeError, ENT_QUOTES, 'UTF-8') ?>"></div><?php endif; ?><?php if (!empty($typeSuccess)): ?><div class="server-success-alert" data-message="<?= e($typeSuccess) ?>"></div><?php endif; ?>
 <section class="form-page">
     <div class="panel-heading">
         <div>

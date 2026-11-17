@@ -1,4 +1,4 @@
-<section class="form-page">
+<?php if (!empty($courseSuccess)): ?><div class="server-success-alert" data-message="<?= e($courseSuccess) ?>"></div><?php endif; ?><section class="form-page">
     <div class="panel-heading">
         <div>
             <h1>Cursos</h1>

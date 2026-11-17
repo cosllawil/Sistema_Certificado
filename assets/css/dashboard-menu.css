@@ -273,10 +273,6 @@ body::-webkit-scrollbar-thumb:hover {
     }
 }
 
-.sidebar-profile {
-    cursor: pointer
-}
-
 .sidebar-profile:focus-visible {
     outline: 2px solid #75b8ff;
     outline-offset: 2px
@@ -351,6 +347,7 @@ body::-webkit-scrollbar-thumb:hover {
     border: 1px solid #1d3b63;
     border-radius: 12px;
     background: #14345e;
+    cursor: pointer;
     z-index: 5
 }
 
@@ -503,8 +500,8 @@ body::-webkit-scrollbar-thumb:hover {
 .brand-mark {
     display: grid !important;
     place-items: center;
-    width: 48px;
-    height: 40px;
+    width: 210px;
+    height: 52px;
     background: transparent !important;
     clip-path: none !important
 }
@@ -517,12 +514,15 @@ body::-webkit-scrollbar-thumb:hover {
 
 .brand-mark img {
     display: block;
-    width: 48px;
-    height: 40px;
+    width: 210px;
+    height: 52px;
     object-fit: contain;
-    transform: scale(1.45);
+    transform: translate(-14px, -11px);
     transform-origin: center
 }
+.sidebar .brand{height:60px;min-height:60px;box-sizing:border-box;padding-top:4px;padding-bottom:4px}
+.sidebar .brand::after{bottom:5px}
+@media(max-width:760px){.sidebar .brand-mark img{content:url('../images/logoblanco-mobil.png')!important;width:220px!important;height:62px!important;max-width:220px!important;object-fit:contain!important;transform:translateX(-4px)!important}}
 
 .stat {
     position: relative;
@@ -693,6 +693,11 @@ body::-webkit-scrollbar-thumb:hover {
 .sidebar-collapsed .brand-mark {
     margin: 0
 }
+.sidebar-collapsed .brand-mark img{content:url('../images/amburgesa.png');width:64px;height:64px;object-fit:contain;transform:translateY(-14px)}
+.sidebar,.sidebar .menu{overflow-x:hidden!important}
+.sidebar-collapsed .menu a{justify-content:center!important;padding-left:10px!important;padding-right:10px!important}
+.sidebar-collapsed .menu a{transform:translateX(-6px)}
+@media(max-width:760px){.sidebar-collapsed .brand-mark img{content:url('../images/amburgesa.png')!important;width:64px!important;height:64px!important;max-width:64px!important;transform:translateY(-14px)!important}}
 
 .sidebar-collapsed .sidebar-profile {
     left: 10px;

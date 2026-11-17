@@ -29,6 +29,7 @@ final class CoursesController
                 exit;
             }
             $courseId = (int)($_POST['course_id'] ?? 0);
+            $isCourseEdit = $courseId > 0;
             $codigo = trim((string)($_POST['codigo'] ?? ''));
             if ($courseId === 0 && $codigo === '') $codigo = (string)(((int)$db->query('SELECT COALESCE(MAX(CAST(codigo AS UNSIGNED)), 0) FROM cursos')->fetchColumn()) + 1);
             $exists = $db->prepare('SELECT COUNT(*) FROM cursos WHERE codigo=:codigo AND id<>:id AND deleted_at IS NULL');
@@ -56,10 +57,13 @@ final class CoursesController
                 $courseId = (new Course($db))->create($courseData);
                 (new AuditService($db))->log($userId, 'Crear curso', 'cursos', $courseId);
             }
+            $_SESSION['course_success'] = $isCourseEdit ? 'Los datos del curso se actualizaron correctamente.' : 'El curso se registró correctamente.';
             header('Location: cursos');
             exit;
         }
         $courses = (new Course($db))->all();
+        $courseSuccess = $_SESSION['course_success'] ?? null;
+        unset($_SESSION['course_success']);
         $certificateTypes = (new CertificateType($db))->active();
         $templates = (new Template($db))->active();
         $nextCourseCode = (string)(((int)$db->query('SELECT COALESCE(MAX(CAST(codigo AS UNSIGNED)), 0) FROM cursos')->fetchColumn()) + 1);

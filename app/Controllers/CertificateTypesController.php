@@ -28,6 +28,7 @@ final class CertificateTypesController
                 elseif ($model->codeExists($code, $id)) $_SESSION['type_error'] = 'El código del tipo de certificado ya existe.';
                 elseif ($id > 0) $model->update($id, ['codigo' => $code, 'nombre' => $name, 'descripcion' => strtoupper(trim((string) ($_POST['descripcion'] ?? ''))) ?: null, 'plantilla_id' => (int)($_POST['plantilla_id'] ?? 0) ?: null]);
                 else $model->create(['codigo' => $code, 'nombre' => $name, 'descripcion' => strtoupper(trim((string) ($_POST['descripcion'] ?? ''))) ?: null, 'plantilla_id' => (int)($_POST['plantilla_id'] ?? 0) ?: null]);
+                if (!isset($_SESSION['type_error'])) $_SESSION['type_success'] = $id > 0 ? 'Los datos se actualizaron correctamente.' : 'El tipo de certificado se registró correctamente.';
             } else (new CertificateType($db))->setStatus((int) ($_POST['type_id'] ?? 0), (int) ($_POST['activo'] ?? 0));
             header('Location: tipos_certificado');
             exit;
@@ -37,7 +38,8 @@ final class CertificateTypesController
         $nextTypeNumber = (int)$db->query("SELECT COALESCE(MAX(CAST(SUBSTRING(codigo, 4) AS UNSIGNED)), 0) FROM tipos_certificado WHERE codigo LIKE 'TC-%'")->fetchColumn() + 1;
         $nextTypeCode = 'TC-' . str_pad((string)$nextTypeNumber, 3, '0', STR_PAD_LEFT);
         $typeError = $_SESSION['type_error'] ?? null;
-        unset($_SESSION['type_error']);
+        $typeSuccess = $_SESSION['type_success'] ?? null;
+        unset($_SESSION['type_error'], $_SESSION['type_success']);
         ob_start();
         require dirname(__DIR__) . '/Views/certificate_types/index.php';
         $pageContent = ob_get_clean();

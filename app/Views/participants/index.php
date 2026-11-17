@@ -1,4 +1,4 @@
-<section class="form-page">
+<?php if (!empty($participantSuccess)): ?><div class="server-success-alert" data-message="<?= e($participantSuccess) ?>"></div><?php endif; ?><section class="form-page">
     <div class="panel-heading">
         <div>
             <h1>Participantes</h1>
@@ -14,6 +14,8 @@
                 <button type="button" class="participant-action participant-action-disable" disabled><svg viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M6 7h12M9 7V4h6v3m-8 0 1 13h8l1-13M10 11v5M14 11v5" />
                     </svg>Desactivar participante</button>
+                <a class="participant-action participant-action-excel-download" href="participantes?download_template=1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14" /></svg>Descargar plantilla Excel</a>
+                <button type="button" class="participant-action participant-action-excel-import" onclick="document.getElementById('participant-import-modal').removeAttribute('hidden')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M5 20h14" /></svg>Importar Excel</button>
             </div>
         </div>
     </div>
@@ -86,6 +88,11 @@
         </form>
     </div>
 </div>
+<div class="participant-modal" id="participant-import-modal" <?= ($importRows || $importError) ? '' : 'hidden' ?>><div class="participant-modal-card"><div class="participant-modal-header"><h2><svg class="modal-title-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2" /><path d="M12 7v8M8.5 11.5 12 15l3.5-3.5M8 18h8" /></svg>Importar participantes</h2><button type="button" class="participant-modal-close" onclick="document.getElementById('participant-import-modal').setAttribute('hidden','')">&times;</button></div>
+    <?php if ($importError): ?><div class="server-form-alert"><?= e($importError) ?></div><?php endif; ?>
+    <form class="participant-import-form" method="post" action="participantes" enctype="multipart/form-data"><input type="hidden" name="_token" value="<?= e($_SESSION['participant_csrf']) ?>"><input type="hidden" name="action" value="import_preview"><label class="participant-import-file"><span class="participant-import-label">Archivo Excel (.xlsx)</span><input type="file" name="archivo_excel" accept=".xlsx,.xls" required><span class="participant-import-picker"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M5 20h14" /></svg><strong>Seleccionar archivo</strong><span class="participant-import-name">Ningún archivo seleccionado</span></span></label><div class="form-actions"><button type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" /><circle cx="12" cy="12" r="2.5" /></svg>Previsualizar</button></div></form>
+    <?php if ($importRows): ?><div class="participant-import-preview"><div class="table-wrap"><table id="participant-import-table"><thead><tr><th>Fila</th><th>Documento</th><th>Nombre</th><th>Estado</th></tr></thead><tbody><?php foreach ($importRows as $row): ?><tr><td><?= (int)$row['_line'] ?></td><td><?= e($row['tipo_documento'].' '.$row['numero_documento']) ?></td><td><?= e($row['apellidos'].', '.$row['nombres']) ?></td><td><span class="participant-import-badge <?= empty($row['_errors']) ? 'valid' : 'invalid' ?>"><?= empty($row['_errors']) ? 'Válido' : e(implode(', ', $row['_errors'])) ?></span></td></tr><?php endforeach; ?></tbody></table></div><div class="participant-import-pagination report-pagination"><span class="participant-import-count" data-import-count></span><div><button type="button" class="report-prev" data-import-prev disabled>Anterior</button><button type="button" class="report-page-number participant-import-page-number" data-import-page>1</button><button type="button" class="report-next" data-import-next>Siguiente</button></div></div><form class="participant-import-confirm" method="post" action="participantes"><input type="hidden" name="_token" value="<?= e($_SESSION['participant_csrf']) ?>"><input type="hidden" name="action" value="import_confirm"><button class="participant-action" type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4 7-7" /></svg>Confirmar importación</button></form></div><?php endif; ?>
+</div></div>
 <div class="participant-modal participant-confirm" id="participant-confirm" hidden>
     <div class="participant-modal-card participant-confirm-card">
         <h2>Desactivar participante</h2>

@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Recuperación de contraseña">
     <title>Recuperar contraseña | Sistema de Certificados</title>
-    <link rel="icon" type="image/png" href="assets/images/icono-birrete-diploma.png">
+    <link rel="icon" type="image/png" href="assets/images/favicon.png">
     <link rel="stylesheet" href="assets/css/login.css?v=5">
-    <link rel="stylesheet" href="assets/css/compact.css?v=15">
+    <link rel="stylesheet" href="assets/css/compact.css?v=16">
 </head>
 
 <body>

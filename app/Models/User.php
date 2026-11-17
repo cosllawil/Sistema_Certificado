@@ -12,18 +12,18 @@ final class User
     }
     public function all(): array
     {
-        return $this->db->query('SELECT id,nombres,apellidos,email,username,estado,ultimo_acceso_at FROM usuarios WHERE deleted_at IS NULL ORDER BY apellidos,nombres')->fetchAll();
+        return $this->db->query('SELECT id,tipo_documento,numero_documento,nombres,apellidos,email,username,estado,ultimo_acceso_at FROM usuarios WHERE deleted_at IS NULL ORDER BY apellidos,nombres')->fetchAll();
     }
     public function create(array $data): int
     {
-        $q = $this->db->prepare('INSERT INTO usuarios (nombres, apellidos, email, username, password_hash) VALUES (:nombres,:apellidos,:email,:username,:password_hash)');
+        $q = $this->db->prepare('INSERT INTO usuarios (tipo_documento, numero_documento, nombres, apellidos, email, username, password_hash) VALUES (:tipo_documento,:numero_documento,:nombres,:apellidos,:email,:username,:password_hash)');
         $q->execute($data);
         return (int)$this->db->lastInsertId();
     }
     public function update(int $id, array $data): void
     {
         $hasPassword = !empty($data['password_hash']);
-        $sql = 'UPDATE usuarios SET nombres=:nombres, apellidos=:apellidos, email=:email, username=:username' . ($hasPassword ? ', password_hash=:password_hash' : '') . ' WHERE id=:id AND deleted_at IS NULL';
+        $sql = 'UPDATE usuarios SET tipo_documento=:tipo_documento, numero_documento=:numero_documento, nombres=:nombres, apellidos=:apellidos, email=:email, username=:username' . ($hasPassword ? ', password_hash=:password_hash' : '') . ' WHERE id=:id AND deleted_at IS NULL';
         if (!$hasPassword) unset($data['password_hash']);
         $q = $this->db->prepare($sql);
         $data['id'] = $id;

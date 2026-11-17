@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+  if (!document.querySelector(".audit-row, #audit-search, #audit-body")) return;
   const input = document.querySelector("#audit-search");
   const rows = [...document.querySelectorAll(".audit-row")];
   const empty = document.querySelector("#audit-no-results");

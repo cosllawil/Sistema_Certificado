@@ -167,8 +167,27 @@
   });
   form?.addEventListener("submit", (event) => {
     event.preventDefault();
+    const submitButton = form.querySelector('button[type="submit"]');
+    const defaultButtonHtml = submitButton?.innerHTML || "";
+    const setLoading = (loading) => {
+      let processing = document.querySelector(".login-processing");
+      if (loading && !processing) {
+        processing = document.createElement("div");
+        processing.className = "login-processing";
+        processing.innerHTML = '<div class="login-processing-card" role="status" aria-live="polite"><span class="login-processing-spinner" aria-hidden="true"></span><strong>Validando acceso</strong><span>Comprobando tus credenciales...</span></div>';
+        document.body.append(processing);
+      }
+      if (!loading) processing?.remove();
+      if (!submitButton) return;
+      submitButton.disabled = loading;
+      submitButton.classList.toggle("is-loading", loading);
+      submitButton.innerHTML = loading
+        ? '<span class="login-spinner" aria-hidden="true"></span><span>Validando acceso...</span>'
+        : defaultButtonHtml;
+    };
     const username = document.querySelector("#username");
     const showAlert = (title, text) => {
+      setLoading(false);
       document.querySelector(".form-alert")?.remove();
       const alert = document.createElement("div");
       alert.className = "form-alert";
@@ -195,6 +214,8 @@
       return;
     }
 
+    setLoading(true);
+
     fetch("auth/login", {
       method: "POST",
       headers: {
@@ -211,13 +232,16 @@
       )
       .then(({ ok, data }) => {
         if (!ok || !data.ok) {
+          setLoading(false);
           showAlert(
             "Acceso denegado",
             data.message || "No fue posible iniciar sesión.",
           );
           return;
         }
-        window.location.href = "dashboard";
+        window.setTimeout(() => {
+          window.location.href = "dashboard";
+        }, 1000);
       })
       .catch(() =>
         showAlert("Error de conexión", "No se pudo contactar al servidor."),

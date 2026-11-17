@@ -1,7 +1,8 @@
 {
     "require": {
         "setasign/fpdf": "^1.8.6",
-        "setasign/fpdi": "^2.6.1"
+        "setasign/fpdi": "^2.6.1",
+        "phpoffice/phpspreadsheet": "2.2"
     },
     "config": {
         "audit": {

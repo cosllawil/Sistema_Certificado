@@ -29,7 +29,7 @@ final class DashboardRepository
                 FROM certificados c
                 LEFT JOIN participantes p ON p.id = c.participante_id
                 LEFT JOIN cursos cu ON cu.id = c.curso_id
-                WHERE c.deleted_at IS NULL
+                WHERE c.estado = "emitido" AND c.deleted_at IS NULL
                 ORDER BY c.created_at DESC
                 LIMIT 5';
 
@@ -40,7 +40,7 @@ final class DashboardRepository
     {
         $sql = 'SELECT MONTH(fecha_emision) AS month_number, COUNT(*) AS total
                 FROM certificados
-                WHERE deleted_at IS NULL AND fecha_emision IS NOT NULL
+                WHERE estado = "emitido" AND deleted_at IS NULL AND fecha_emision IS NOT NULL
                 GROUP BY MONTH(fecha_emision)
                 ORDER BY month_number';
         return $this->database->query($sql)->fetchAll();
@@ -50,15 +50,15 @@ final class DashboardRepository
     {
         $sql = 'SELECT estado, COUNT(*) AS total
                 FROM certificados
-                WHERE deleted_at IS NULL
+                WHERE estado IN ("emitido", "anulado") AND deleted_at IS NULL
                 GROUP BY estado';
         $result = ['activo' => 0, 'pendiente' => 0, 'impreso' => 0, 'anulado' => 0];
         foreach ($this->database->query($sql)->fetchAll() as $row) {
             $status = strtolower((string) $row['estado']);
-            $key = ['emitido' => 'activo', 'borrador' => 'pendiente', 'anulado' => 'anulado'][$status] ?? null;
+            $key = ['emitido' => 'activo', 'anulado' => 'anulado'][$status] ?? null;
             if ($key !== null) $result[$key] = (int) $row['total'];
         }
-        $result['impreso'] = (int)$this->database->query('SELECT COUNT(DISTINCT certificado_id) FROM impresiones_certificado')->fetchColumn();
+        $result['impreso'] = (int)$this->database->query('SELECT COUNT(DISTINCT i.certificado_id) FROM impresiones_certificado i INNER JOIN certificados c ON c.id=i.certificado_id WHERE c.estado="emitido" AND c.deleted_at IS NULL')->fetchColumn();
         return $result;
     }
 

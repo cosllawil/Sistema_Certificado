@@ -50,7 +50,17 @@ function openChangePasswordModal() {
       if (typeof showParticipantAlert === "function")
         showParticipantAlert("Las contraseñas nuevas no coinciden.");
       passwordForm.elements.confirm_password.focus();
+      return;
     }
+    const saveButton = passwordForm.querySelector('button[type="submit"]');
+    if (saveButton.dataset.saving === "1") {
+      event.preventDefault();
+      return;
+    }
+    saveButton.dataset.saving = "1";
+    saveButton.disabled = true;
+    saveButton.classList.add("template-submit-loading");
+    saveButton.innerHTML = '<span class="template-submit-spinner" aria-hidden="true"></span><span>Guardando...</span>';
   });
   modal.querySelector("input")?.focus();
 }
@@ -154,10 +164,6 @@ function openChangePasswordModal() {
   });
   const brandMark = document.querySelector(".brand-mark");
   if (brandMark) {
-    brandMark.innerHTML =
-      '<svg viewBox="0 0 48 40" fill="none" aria-hidden="true"><path d="M24 2 46 13 24 24 2 13 24 2Z" fill="#147BF4"/><path d="M9 18v10c0 3 7 7 15 7s15-4 15-7V18L24 24 9 18Z" fill="#0758C7"/><path d="M7 15v12" stroke="#9BC8FF" stroke-width="2" stroke-linecap="round"/><circle cx="7" cy="29" r="2" fill="#9BC8FF"/></svg>';
-    brandMark.innerHTML =
-      '<img src="assets/images/icono-birrete-diploma.png" alt="Emblema del sistema">';
     const toggle = document.createElement("button");
     toggle.className = "sidebar-toggle";
     toggle.type = "button";
@@ -242,7 +248,7 @@ function openChangePasswordModal() {
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 9h18M8 13h.01M12 13h.01M16 13h.01" stroke-linecap="round"/></svg><span><b>' +
       date.charAt(0).toUpperCase() +
       date.slice(1) +
-      "</b><small>Colegio de Abogados del Santa</small></span>";
+      "</b><small>" + (document.body.dataset.brandingInstitution || "Colegio de Abogados del Santa") + "</small></span>";
     notification.before(topDate);
     notification.setAttribute("role", "button");
     notification.setAttribute("tabindex", "0");
@@ -365,7 +371,7 @@ function openChangePasswordModal() {
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 9h18M8 13h.01M12 13h.01M16 13h.01M8 17h.01M12 17h.01" stroke-linecap="round"/></svg><span><b>' +
       date.charAt(0).toUpperCase() +
       date.slice(1) +
-      "</b><small>Colegio de Abogados del Santa</small></span>";
+      "</b><small>" + (document.body.dataset.brandingInstitution || "Colegio de Abogados del Santa") + "</small></span>";
   }
   const icons = [
     '<svg viewBox="0 0 24 24" fill="currentColor"><path d="m3 11 9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9Z"/></svg>',
@@ -541,7 +547,7 @@ function openChangePasswordModal() {
     buttons += "<button" + (pages === 1 ? " disabled" : "") + ">›</button>";
     footer.innerHTML =
       "<span>Mostrando " +
-      (records ? `1 a ${Math.min(records, 10)} de ${records}` : "0") +
+      (records ? `1 a ${Math.min(records, 10)} de ${records}` : "0 de 0") +
       " registros</span><div>" +
       buttons +
       "</div>";

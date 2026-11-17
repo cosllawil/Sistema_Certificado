@@ -45,6 +45,10 @@ document.addEventListener("click", (event) => {
   if (event.target.closest(".template-config")) {
     const selected = document.querySelector(".template-row.selected");
     if (selected) {
+      if (Number(selected.dataset.participantsAssigned || 0) === 0) {
+        showParticipantAlert("Esta plantilla no tiene ningún participante asignado a un certificado. Asígnale al menos un participante antes de configurar la plantilla.");
+        return;
+      }
       location.href = "plantillas?config=" + selected.dataset.templateId;
       return;
     }
@@ -60,7 +64,10 @@ document.addEventListener("click", (event) => {
       typeModal.dataset.nextCode || "TC-001";
     typeModal.querySelector("[name=nombre]").value = "";
     typeModal.querySelector("[name=descripcion]").value = "";
+    typeModal.querySelector("[name=plantilla_id]").value = "";
+    typeModal.querySelector("[name=plantilla_id]").dispatchEvent(new Event("change", { bubbles: true }));
     typeModal.removeAttribute("hidden");
+    requestAnimationFrame(() => typeModal.querySelector('[name="nombre"]')?.focus());
     return;
   }
   if (
@@ -71,12 +78,25 @@ document.addEventListener("click", (event) => {
     modal.querySelector("h2").innerHTML =
       '<svg class="modal-title-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m6 16 4-4 3 3 2-2 3 3M8 8h.01"/></svg>Nueva plantilla';
     modal.querySelector("[name=template_id]").value = "";
-    ["horas_academicas", "fecha_sesion", "fecha_inicio", "fecha_fin"].forEach(
-      (name) => {
-        modal.querySelector(`[name=${name}]`).value = "";
-      },
-    );
+    modal.querySelector("[name=nombre]").value = "";
+    modal.querySelector("[name=fecha_sesion]").value = "";
     modal.removeAttribute("hidden");
+    requestAnimationFrame(() => modal.querySelector('[name="fecha_sesion"]')?.focus());
+    return;
+  }
+  if (
+    event.target.closest(".participant-action-new") &&
+    document.querySelector("#course-modal")
+  ) {
+    const courseModal = document.querySelector("#course-modal");
+    const form = courseModal.querySelector(".course-form");
+    form.reset();
+    form.elements.course_id.value = "";
+    form.elements.action.value = "save";
+    courseModal.querySelector("h2").innerHTML =
+      '<svg class="modal-title-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h6"/></svg>Nuevo curso';
+    courseModal.removeAttribute("hidden");
+    requestAnimationFrame(() => form.elements.nombre?.focus());
     return;
   }
   if (
@@ -98,9 +118,21 @@ document.addEventListener("click", (event) => {
     if (row && modal) {
       const form = modal.querySelector(".signer-form");
       form.elements.signer_id.value = row.dataset.signerId;
+      form.elements.tipo_documento.value = row.dataset.tipoDocumento || "";
+      form.elements.tipo_documento.dispatchEvent(new Event("change", { bubbles: true }));
+      form.elements.numero_documento.value = row.dataset.numeroDocumento || "";
+      form.elements.numero_documento.disabled = false;
       form.elements.nombres.value = row.dataset.nombres || "";
       form.elements.apellidos.value = row.dataset.apellidos || "";
       form.elements.cargo.value = row.dataset.cargo || "";
+      const signerCourseId = row.dataset.cursoId || "";
+      form.elements.curso_id.value = signerCourseId;
+      [...form.elements.curso_id.options].forEach((option) => {
+        option.selected = option.value === signerCourseId;
+      });
+      form.elements.curso_id.dispatchEvent(new Event("change", { bubbles: true }));
+      const courseTrigger = form.elements.curso_id.closest(".select2-lite")?.querySelector(".select2-trigger");
+      if (courseTrigger) courseTrigger.textContent = form.elements.curso_id.selectedOptions[0]?.textContent || "---Seleccione curso---";
       modal.querySelector("h2").innerHTML =
         '<svg class="modal-title-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4 20a8 8 0 0 1 16 0"/></svg>Editar firmante';
       modal.removeAttribute("hidden");
@@ -383,35 +415,6 @@ document.addEventListener("click", (event) => {
       : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7h12M9 7V4h6v3m-8 0 1 13h8l1-13M10 11v5M14 11v5"/></svg>Desactivar plantilla';
     return;
   }
-  if (event.target.closest(".template-config")) {
-    const row = document.querySelector(".template-row.selected");
-    const modal = document.querySelector("#template-config-modal");
-    if (row && modal) {
-      modal.dataset.fondo = row.dataset.fondo || "";
-      const cfg = JSON.parse(row.dataset.config || "{}");
-      modal.querySelector("[name=config_template_id]").value =
-        row.dataset.templateId;
-      modal
-        .querySelectorAll(".template-fields input[type=checkbox], .template-signature-toggle input[type=checkbox]")
-        .forEach(
-          (box) => (box.checked = Boolean(cfg.campos && cfg.campos[box.value])),
-        );
-      if (cfg.fuente) modal.querySelector("[name=fuente]").value = cfg.fuente;
-      if (cfg.tamano) modal.querySelector("[name=tamano]").value = cfg.tamano;
-      if (cfg.color) modal.querySelector("[name=color]").value = cfg.color;
-      renderTemplatePositions(modal);
-      Object.entries(cfg.campos || {}).forEach(([key, value]) => {
-        modal.querySelectorAll(`[data-position="${key}"]`).forEach((input) => {
-          const legacyDefault = value.x === 35 && value.y === 100;
-          if (!legacyDefault && value[input.dataset.axis] !== undefined)
-            input.value = value[input.dataset.axis];
-        });
-      });
-      renderTemplatePreview(modal);
-      modal.removeAttribute("hidden");
-    }
-    return;
-  }
   if (
     event.target.closest(
       "#template-config-modal .course-cancel, #template-config-modal .participant-modal-close",
@@ -454,8 +457,6 @@ document.addEventListener("click", (event) => {
       form.elements.fecha_fin.value = selected.dataset.fin;
       form.elements.tipo_certificado_id.value = selected.dataset.tipoCertificado || "";
       form.elements.tipo_certificado_id.dispatchEvent(new Event("change", { bubbles: true }));
-      form.elements.plantilla_id.value = selected.dataset.plantilla || "";
-      form.elements.plantilla_id.dispatchEvent(new Event("change", { bubbles: true }));
       form.elements.descripcion.value = selected.dataset.descripcion;
       document.querySelector("#course-modal h2").innerHTML =
         '<svg class="modal-title-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h6"/></svg>Editar curso';
@@ -648,6 +649,16 @@ document.addEventListener("submit", (event) => {
       event.preventDefault();
       showParticipantAlert(`Ingresa la ${labels[missing]} para continuar.`);
       certificateForm.elements[missing].focus();
+    } else {
+      const saveButton = certificateForm.querySelector('button[type="submit"]');
+      if (saveButton.dataset.saving === "1") {
+        event.preventDefault();
+        return;
+      }
+      saveButton.dataset.saving = "1";
+      saveButton.disabled = true;
+      saveButton.classList.add("template-submit-loading");
+      saveButton.innerHTML = '<span class="template-submit-spinner" aria-hidden="true"></span><span>Guardando...</span>';
     }
     return;
   }
@@ -681,7 +692,17 @@ document.addEventListener("submit", (event) => {
       const field = signerForm.elements.firma;
       showParticipantAlert("Selecciona el archivo de firma.");
       field.focus();
+      return;
     }
+    const saveButton = signerForm.querySelector('button[type="submit"]');
+    if (saveButton.dataset.saving === "1") {
+      event.preventDefault();
+      return;
+    }
+    saveButton.dataset.saving = "1";
+    saveButton.disabled = true;
+    saveButton.classList.add("template-submit-loading");
+    saveButton.innerHTML = '<span class="template-submit-spinner" aria-hidden="true"></span><span>Guardando...</span>';
     return;
   }
   const typeForm = event.target.closest(".type-form");
@@ -693,6 +714,17 @@ document.addEventListener("submit", (event) => {
       event.preventDefault();
       showParticipantAlert(`Ingresa ${missing} para continuar.`);
       typeForm.elements[missing].focus();
+    }
+    if (!missing) {
+      const saveButton = typeForm.querySelector('button[type="submit"]');
+      if (saveButton.dataset.saving === "1") {
+        event.preventDefault();
+        return;
+      }
+      saveButton.dataset.saving = "1";
+      saveButton.disabled = true;
+      saveButton.classList.add("template-submit-loading");
+      saveButton.innerHTML = '<span class="template-submit-spinner" aria-hidden="true"></span><span>Guardando...</span>';
     }
     return;
   }
@@ -711,6 +743,17 @@ document.addEventListener("submit", (event) => {
         `Ingresa ${field.replace("_", " ")} para continuar.`,
       );
       courseForm.elements[field].focus();
+    }
+    if (!field) {
+      const saveButton = courseForm.querySelector('button[type="submit"]');
+      if (saveButton.dataset.saving === "1") {
+        event.preventDefault();
+        return;
+      }
+      saveButton.dataset.saving = "1";
+      saveButton.disabled = true;
+      saveButton.classList.add("template-submit-loading");
+      saveButton.innerHTML = '<span class="template-submit-spinner" aria-hidden="true"></span><span>Guardando...</span>';
     }
     return;
   }
@@ -760,7 +803,18 @@ document.addEventListener("submit", (event) => {
     "apellidos",
     "nro_registro_cas",
   ].find((name) => !form.elements[name].value.trim());
-  if (!missing) return;
+  if (!missing) {
+    const saveButton = form.querySelector('button[type="submit"]');
+    if (saveButton.dataset.saving === "1") {
+      event.preventDefault();
+      return;
+    }
+    saveButton.dataset.saving = "1";
+    saveButton.disabled = true;
+    saveButton.classList.add("template-submit-loading");
+    saveButton.innerHTML = '<span class="template-submit-spinner" aria-hidden="true"></span><span>Guardando...</span>';
+    return;
+  }
   event.preventDefault();
   const message = document.createElement("div");
   message.className = "form-alert";
@@ -854,7 +908,7 @@ function renderTemplatePositions(modal) {
     });
 }
 
-function renderTemplatePreview(modal) {
+function renderTemplatePreviewLegacy(modal) {
   let wrap = modal.querySelector(".template-preview-wrap");
   if (!wrap) {
     wrap = document.createElement("div");
@@ -887,7 +941,7 @@ function renderTemplatePreview(modal) {
     });
 }
 
-function renderTemplatePreview(modal) {
+function renderTemplatePreviewPdfLegacy(modal) {
   let wrap = modal.querySelector(".template-preview-wrap");
   if (!wrap) {
     wrap = document.createElement("div");
@@ -947,6 +1001,41 @@ function renderTemplatePreview(modal) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".template-fields label").forEach((label) => {
+    if (label.textContent.trim() === "Firmante") label.lastChild.textContent = " Firmante 1";
+  });
+  const importFile = document.querySelector('.participant-import-file input[type="file"]');
+  importFile?.addEventListener("change", () => {
+    const name = importFile.files?.[0]?.name || "Ningún archivo seleccionado";
+    importFile.closest(".participant-import-file")?.querySelector(".participant-import-name")?.replaceChildren(document.createTextNode(name));
+  });
+  const importTable = document.querySelector("#participant-import-table");
+  if (importTable) {
+    const rows = [...importTable.querySelectorAll("tbody tr")];
+    const pageSize = 10;
+    let page = 1;
+    const pageCount = Math.max(1, Math.ceil(rows.length / pageSize));
+    const previous = document.querySelector("[data-import-prev]");
+    const next = document.querySelector("[data-import-next]");
+    if (previous) previous.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span>Anterior</span>';
+    if (next) next.innerHTML = '<span>Siguiente</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>';
+    const renderImportPage = () => {
+      rows.forEach((row, index) => { row.hidden = Math.floor(index / pageSize) + 1 !== page; });
+      const pageLabel = document.querySelector("[data-import-page]");
+      const count = document.querySelector("[data-import-count]");
+      if (pageLabel) pageLabel.textContent = String(page);
+      if (previous) previous.disabled = page === 1;
+      if (next) next.disabled = page === pageCount;
+      if (count) {
+        const start = rows.length ? (page - 1) * pageSize + 1 : 0;
+        const end = Math.min(page * pageSize, rows.length);
+        count.textContent = `Mostrando ${start} a ${end} de ${rows.length} registros`;
+      }
+    };
+    document.querySelector("[data-import-prev]")?.addEventListener("click", () => { if (page > 1) { page -= 1; renderImportPage(); } });
+    document.querySelector("[data-import-next]")?.addEventListener("click", () => { if (page < pageCount) { page += 1; renderImportPage(); } });
+    renderImportPage();
+  }
   const courseModal = document.querySelector("#course-modal");
   const courseType = courseModal?.querySelector('[name="tipo_certificado_id"]');
   const courseTemplate = courseModal?.querySelector('[name="plantilla_id"]');
@@ -1182,20 +1271,27 @@ document.addEventListener("DOMContentLoaded", () => {
     templateForm.addEventListener(
       "keydown",
       (event) => {
-        if (event.key !== "Enter") return;
+        if (event.key !== "Enter" && event.code !== "NumpadEnter") return;
+        if (event.target.matches("textarea")) return;
         event.preventDefault();
-        const fields = [
-          ...templateForm.querySelectorAll(
-            'input:not([type="hidden"]), select, textarea, button[type="submit"]',
-          ),
-        ].filter((field) => !field.disabled);
-        const index = fields.indexOf(event.target);
-        if (index >= 0 && fields[index + 1]) fields[index + 1].focus();
+        event.stopImmediatePropagation();
+        const order = ["fecha_sesion", "nombre", "formato", "orientacion", "fondo", "descripcion"];
+        const index = order.indexOf(event.target.name);
+        const next = index >= 0
+          ? templateForm.elements[order[index + 1]] || templateForm.querySelector('button[type="submit"]')
+          : null;
+        if (next && !next.disabled) next.focus();
       },
       true,
     );
     templateForm.addEventListener("submit", (event) => {
       event.preventDefault();
+    });
+    templateForm.elements.nombre?.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.code !== "NumpadEnter") return;
+      event.preventDefault();
+      event.stopPropagation();
+      templateForm.elements.formato?.focus();
     });
     templateForm
       .querySelector('button[type="submit"]')
@@ -1214,6 +1310,12 @@ document.addEventListener("DOMContentLoaded", () => {
           templateForm.elements.nombre.focus();
           return;
         }
+        const saveButton = templateForm.querySelector('button[type="submit"]');
+        if (saveButton.dataset.saving === "1") return;
+        saveButton.dataset.saving = "1";
+        saveButton.disabled = true;
+        saveButton.classList.add("template-submit-loading");
+        saveButton.innerHTML = '<span class="template-submit-spinner" aria-hidden="true"></span><span>Guardando...</span>';
         HTMLFormElement.prototype.submit.call(templateForm);
       });
   }
@@ -1224,6 +1326,119 @@ document.addEventListener("DOMContentLoaded", () => {
   if (configForm) {
     const configModal = document.querySelector("#template-config-modal");
     const templateFields = configForm.querySelector(".template-fields");
+    const signerField = templateFields?.querySelector('input[value="firmante"]');
+    const previewSigners = (() => {
+      try { return JSON.parse(document.querySelector("#template-preview-signers")?.textContent || "[]"); } catch (_) { return []; }
+    })();
+    const availableFields = (() => {
+      try { return JSON.parse(document.querySelector("#template-available-fields")?.textContent || "{}"); } catch (_) { return {}; }
+    })();
+    const hasPreviewValue = (value) => String(value ?? "").trim() !== "";
+    const fieldHasAvailableData = (key) => {
+      if (Object.prototype.hasOwnProperty.call(availableFields, key)) return Boolean(availableFields[key]);
+      const signerMatch = key.match(/^(firmante|firma)(?:_(2|3))?(?:_cargo)?$/);
+      if (signerMatch) {
+        const signer = previewSigners[Number(signerMatch[2] || 1) - 1];
+        if (!signer) return false;
+        if (key.includes("_cargo")) return hasPreviewValue(signer.nombre) && hasPreviewValue(signer.cargo);
+        if (signerMatch[1] === "firma") return hasPreviewValue(signer.nombre) && (hasPreviewValue(signer.firma_path) || hasPreviewValue(signer.firma_data));
+        return hasPreviewValue(signer.nombre);
+      }
+      if (key === "codigo_verificacion") return true;
+      if (key === "participante") return hasPreviewValue(configModal?.dataset.previewParticipant);
+      if (key === "registro_cas") return hasPreviewValue(configModal?.dataset.previewCas);
+      if (key === "fecha_sesion") return hasPreviewValue(configModal?.dataset.previewSession);
+      if (key === "fecha_sistema") return hasPreviewValue(configModal?.dataset.previewSystem);
+      if (key === "curso") return hasPreviewValue(configModal?.dataset.previewCourse);
+      if (key === "tipo") return hasPreviewValue(configModal?.dataset.previewType);
+      if (key === "horas") return hasPreviewValue(configModal?.dataset.previewHours);
+      if (key === "fecha_inicio") return hasPreviewValue(configModal?.dataset.previewStart);
+      if (key === "fecha_fin") return hasPreviewValue(configModal?.dataset.previewEnd);
+      return false;
+    };
+    const syncAvailableTemplateFields = () => {
+      templateFields?.querySelectorAll('input[type="checkbox"]').forEach((box) => {
+        const label = box.closest("label");
+        if (!label) return;
+        const available = fieldHasAvailableData(box.value);
+        label.hidden = !available;
+        if (!available) box.checked = false;
+      });
+    };
+    [
+      ["firmante_2", "Firmante 2"],
+      ["firmante_2_cargo", "Cargo del firmante 2"],
+      ["firma_2", "Firma 2"],
+      ["firmante_3", "Firmante 3"],
+      ["firmante_3_cargo", "Cargo del firmante 3"],
+      ["firma_3", "Firma 3"],
+    ].forEach(([value, labelText]) => {
+      if (!templateFields?.querySelector(`input[value="${value}"]`)) {
+        const label = document.createElement("label");
+        label.innerHTML = `<input type="checkbox" value="${value}"> ${labelText}`;
+        templateFields.append(label);
+      }
+    });
+    [["firmante_2", "firmante_2_cargo"], ["firmante_3", "firmante_3_cargo"]].forEach(([signerKey, cargoKey]) => {
+      const signer = templateFields?.querySelector(`input[value="${signerKey}"]`);
+      const cargo = templateFields?.querySelector(`input[value="${cargoKey}"]`);
+      const slot = signerKey.match(/_(2|3)$/)?.[1];
+      const signature = slot ? templateFields?.querySelector(`input[value="firma_${slot}"]`) : null;
+      if (signer && cargo) {
+        const sync = () => {
+          [signature, cargo].filter(Boolean).forEach((field) => {
+            const available = fieldHasAvailableData(field.value);
+            field.closest("label")?.toggleAttribute("hidden", !available);
+            field.checked = signer.checked && available;
+          });
+          renderTemplatePositions(configModal);
+          renderTemplatePreview(configModal);
+        };
+        signer.addEventListener("change", sync);
+        sync();
+      }
+    });
+    if (templateFields && signerField && !templateFields.querySelector('input[value="firmante_cargo"]')) {
+      const cargoLabel = document.createElement("label");
+      cargoLabel.innerHTML = '<input type="checkbox" value="firmante_cargo"> Cargo del firmante';
+      templateFields.append(cargoLabel);
+      const syncSignerCargo = () => {
+        const cargo = cargoLabel.querySelector("input");
+        const available = fieldHasAvailableData(cargo.value);
+        cargoLabel.hidden = !available;
+        cargo.checked = signerField.checked && available;
+        renderTemplatePositions(configModal);
+      };
+      signerField.addEventListener("change", syncSignerCargo);
+      syncSignerCargo();
+    }
+    if (signerField) {
+      const signatureField = templateFields.querySelector('input[value="firma"]');
+      const cargoField = templateFields.querySelector('input[value="firmante_cargo"]');
+      const syncPrimaryDependents = () => {
+        [signatureField, cargoField].filter(Boolean).forEach((field) => {
+          const available = fieldHasAvailableData(field.value);
+          field.closest("label")?.toggleAttribute("hidden", !available);
+          field.checked = signerField.checked && available;
+        });
+        renderTemplatePositions(configModal);
+        renderTemplatePreview(configModal);
+      };
+      signerField.addEventListener("change", syncPrimaryDependents);
+      syncPrimaryDependents();
+    }
+    const orderedTemplateFields = [
+      templateFields?.querySelector('input[value="firmante"]')?.closest("label"),
+      templateFields?.querySelector('.template-signature-toggle'),
+      templateFields?.querySelector('input[value="firmante_2"]')?.closest("label"),
+      templateFields?.querySelector('input[value="firma_2"]')?.closest("label"),
+      templateFields?.querySelector('input[value="firmante_3"]')?.closest("label"),
+      templateFields?.querySelector('input[value="firma_3"]')?.closest("label"),
+      templateFields?.querySelector('input[value="firmante_cargo"]')?.closest("label"),
+      templateFields?.querySelector('input[value="firmante_2_cargo"]')?.closest("label"),
+      templateFields?.querySelector('input[value="firmante_3_cargo"]')?.closest("label"),
+    ].filter(Boolean);
+    orderedTemplateFields.forEach((field) => templateFields.append(field));
     if (
       templateFields &&
       !templateFields.querySelector('input[value="codigo_verificacion"]')
@@ -1236,40 +1451,33 @@ document.addEventListener("DOMContentLoaded", () => {
         const savedConfig = JSON.parse(configModal?.dataset.config || "{}");
         label.querySelector('input[value="codigo_verificacion"]').checked =
           Boolean(savedConfig.campos?.codigo_verificacion?.visible);
+        ["firmante_2", "firmante_2_cargo", "firma_2", "firmante_3", "firmante_3_cargo", "firma_3"].forEach((key) => {
+          const field = templateFields.querySelector(`input[value="${key}"]`);
+          if (field) field.checked = Boolean(savedConfig.campos?.[key]?.visible);
+        });
       } catch (_) {}
     }
+    syncAvailableTemplateFields();
     configForm
       .querySelectorAll(".template-fields input[type=checkbox], .template-signature-toggle input[type=checkbox]")
       .forEach((box) => {
-        box.onchange = () => renderTemplatePositions(configModal);
+        box.onchange = () => {
+          const match = box.value.match(/^(firmante|firma)(?:_(2|3))?(?:_cargo)?$/);
+          if (box.checked && match) {
+            const signers = previewSigners;
+            const slot = Number(match[2] || 1);
+            const signer = signers[slot - 1];
+            const isCargo = box.value.includes("_cargo");
+            const valid = isCargo ? Boolean(signer?.nombre && signer?.cargo) : match[1] === "firmante" ? Boolean(signer?.nombre) : Boolean(signer?.nombre && (signer?.firma_path || signer?.firma_data));
+            if (!valid) {
+              box.checked = false;
+              showParticipantAlert(`No tienes registrado ${isCargo ? "el cargo" : match[1] === "firma" ? "la firma" : "el firmante"} ${slot}.`);
+              return;
+            }
+          }
+          renderTemplatePositions(configModal);
+        };
       });
-    configForm.addEventListener("submit", () => {
-      const campos = {};
-      configForm
-        .querySelectorAll(".template-fields input[type=checkbox]")
-        .forEach((box) => {
-          if (box.checked) campos[box.value] = { visible: true };
-        });
-      configForm
-        .querySelectorAll(
-          ".template-position-fields [data-position][data-axis]",
-        )
-        .forEach((input) => {
-          campos[input.dataset.position] ??= { visible: true };
-          campos[input.dataset.position][input.dataset.axis] =
-            input.type === "number" ? Number(input.value) : input.value;
-        });
-      configForm.elements.configuracion_json.value = JSON.stringify({
-        version: 3,
-        coordinate_system: "pdf-points",
-        canvas_width: 842,
-        canvas_height: 595,
-        campos,
-        fuente: configForm.elements.fuente.value,
-        tamano: Number(configForm.elements.tamano.value),
-        color: configForm.elements.color.value,
-      });
-    });
   }
 });
 
@@ -1311,6 +1519,13 @@ document.addEventListener("input", (event) => {
 });
 
 document.addEventListener("change", (event) => {
+  const selectedFile = event.target.files?.[0];
+  if ((event.target.name === "fondo" || event.target.name === "firma") && selectedFile && selectedFile.size > 20 * 1024 * 1024) {
+    showParticipantAlert(event.target.name === "firma" ? "La firma supera el tamaño máximo permitido de 20 MB." : "El PDF supera el tamaño máximo permitido de 20 MB.");
+    event.target.value = "";
+    event.target.closest(".file-upload").querySelector(".file-upload-name").textContent = "Ningún archivo seleccionado";
+    return;
+  }
   if (event.target.matches('.file-upload input[type="file"]'))
     event.target
       .closest(".file-upload")
@@ -1520,8 +1735,8 @@ function renderTemplatePreview(modal) {
     return `${date.getDate()} de ${months[date.getMonth()]} de ${date.getFullYear()}`;
   };
   const samples = {
-    participante: "KATHERINE OLIVERA ROJAS",
-    registro_cas: "12345",
+    participante: modal.dataset.previewParticipant || "PARTICIPANTE",
+    registro_cas: modal.dataset.previewCas || "",
     fecha_sesion:
       formatTemplateDate(templateData.fecha_sesion) || "Fecha de sesión",
     fecha_inicio:
@@ -1539,24 +1754,45 @@ function renderTemplatePreview(modal) {
     })(),
     codigo_verificacion: "CERT-2026-8F4K92",
     firmante: modal.dataset.previewSigner || "FIRMANTE",
+    firmante_cargo: modal.dataset.previewSignerCargo || "CARGO",
+    firmante_2: modal.dataset.previewSigner2 || "",
+    firmante_3: modal.dataset.previewSigner3 || "",
+    firmante_2_cargo: "",
+    firmante_3_cargo: "",
+    firma: modal.dataset.previewSignature || "",
+    firma_2: "",
+    firma_3: "",
   };
+  try {
+    const previewSigners = JSON.parse(document.querySelector("#template-preview-signers")?.textContent || "[]");
+    if (previewSigners[0]?.nombre) samples.firmante = previewSigners[0].nombre;
+    if (previewSigners[0]?.cargo) samples.firmante_cargo = previewSigners[0].cargo;
+    if (previewSigners[0]?.firma_data) samples.firma = previewSigners[0].firma_data;
+    if (previewSigners[1]?.nombre) samples.firmante_2 = previewSigners[1].nombre;
+    if (previewSigners[2]?.nombre) samples.firmante_3 = previewSigners[2].nombre;
+    if (previewSigners[1]?.cargo) samples.firmante_2_cargo = previewSigners[1].cargo;
+    if (previewSigners[2]?.cargo) samples.firmante_3_cargo = previewSigners[2].cargo;
+    if (previewSigners[1]?.firma_data) samples.firma_2 = previewSigners[1].firma_data;
+    if (previewSigners[2]?.firma_data) samples.firma_3 = previewSigners[2].firma_data;
+  } catch (_) {}
   modal
         .querySelectorAll('.template-fields input[type="checkbox"]:checked, .template-signature-toggle input[type="checkbox"]:checked')
     .forEach((check) => {
       const key = check.value,
         item = document.createElement("span");
+      if (["firmante_2", "firmante_2_cargo", "firmante_3", "firmante_3_cargo", "firma_2", "firma_3"].includes(key) && !samples[key]) return;
       item.className = "template-preview-item";
       item.dataset.field = key;
-      if (key === "firma" && modal.dataset.previewSignature) {
+      if (["firma", "firma_2", "firma_3"].includes(key) && samples[key]) {
         item.textContent = "";
         item.style.width = "90px";
         item.style.height = "45px";
-        item.style.backgroundImage = `url("${modal.dataset.previewSignature}")`;
+        item.style.backgroundImage = `url("${samples[key]}")`;
         item.style.backgroundPosition = "center";
         item.style.backgroundRepeat = "no-repeat";
         item.style.backgroundSize = "contain";
       } else {
-        item.textContent = samples[key] || check.parentElement.textContent.trim();
+        item.textContent = samples[key] || (["firmante_2", "firmante_2_cargo", "firmante_3", "firmante_3_cargo", "firma_2", "firma_3"].includes(key) ? "" : check.parentElement.textContent.trim());
       }
       const x = modal.querySelector(`[data-position="${key}"][data-axis="x"]`),
         y = modal.querySelector(`[data-position="${key}"][data-axis="y"]`);
@@ -1643,7 +1879,7 @@ document.addEventListener("DOMContentLoaded", () => {
     style.color = form.elements.color.value;
     style.estilo = styleSelect.value;
     style.transformacion = caseSelect.value;
-    if (active === "firma") {
+    if (active && /^firma(?:_|$)/.test(active)) {
       style.ancho = Math.max(20, Math.min(300, Number(form.elements.firma_ancho.value) || 90));
       style.alto = Math.max(10, Math.min(200, Number(form.elements.firma_alto.value) || 45));
     }
@@ -1658,7 +1894,7 @@ document.addEventListener("DOMContentLoaded", () => {
     caseSelect.value = style.transformacion || "none";
     form.elements.firma_ancho.value = style.ancho;
     form.elements.firma_alto.value = style.alto;
-    form.querySelectorAll(".signature-size-control").forEach((field) => { field.hidden = active !== "firma"; });
+    form.querySelectorAll(".signature-size-control").forEach((field) => { field.hidden = !active || !/^firma(?:_|$)/.test(active); });
     paint();
   }
   function paint() {
@@ -1699,7 +1935,7 @@ document.addEventListener("DOMContentLoaded", () => {
       node.style.color = style.color;
       node.style.fontWeight = style.estilo.includes("B") ? "bold" : "normal";
       node.style.fontStyle = style.estilo.includes("I") ? "italic" : "normal";
-      if (name === "firma") {
+      if (name && /^firma(?:_|$)/.test(name)) {
         node.style.width = `${style.ancho * scale}px`;
         node.style.height = `${style.alto * scale}px`;
         node.style.minWidth = "0";
@@ -1716,6 +1952,10 @@ document.addEventListener("DOMContentLoaded", () => {
           sizePx -= 0.5;
           node.style.fontSize = `${sizePx}px`;
         }
+      }
+      if (name === "firmante" || name === "firmante_2" || name === "firmante_3") {
+        node.style.whiteSpace = "nowrap";
+        node.style.maxWidth = "none";
       }
     });
   }
@@ -1790,37 +2030,45 @@ document.addEventListener("DOMContentLoaded", () => {
       selector.value = marker.dataset.field;
       selector.dispatchEvent(new Event("change", { bubbles: true }));
     });
-  // Primer listener construye posiciones; este segundo guarda TODOS los estilos por campo.
-  form.addEventListener("submit", () => {
-    readControls();
-    let data = {};
-    try {
-      data = JSON.parse(form.elements.configuracion_json.value || "{}");
-    } catch (_) {}
-    data.campos ||= {};
-    if (saved.datos && typeof saved.datos === "object")
-      data.datos = { ...saved.datos, ...(data.datos || {}) };
-    checks()
-      .filter((c) => c.checked)
-      .forEach((check) => {
-        const style = fieldStyle(check.value);
-        data.campos[check.value] ||= { visible: true };
-        Object.assign(data.campos[check.value], {
-          fuente: style.fuente,
-          tamano: style.tamano,
-          color: style.color,
-          estilo: style.estilo,
-          transformacion: style.transformacion,
-          ...(check.value === "firma" ? { ancho: style.ancho, alto: style.alto } : {}),
-        });
-      });
-    form.elements.configuracion_json.value = JSON.stringify(data);
-  });
-
   let saving = false;
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (saving) return;
+    readControls();
+    let data = {};
+    try { data = JSON.parse(modal.dataset.config || "{}"); } catch (_) {}
+    data.campos = {};
+    if (saved.datos && typeof saved.datos === "object") data.datos = { ...saved.datos };
+    form.querySelectorAll(".template-position-fields [data-position][data-axis]").forEach((input) => {
+      data.campos[input.dataset.position] ||= { visible: true };
+      data.campos[input.dataset.position][input.dataset.axis] = input.type === "number" ? Number(input.value) : input.value;
+    });
+    checks().filter((c) => c.checked).forEach((check) => {
+      const style = fieldStyle(check.value);
+      data.campos[check.value] ||= { visible: true };
+      Object.assign(data.campos[check.value], {
+        fuente: style.fuente,
+        tamano: style.tamano,
+        color: style.color,
+        estilo: style.estilo,
+        transformacion: style.transformacion,
+        ...(/^firma(?:_|$)/.test(check.value) ? { ancho: style.ancho, alto: style.alto } : {}),
+      });
+    });
+    form.elements.configuracion_json.value = JSON.stringify(data);
+    let previewSigners = [];
+    try { previewSigners = JSON.parse(document.querySelector("#template-preview-signers")?.textContent || "[]"); } catch (_) {}
+    const requiredSlots = [
+      [1, ["firmante", "firma"]],
+      [2, ["firmante_2", "firma_2"]],
+      [3, ["firmante_3", "firma_3"]],
+    ];
+    for (const [slot, keys] of requiredSlots) {
+      if (keys.some((key) => form.querySelector(`.template-fields input[value="${key}"]`)?.checked) && previewSigners.length < slot) {
+        showParticipantAlert(`No tienes registrada la firma necesaria para Firmante ${slot}.`);
+        return;
+      }
+    }
     const saveButton = form.querySelector('button[type="submit"]');
     let status = form.querySelector(".template-save-feedback");
     if (!status) {
@@ -1860,6 +2108,7 @@ document.addEventListener("DOMContentLoaded", () => {
       status.textContent =
         "No se guardó: " + (error.message || "Error de conexión");
       status.style.color = "#fca5a5";
+      showParticipantAlert(error.message || "No se pudo guardar la configuración.");
     } finally {
       saving = false;
       if (saveButton) saveButton.disabled = false;
@@ -1898,5 +2147,5 @@ document.addEventListener("click", (event) => {
       if (!response.ok || !data.url) throw new Error(data.error || "No se pudo generar el token.");
       window.location.href = data.url.replace("certificado_pdf", "certificado_viewer");
     })
-    .catch((error) => window.alert(error.message));
+    .catch((error) => showParticipantAlert(error.message));
 }, true);

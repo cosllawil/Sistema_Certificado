@@ -18,6 +18,10 @@ final class VerificationController
         }
         $certificate = null;
         $verificationToken = null;
+        $branding = [];
+        try {
+            foreach (databaseConnection()->query("SELECT clave,valor FROM configuraciones WHERE clave IN ('branding.institucion','branding.verificacion')")->fetchAll() as $row) $branding[$row['clave']] = (string)$row['valor'];
+        } catch (Throwable $error) { }
         $searched = false;
         $code = strtoupper(trim((string) ($_GET['codigo'] ?? $_SESSION['verification_code_once'] ?? '')));
         unset($_SESSION['verification_code_once']);

@@ -32,6 +32,175 @@
     background: #1683f7;
 }
 
+.participant-action-excel-download {
+    color: #fff !important;
+    background: #0f766e;
+    text-decoration: none;
+}
+
+.participant-action-excel-download:hover {
+    background: #0d5f59;
+}
+
+.participant-action-excel-import {
+    background: #7c3aed;
+}
+
+.participant-action-excel-import:hover {
+    background: #6d28d9;
+}
+
+.participant-import-form {
+    display: grid;
+    gap: 18px;
+}
+
+.participant-import-file {
+    display: grid;
+    gap: 8px;
+    color: #dbeafe;
+    font-size: 14px;
+}
+
+.participant-import-file input[type="file"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.participant-import-picker {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 58px;
+    padding: 10px 16px;
+    border: 1px dashed #4b79a8;
+    border-radius: 12px;
+    color: #dbeafe;
+    background: #0b1d33;
+    cursor: pointer;
+    transition: border-color .2s ease, background .2s ease;
+}
+
+.participant-import-picker:hover,
+.participant-import-file:focus-within .participant-import-picker {
+    border-color: #55a8ff;
+    background: #102b49;
+}
+
+.participant-import-picker svg {
+    width: 21px;
+    height: 21px;
+    fill: none;
+    stroke: #8fc4ff;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.participant-import-picker strong {
+    color: #fff;
+}
+
+.participant-import-name {
+    overflow: hidden;
+    color: #94afd0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.participant-import-form .form-actions button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #1683f7;
+}
+
+.participant-import-form .form-actions svg {
+    width: 17px;
+    height: 17px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.participant-import-form .form-actions {
+    justify-content: flex-end;
+    margin-top: 8px;
+    margin-bottom: 18px;
+}
+
+.participant-import-preview {
+    margin-top: 20px;
+}
+
+.participant-import-pagination {
+    margin-top: 0;
+}
+
+.participant-import-confirm {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #294665;
+}
+
+.participant-import-confirm button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 36px;
+    padding: 8px 14px;
+    border: 0;
+    border-radius: 7px;
+    color: #fff !important;
+    background: #1683f7 !important;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.participant-import-confirm button:hover {
+    background: #0d6ed5;
+}
+
+.participant-import-badge {
+    display: inline-flex;
+    max-width: 100%;
+    padding: 5px 9px;
+    border-radius: 999px;
+    font-size: 12px;
+    line-height: 1.2;
+    white-space: normal;
+}
+
+.participant-import-badge.valid {
+    color: #b7f7d6;
+    background: #116b4b;
+}
+
+.participant-import-badge.invalid {
+    color: #ffd0d0;
+    background: #8f2931;
+}
+
+.participant-import-confirm svg {
+    width: 17px;
+    height: 17px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
 #bulk-print-button {
     background: #64748b;
     color: #fff;
@@ -852,8 +1021,8 @@
 .template-fields {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    padding: 12px;
+    gap: 6px 8px;
+    padding: 9px;
     border: 1px solid #294665;
     border-radius: 8px;
     background: #0b1d33;
@@ -874,6 +1043,15 @@
     gap: 9px;
     cursor: pointer;
 }
+
+/* Orden fijo de firmantes y firmas dentro de la cuadrícula */
+.template-fields label:has(input[value="firmante"]) { grid-column: 1; grid-row: 4; }
+.template-fields label:has(input[value="firmante_2"]) { grid-column: 2; grid-row: 4; }
+.template-fields label:has(input[value="firmante_3"]) { grid-column: 3; grid-row: 4; }
+.template-fields label.template-signature-toggle { grid-column: 1; grid-row: 5; }
+.template-fields label:has(input[value="firma_2"]) { grid-column: 2; grid-row: 5; }
+.template-fields label:has(input[value="firma_3"]) { grid-column: 3; grid-row: 5; }
+.template-fields label:has(input[value="firmante_cargo"]) { grid-column: 1; grid-row: 6; }
 
 .template-position-fields {
     display: none;
@@ -948,6 +1126,7 @@
     background: transparent;
     font-size: 11px;
     z-index: 4;
+    white-space: pre-line;
 }
 
 .template-preview-item[data-field="firma"] img {
@@ -1118,9 +1297,10 @@
 }
 
 .select2-trigger {
+    position: relative;
     width: 100%;
     min-height: 48px;
-    padding: 11px 15px;
+    padding: 11px 42px 11px 15px;
     border: 1px solid #294665;
     border-radius: 7px;
     color: #eef5ff;
@@ -1128,11 +1308,6 @@
     font: inherit;
     text-align: left;
     cursor: pointer;
-}
-
-.select2-trigger {
-    position: relative;
-    padding-right: 42px;
 }
 
 .select2-trigger::after {
@@ -1904,6 +2079,15 @@
     background-size: 19px 19px;
 }
 
+#template-modal .field>input:focus,
+#template-modal .field>select:focus,
+#template-modal .field>textarea:focus {
+    outline: 2px solid #8fc4ff;
+    outline-offset: -2px;
+    border-color: #8fc4ff;
+    caret-color: #ffffff;
+}
+
 #template-modal input[name="fecha_sesion"] {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='5' width='16' height='15' rx='2'/%3E%3Cpath d='M8 3v4M16 3v4M4 10h16'/%3E%3C/svg%3E");
 }
@@ -1967,6 +2151,10 @@
 
 .signer-form input[name="cargo"] {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fc3e8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='7' width='16' height='12' rx='2'/%3E%3Cpath d='M9 7V5h6v2M4 12h16M10 12v2h4v-2'/%3E%3C/svg%3E");
+}
+
+.participant-modal .signer-form .form-grid > .signature-field {
+    grid-column: 1 / -1 !important;
 }
 
 /* Iconos interiores del formulario de usuarios */
@@ -2189,6 +2377,106 @@
 
 #template-modal .field:has([name="descripcion"]) {
     order: 6;
+}
+
+#template-modal button.template-submit-loading {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: wait;
+    opacity: .85;
+}
+
+#type-modal button.template-submit-loading {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: wait;
+    opacity: .85;
+}
+
+#course-modal button.template-submit-loading {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: wait;
+    opacity: .85;
+}
+
+.participant-modal .participant-form button.template-submit-loading {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: wait;
+    opacity: .85;
+}
+
+.participant-modal .signer-form button.template-submit-loading {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: wait;
+    opacity: .85;
+}
+
+.form-card button.template-submit-loading {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: wait;
+    opacity: .85;
+}
+
+.template-submit-spinner {
+    width: 15px;
+    height: 15px;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: template-submit-spin .7s linear infinite;
+}
+
+/* Bloquea la edición durante el envío sin desactivar los controles antes de serializar el formulario. */
+form:has(button.template-submit-loading) {
+    pointer-events: none;
+    user-select: none;
+}
+
+#user-modal button.template-submit-loading {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: wait;
+    opacity: .85;
+}
+
+#role-modal button.template-submit-loading {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: wait;
+    opacity: .85;
+}
+
+.change-password-dialog button.template-submit-loading {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: wait;
+    opacity: .85;
+}
+
+@keyframes template-submit-spin {
+    to { transform: rotate(360deg); }
 }
 
 .form-page:has(.configuration-edit)>.participant-actions {

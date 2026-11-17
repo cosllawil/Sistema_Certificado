@@ -26,19 +26,10 @@ final class TemplatesController
                 http_response_code(404);
                 exit;
             }
-            require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
-            $pdf = new \setasign\Fpdi\Fpdi();
-            $pages = $pdf->setSourceFile($full);
-            for ($page = 1; $page <= $pages; $page++) {
-                $tpl = $pdf->importPage($page);
-                $size = $pdf->getTemplateSize($tpl);
-                $pdf->AddPage($size['orientation'], [$size['width'], $size['height']]);
-                $pdf->useTemplate($tpl);
-            }
-            $pdf->SetTitle('Plantilla');
             header('Content-Type: application/pdf');
+            header('Content-Length: ' . (string)filesize($full));
             header('Content-Disposition: inline; filename="Plantilla.pdf"');
-            $pdf->Output('I', 'Plantilla.pdf');
+            readfile($full);
             exit;
         }
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['config_template_id'])) {
@@ -63,6 +54,28 @@ final class TemplatesController
                 }
                 http_response_code(422);
                 exit('Configuración inválida.');
+            }
+            $requiredSignerSlots = [];
+            foreach ([1, 2, 3] as $slot) {
+                $nameKey = $slot === 1 ? 'firmante' : 'firmante_' . $slot;
+                $signatureKey = $slot === 1 ? 'firma' : 'firma_' . $slot;
+                if (!empty($cfg['campos'][$nameKey]['visible']) || !empty($cfg['campos'][$signatureKey]['visible'])) $requiredSignerSlots[] = $slot;
+            }
+            if ($requiredSignerSlots) {
+                $availableSignatures = (int)$db->query("SELECT COUNT(*) FROM firmantes WHERE estado='activo' AND deleted_at IS NULL AND firma_path IS NOT NULL AND firma_path<>''")->fetchColumn();
+                $requiredSlot = max($requiredSignerSlots);
+                if ($availableSignatures < $requiredSlot) {
+                    $message = 'No tienes registrada la firma necesaria para Firmante ' . $requiredSlot . '.';
+                    if ($isAjax) {
+                        http_response_code(422);
+                        header('Content-Type: application/json; charset=utf-8');
+                        echo json_encode(['success' => false, 'message' => $message], JSON_UNESCAPED_UNICODE);
+                        exit;
+                    }
+                    $_SESSION['template_error'] = $message;
+                    header('Location: plantillas');
+                    exit;
+                }
             }
             $q = $db->prepare('UPDATE plantillas SET configuracion_json=:cfg WHERE id=:id AND deleted_at IS NULL');
             $q->execute(['cfg' => json_encode($cfg, JSON_UNESCAPED_UNICODE), 'id' => $id]);
@@ -95,10 +108,42 @@ final class TemplatesController
                 header('Location: plantillas');
                 exit;
             }
-            $previewTypeName = (string)($db->query('SELECT nombre FROM tipos_certificado ORDER BY activo DESC, nombre LIMIT 1')->fetchColumn() ?: 'TIPO DE CERTIFICADO');
-            $previewCourseName = (string)($db->query('SELECT nombre FROM cursos WHERE deleted_at IS NULL ORDER BY estado="activo" DESC, nombre LIMIT 1')->fetchColumn() ?: 'CURSO DE EJEMPLO');
-            $previewCourse = $db->query('SELECT nombre,horas_academicas,fecha_inicio,fecha_fin FROM cursos WHERE deleted_at IS NULL ORDER BY estado="activo" DESC, nombre LIMIT 1')->fetch() ?: [];
+            $cfg = json_decode((string)($template['configuracion_json'] ?? '{}'), true) ?: [];
+            $previewQuery = $db->prepare('SELECT c.id,c.curso_id,c.fecha_sesion,c.fecha_inicio,c.fecha_fin,c.horas_academicas,CONCAT(p.nombres," ",p.apellidos) participante,p.nro_registro_cas registro_cas,cu.nombre curso,cu.horas_academicas curso_horas,cu.fecha_inicio curso_inicio,cu.fecha_fin curso_fin,t.nombre tipo FROM certificados c INNER JOIN participantes p ON p.id=c.participante_id INNER JOIN cursos cu ON cu.id=c.curso_id INNER JOIN tipos_certificado t ON t.id=c.tipo_certificado_id WHERE c.plantilla_id=:id AND c.deleted_at IS NULL ORDER BY c.id LIMIT 1');
+            $previewQuery->execute(['id' => $id]);
+            $previewCertificate = $previewQuery->fetch() ?: [];
+            if (!empty($previewCertificate['fecha_sesion'])) {
+                $cfg['datos']['fecha_sesion'] = $previewCertificate['fecha_sesion'];
+            }
+            $availableQuery = $db->prepare('SELECT COUNT(*) total, MAX(p.nro_registro_cas IS NOT NULL AND p.nro_registro_cas <> "") has_cas, MAX(c.fecha_sesion IS NOT NULL) has_session, MAX(COALESCE(c.fecha_inicio,cu.fecha_inicio) IS NOT NULL) has_start, MAX(COALESCE(c.fecha_fin,cu.fecha_fin) IS NOT NULL) has_end, MAX(COALESCE(NULLIF(c.horas_academicas,0),cu.horas_academicas) > 0) has_hours FROM certificados c INNER JOIN participantes p ON p.id=c.participante_id INNER JOIN cursos cu ON cu.id=c.curso_id WHERE c.plantilla_id=:id AND c.deleted_at IS NULL');
+            $availableQuery->execute(['id' => $id]);
+            $available = $availableQuery->fetch() ?: [];
+            $availableFields = ['participante' => (int)($available['total'] ?? 0) > 0, 'registro_cas' => !empty($available['has_cas']), 'curso' => (int)($available['total'] ?? 0) > 0, 'tipo' => (int)($available['total'] ?? 0) > 0, 'fecha_sesion' => !empty($available['has_session']), 'fecha_inicio' => !empty($available['has_start']), 'fecha_fin' => !empty($available['has_end']), 'fecha_sistema' => (int)($available['total'] ?? 0) > 0, 'horas' => !empty($available['has_hours']), 'codigo_verificacion' => (int)($available['total'] ?? 0) > 0];
+            $templateData = is_array($cfg['datos'] ?? null) ? $cfg['datos'] : [];
+            foreach (['fecha_sesion', 'fecha_inicio', 'fecha_fin', 'horas'] as $dataKey) {
+                if (trim((string)($templateData[$dataKey] ?? '')) !== '') $availableFields[$dataKey] = true;
+            }
+            $previewParticipant = (string)($previewCertificate['participante'] ?? '');
+            $previewCas = (string)($previewCertificate['registro_cas'] ?? '');
+            $previewTypeName = (string)($previewCertificate['tipo'] ?? '');
+            $previewCourseName = (string)($previewCertificate['curso'] ?? '');
+            $previewCourse = ['id' => (int)($previewCertificate['curso_id'] ?? 0), 'horas_academicas' => $previewCertificate['curso_horas'] ?? '', 'fecha_inicio' => $previewCertificate['curso_inicio'] ?? '', 'fecha_fin' => $previewCertificate['curso_fin'] ?? ''];
+            $previewSigners = [];
+            if (!empty($previewCourse['id'])) {
+                $signerQuery = $db->prepare('SELECT CONCAT(nombres," ",apellidos) nombre,cargo,firma_path FROM firmantes WHERE curso_id=:curso_id AND estado="activo" AND deleted_at IS NULL ORDER BY apellidos,nombres LIMIT 3');
+                $signerQuery->execute(['curso_id' => (int)$previewCourse['id']]);
+                $previewSigners = $signerQuery->fetchAll();
+            }
+            foreach ($previewSigners as &$previewSigner) {
+                $signatureFile = dirname(__DIR__, 2) . '/' . ltrim((string)($previewSigner['firma_path'] ?? ''), '/');
+                if (is_file($signatureFile)) {
+                    $mime = mime_content_type($signatureFile) ?: 'image/png';
+                    $previewSigner['firma_data'] = 'data:' . $mime . ';base64,' . base64_encode((string)file_get_contents($signatureFile));
+                }
+            }
+            unset($previewSigner);
             $previewSignerName = (string)($db->query('SELECT CONCAT(nombres, " ", apellidos) FROM firmantes WHERE deleted_at IS NULL ORDER BY estado="activo" DESC, apellidos, nombres LIMIT 1')->fetchColumn() ?: 'FIRMANTE');
+            $previewSignerCargo = (string)($db->query('SELECT cargo FROM firmantes WHERE deleted_at IS NULL ORDER BY estado="activo" DESC, apellidos, nombres LIMIT 1')->fetchColumn() ?: 'CARGO');
             $previewSignerId = (int)($db->query('SELECT id FROM firmantes WHERE deleted_at IS NULL AND estado="activo" AND firma_path IS NOT NULL AND firma_path <> "" ORDER BY apellidos,nombres LIMIT 1')->fetchColumn() ?: 0);
             $previewSignerSignature = (string)($db->query('SELECT firma_path FROM firmantes WHERE id=' . $previewSignerId . ' LIMIT 1')->fetchColumn() ?: '');
             if ($previewSignerSignature !== '') $previewSignerSignature = '/Sistema_Certificado/' . ltrim($previewSignerSignature, '/');
@@ -117,18 +162,33 @@ final class TemplatesController
             exit;
         }
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nombre'])) {
+            unset($_SESSION['template_error']);
             $name = strtoupper(trim((string)$_POST['nombre']));
             if ($name === '') {
                 $_SESSION['template_error'] = 'Ingresa el nombre de la plantilla.';
             } else {
                 $path = null;
                 if (!empty($_FILES['fondo']['name'])) {
-                    if ($_FILES['fondo']['error'] !== UPLOAD_ERR_OK || strtolower(pathinfo($_FILES['fondo']['name'], PATHINFO_EXTENSION)) !== 'pdf') $_SESSION['template_error'] = 'Solo se permiten archivos PDF.';
-                    else {
+                    $uploadError = (int)($_FILES['fondo']['error'] ?? UPLOAD_ERR_NO_FILE);
+                    $extension = strtolower(pathinfo((string)$_FILES['fondo']['name'], PATHINFO_EXTENSION));
+                    if ($uploadError !== UPLOAD_ERR_OK) {
+                        $uploadMessages = [
+                            UPLOAD_ERR_INI_SIZE => 'El hosting rechazó el PDF porque supera el límite de tamaño configurado.',
+                            UPLOAD_ERR_FORM_SIZE => 'El formulario rechazó el PDF por su tamaño.',
+                            UPLOAD_ERR_PARTIAL => 'La subida del PDF quedó incompleta. Inténtalo nuevamente.',
+                            UPLOAD_ERR_NO_TMP_DIR => 'El hosting no tiene carpeta temporal para subir archivos.',
+                            UPLOAD_ERR_CANT_WRITE => 'El hosting no permite escribir el archivo subido.',
+                            UPLOAD_ERR_EXTENSION => 'Una extensión del hosting bloqueó la subida del PDF.',
+                        ];
+                        $_SESSION['template_error'] = $uploadMessages[$uploadError] ?? 'No se pudo subir el PDF al hosting.';
+                    } elseif ($extension !== 'pdf') {
+                        $_SESSION['template_error'] = 'El archivo debe tener extensión .pdf.';
+                    } else {
                         $dir = dirname(__DIR__, 2) . '/storage/templates';
                         if (!is_dir($dir)) mkdir($dir, 0775, true);
                         $file = 'template_' . bin2hex(random_bytes(8)) . '.pdf';
-                        if (move_uploaded_file($_FILES['fondo']['tmp_name'], $dir . '/' . $file)) $path = 'storage/templates/' . $file;
+                        if (!is_writable($dir)) $_SESSION['template_error'] = 'La carpeta storage/templates no tiene permisos de escritura.';
+                        elseif (move_uploaded_file($_FILES['fondo']['tmp_name'], $dir . '/' . $file)) $path = 'storage/templates/' . $file;
                         else $_SESSION['template_error'] = 'No se pudo guardar el archivo PDF.';
                     }
                 }
@@ -143,18 +203,20 @@ final class TemplatesController
                     $id = (int)($_POST['template_id'] ?? 0);
                     if ($id > 0) (new Template($db))->update($id, $data);
                     else (new Template($db))->create([...$data, 'created_by' => (int)$_SESSION['auth_user']['id']]);
+                    $_SESSION['template_success'] = $id > 0 ? 'Los datos de la plantilla se actualizaron correctamente.' : 'La plantilla se registró correctamente.';
                 }
             }
             header('Location: plantillas');
             exit;
         }
-        $templates = $db->query('SELECT id,nombre,descripcion,fondo_path,formato,orientacion,version,activo,configuracion_json,created_at FROM plantillas WHERE deleted_at IS NULL ORDER BY nombre')->fetchAll();
+        $templates = $db->query('SELECT p.id,p.nombre,p.descripcion,p.fondo_path,p.formato,p.orientacion,p.version,p.activo,p.configuracion_json,p.created_at,COUNT(DISTINCT c.participante_id) AS participantes_asignados FROM plantillas p LEFT JOIN certificados c ON c.plantilla_id=p.id AND c.deleted_at IS NULL WHERE p.deleted_at IS NULL GROUP BY p.id,p.nombre,p.descripcion,p.fondo_path,p.formato,p.orientacion,p.version,p.activo,p.configuracion_json,p.created_at ORDER BY p.nombre')->fetchAll();
         foreach ($templates as &$template) {
             $template['config_token'] = rtrim(strtr(base64_encode((string)$template['id']), '+/', '-_'), '=') . '.' . hash_hmac('sha256', (string)$template['id'], 'Sistema_Certificado_template_key');
         }
         unset($template);
         $templateError = $_SESSION['template_error'] ?? null;
-        unset($_SESSION['template_error']);
+        $templateSuccess = $_SESSION['template_success'] ?? null;
+        unset($_SESSION['template_error'], $_SESSION['template_success']);
         ob_start();
         require dirname(__DIR__) . '/Views/templates/index.php';
         $pageContent = ob_get_clean();

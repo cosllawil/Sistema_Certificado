@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   document
     .querySelectorAll(
-      ".form-card select, .participant-form select, .signer-form select.user-document-type, #template-modal select, #type-modal select, #course-modal select, #user-modal select.user-document-type, #certificate-course-filter",
+      ".form-card select, .participant-form select, .signer-form select.user-document-type, .signer-form select[name=curso_id], #template-modal select, #type-modal select, #course-modal select, #user-modal select.user-document-type, #certificate-course-filter",
     )
     .forEach((select) => {
       if (select.closest(".select2-lite")) return;
@@ -24,25 +24,55 @@ document.addEventListener("DOMContentLoaded", () => {
       list.className = "select2-options";
       dropdown.appendChild(list);
       wrapper.appendChild(dropdown);
+      const isParticipantPicker = select.name === "participante_id";
+      const selectedIds = new Set();
+      const hiddenContainer = select.closest(".certificate-single-participant")?.querySelector("[data-participant-ids]");
       const normalize = (value) =>
         value
           .normalize("NFD")
           .replace(/[\u0300-\u036f]/g, "")
           .toLowerCase();
       const sync = () => {
-        trigger.textContent = select.selectedOptions[0]?.textContent || "";
+        const bulk = isParticipantPicker;
+        trigger.textContent = bulk ? selectedIds.size + " participante" + (selectedIds.size === 1 ? "" : "s") + " seleccionado" + (selectedIds.size === 1 ? "" : "s") : (select.selectedOptions[0]?.textContent || "");
+        wrapper.classList.toggle("select2-multi", bulk);
+        const count = select.closest(".certificate-single-participant")?.querySelector("[data-participant-count]");
+        if (count) { count.hidden = !bulk; count.textContent = trigger.textContent; }
         const query = normalize(search.value.trim());
         list.replaceChildren();
         [...select.options].forEach((option) => {
           const item = document.createElement("button");
           item.type = "button";
           item.className = "select2-option";
-          item.textContent = option.text;
+          if (bulk && option.value) {
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.tabIndex = -1;
+            checkbox.checked = selectedIds.has(option.value);
+            item.append(checkbox, document.createTextNode(option.text));
+          } else {
+            item.textContent = option.text;
+          }
           item.hidden = !normalize(option.text).includes(query);
           item.addEventListener("click", () => {
-            select.value = option.value;
-            select.dispatchEvent(new Event("change", { bubbles: true }));
-            dropdown.classList.remove("open");
+            if (bulk && option.value) {
+              if (selectedIds.has(option.value)) selectedIds.delete(option.value);
+              else selectedIds.add(option.value);
+              if (hiddenContainer) {
+                hiddenContainer.replaceChildren(...[...selectedIds].map((id) => {
+                  const input = document.createElement("input");
+                  input.type = "hidden";
+                  input.name = "participant_ids[]";
+                  input.value = id;
+                  return input;
+                }));
+              }
+              select.value = [...selectedIds][0] || "";
+            } else {
+              select.value = option.value;
+              select.dispatchEvent(new Event("change", { bubbles: true }));
+              dropdown.classList.remove("open");
+            }
             sync();
           });
           list.appendChild(item);
@@ -59,6 +89,13 @@ document.addEventListener("DOMContentLoaded", () => {
         dropdown.classList.toggle("open"),
       );
       search.addEventListener("input", sync);
+      document.querySelectorAll('input[name="assignment_mode"]').forEach((input) => input.addEventListener("change", () => {
+        if (input.value === "single" && input.checked) {
+          selectedIds.clear();
+          hiddenContainer?.replaceChildren();
+        }
+        sync();
+      }));
       document.addEventListener("click", (event) => {
         if (!wrapper.contains(event.target)) dropdown.classList.remove("open");
       });

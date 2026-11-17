@@ -5,7 +5,6 @@
     const template = document.querySelector('select[name="plantilla_id"]');
     const form = course?.form;
     if (!course || !type || !template) return;
-
     const sync = () => {
       const option = course.options[course.selectedIndex];
       type.value = option?.getAttribute("data-tipo-certificado") || "";

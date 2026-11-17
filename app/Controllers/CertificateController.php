@@ -28,6 +28,30 @@ final class CertificateController
             $observaciones = function_exists('mb_strtoupper') ? mb_strtoupper($observaciones, 'UTF-8') : strtoupper($observaciones);
             $data = ['p' => (int)$_POST['participante_id'], 'c' => (int)$_POST['curso_id'], 't' => (int)($courseConfig['tipo_certificado_id'] ?? 0), 'pl' => (int)($courseConfig['plantilla_id'] ?? 0) ?: null, 'h' => 0, 'fs' => null, 'fi' => null, 'ff' => null, 'o' => $observaciones ?: null, 'u' => $userId];
             $editId = (int)($_POST['certificate_id'] ?? 0);
+            $bulkIds = array_values(array_unique(array_filter(array_map('intval', (array)($_POST['participant_ids'] ?? [])), static fn(int $id): bool => $id > 0)));
+            if (!$editId && ($_POST['assignment_mode'] ?? 'single') === 'bulk') {
+                if (!$bulkIds) { $_SESSION['certificate_error'] = 'Selecciona al menos un participante.'; header('Location: registrar_certificado'); exit; }
+                $this->db->beginTransaction();
+                try {
+                    $exists = $this->db->prepare('SELECT COUNT(*) FROM certificados WHERE participante_id=:p AND curso_id=:c AND deleted_at IS NULL');
+                    $certificate = new Certificate($this->db);
+                    $created = 0;
+                    foreach ($bulkIds as $participantId) {
+                        $exists->execute(['p' => $participantId, 'c' => $data['c']]);
+                        if ((int)$exists->fetchColumn() > 0) continue;
+                        $certificateId = $certificate->create([...$data, 'p' => $participantId]);
+                        (new AuditService($this->db))->log($userId, 'Crear certificado grupal', 'certificados', $certificateId);
+                        $created++;
+                    }
+                    $this->db->commit();
+                    $_SESSION['certificate_notice'] = $created . ' certificado' . ($created === 1 ? '' : 's') . ' creado' . ($created === 1 ? '' : 's') . ' correctamente.';
+                } catch (Throwable $error) {
+                    if ($this->db->inTransaction()) $this->db->rollBack();
+                    $_SESSION['certificate_error'] = 'No se pudo completar la asignación grupal.';
+                }
+                header('Location: registrar_certificado');
+                exit;
+            }
             if ($editId > 0) {
                 $q = $this->db->prepare('UPDATE certificados SET participante_id=:p,curso_id=:c,tipo_certificado_id=:t,plantilla_id=:pl,horas_academicas=:h,fecha_sesion=:fs,fecha_inicio=:fi,fecha_fin=:ff,observaciones=:o,updated_by=:u WHERE id=:id AND deleted_at IS NULL');
                 $q->execute([...$data, 'fs' => $_POST['fecha_sesion'] ?: null, 'fi' => $_POST['fecha_inicio'] ?: null, 'ff' => $_POST['fecha_fin'] ?: null, 'id' => $editId]);

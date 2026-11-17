@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+  if (!document.querySelector(".user-row, [data-user-new], #user-modal")) return;
   const rows = [...document.querySelectorAll(".user-row")];
   const modal = document.querySelector("#user-modal");
   const form = modal?.querySelector("form");
@@ -85,6 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
   form?.setAttribute("autocomplete", "new-password");
   const documentType = form?.elements.tipo_documento;
   const documentNumber = form?.elements.numero_documento;
+  let openingUserForEdit = false;
   const syncDocumentState = () => {
     const enabled = Boolean(documentType?.value);
     documentNumber.disabled = !enabled;
@@ -96,9 +98,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!enabled) documentNumber.value = "";
   };
   documentType?.addEventListener("change", () => {
+    const shouldFocusNumber = !openingUserForEdit;
     documentNumber.value = "";
     syncDocumentState();
-    if (documentType.value) {
+    if (documentType.value && shouldFocusNumber) {
       requestAnimationFrame(() => documentNumber.focus());
     }
   });
@@ -206,7 +209,17 @@ document.addEventListener("DOMContentLoaded", () => {
       if (typeof showParticipantAlert === "function")
         showParticipantAlert(`Completa el campo ${missing[1]}.`);
       form.elements[missing[0]].focus();
+      return;
     }
+    const saveButton = form.querySelector('button[type="submit"]');
+    if (saveButton.dataset.saving === "1") {
+      event.preventDefault();
+      return;
+    }
+    saveButton.dataset.saving = "1";
+    saveButton.disabled = true;
+    saveButton.classList.add("template-submit-loading");
+    saveButton.innerHTML = '<span class="template-submit-spinner" aria-hidden="true"></span><span>Guardando...</span>';
   });
   document.querySelector("[data-user-new]")?.addEventListener("click", () => {
     form.reset();
@@ -233,6 +246,12 @@ document.addEventListener("DOMContentLoaded", () => {
   edit?.addEventListener("click", () => {
     if (!selected) return;
     form.elements.user_id.value = selected.dataset.userId;
+    form.elements.tipo_documento.value = selected.dataset.tipoDocumento || "";
+    openingUserForEdit = true;
+    form.elements.tipo_documento.dispatchEvent(new Event("change", { bubbles: true }));
+    openingUserForEdit = false;
+    form.elements.numero_documento.value = selected.dataset.numeroDocumento || "";
+    syncDocumentState();
     form.elements.nombres.value = selected.dataset.nombres;
     form.elements.apellidos.value = selected.dataset.apellidos;
     form.elements.email.value = selected.dataset.email;

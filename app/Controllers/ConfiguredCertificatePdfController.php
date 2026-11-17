@@ -18,6 +18,31 @@ final class ConfiguredCertificatePdfController
         $months = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
         return (int)date('j', $time) . ' de ' . $months[(int)date('n', $time) - 1] . ' de ' . date('Y', $time);
     }
+    private function renderSignature(\setasign\Fpdi\Fpdi $pdf, string $signaturePath, array $field, array $cfg, array $size): void
+    {
+        if (!is_file($signaturePath)) return;
+        $x = (float)($field['x'] ?? 35);
+        $y = (float)($field['y'] ?? 100);
+        $canvasWidth = (float)($cfg['canvas_width'] ?? 842);
+        $canvasHeight = (float)($cfg['canvas_height'] ?? 595);
+        if (empty($cfg['coordinate_system']) && $x <= 100 && $y <= 100) {
+            $x = $x * $size['width'] / 100;
+            $y = $y * $size['height'] / 100;
+        } else {
+            $x = $x * $size['width'] / $canvasWidth;
+            $y = $y * $size['height'] / $canvasHeight;
+        }
+        $imageWidth = (float)($field['ancho'] ?? $field['width'] ?? 42) * $size['width'] / $canvasWidth;
+        $imageHeight = (float)($field['alto'] ?? $field['height'] ?? 22) * $size['height'] / $canvasHeight;
+        $imageInfo = @getimagesize($signaturePath);
+        if ($imageInfo && !empty($imageInfo[0]) && !empty($imageInfo[1])) {
+            $boxRatio = $imageWidth / max($imageHeight, 0.001);
+            $imageRatio = $imageInfo[0] / $imageInfo[1];
+            if ($imageRatio > $boxRatio) $imageHeight = $imageWidth / $imageRatio;
+            else $imageWidth = $imageHeight * $imageRatio;
+        }
+        $pdf->Image($signaturePath, $x - $imageWidth / 2, $y - $imageHeight / 2, $imageWidth, $imageHeight);
+    }
     private function renderCertificatePage(\setasign\Fpdi\Fpdi $pdf, array $c, string $root): void
     {
         $source = $root . '/' . ltrim((string)$c['fondo_path'], '/');
@@ -30,7 +55,7 @@ final class ConfiguredCertificatePdfController
         if ($hours <= 0) $hours = (float)($c['curso_horas'] ?? 0);
         $startDate = $c['fecha_inicio'] ?: ($c['curso_inicio'] ?? null);
         $endDate = $c['fecha_fin'] ?: ($c['curso_fin'] ?? null);
-        $v = ['participante' => (string)$c['participante'], 'registro_cas' => (string)($c['registro_cas'] ?? ''), 'curso' => (string)$c['curso'], 'tipo' => (string)$c['tipo'], 'fecha_sesion' => $this->spanishDate($c['fecha_sesion'] ?? null), 'fecha_inicio' => $this->spanishDate($startDate), 'fecha_fin' => $this->spanishDate($endDate), 'fecha_sistema' => $this->spanishDate(date('Y-m-d')), 'horas' => $hours > 0 ? rtrim(rtrim(number_format($hours, 2, '.', ''), '0'), '.') : '', 'codigo_verificacion' => (string)($c['codigo_verificacion'] ?? ''), 'firmante' => (string)($c['firmante_nombre'] ?? '')];
+        $v = ['participante' => (string)$c['participante'], 'registro_cas' => (string)($c['registro_cas'] ?? ''), 'curso' => (string)$c['curso'], 'tipo' => (string)$c['tipo'], 'fecha_sesion' => $this->spanishDate($c['fecha_sesion'] ?? null), 'fecha_inicio' => $this->spanishDate($startDate), 'fecha_fin' => $this->spanishDate($endDate), 'fecha_sistema' => $this->spanishDate(date('Y-m-d')), 'horas' => $hours > 0 ? rtrim(rtrim(number_format($hours, 2, '.', ''), '0'), '.') : '', 'codigo_verificacion' => (string)($c['codigo_verificacion'] ?? ''), 'firmante' => (string)($c['firmante_nombre'] ?? ''), 'firmante_cargo' => (string)($c['firmante_cargo'] ?? '')];
         $templateData = is_array($cfg['datos'] ?? null) ? $cfg['datos'] : [];
         foreach (['horas', 'fecha_sesion', 'fecha_inicio', 'fecha_fin'] as $dataKey) if (array_key_exists($dataKey, $templateData) && trim((string)$templateData[$dataKey]) !== '') $v[$dataKey] = $dataKey === 'horas' ? (string)$templateData[$dataKey] : $this->spanishDate((string)$templateData[$dataKey]);
         $pdf->setSourceFile($source);
@@ -41,18 +66,7 @@ final class ConfiguredCertificatePdfController
         $pdf->useTemplate($tpl);
         if (!empty($fields['firma']['visible']) && $signature !== '') {
             $signaturePath = $root . '/' . ltrim($signature, '/');
-            if (is_file($signaturePath)) {
-                $f = $fields['firma']; $x = (float)($f['x'] ?? 35); $y = (float)($f['y'] ?? 100);
-                $cw = (float)($cfg['canvas_width'] ?? 842); $ch = (float)($cfg['canvas_height'] ?? 595);
-                if (empty($cfg['coordinate_system']) && $x <= 100 && $y <= 100) { $x = $x * $s['width'] / 100; $y = $y * $s['height'] / 100; } else { $x = $x * $s['width'] / $cw; $y = $y * $s['height'] / $ch; }
-                $imageWidth = (float)($f['ancho'] ?? $f['width'] ?? 42);
-                $imageHeight = (float)($f['alto'] ?? $f['height'] ?? 22);
-                $imageWidth = $imageWidth * $s['width'] / $cw;
-                $imageHeight = $imageHeight * $s['height'] / $ch;
-                $x -= $imageWidth / 2;
-                $y -= $imageHeight / 2;
-                $pdf->Image($signaturePath, $x, $y, $imageWidth, $imageHeight);
-            }
+            $this->renderSignature($pdf, $signaturePath, $fields['firma'], $cfg, $s);
         }
         foreach ($fields as $key => $f) {
             if (!is_array($f) || empty($f['visible']) || !array_key_exists($key, $v)) continue;
@@ -164,6 +178,9 @@ final class ConfiguredCertificatePdfController
             $q = $db->prepare("SELECT c.*,CONCAT(p.nombres,' ',p.apellidos) participante,p.nro_registro_cas registro_cas,cu.nombre curso,cu.horas_academicas curso_horas,cu.fecha_inicio curso_inicio,cu.fecha_fin curso_fin,t.nombre tipo,pl.fondo_path,pl.configuracion_json AS plantilla_configuracion_json,COALESCE(cf.firma_path_snapshot,(SELECT f.firma_path FROM firmantes f WHERE f.estado='activo' AND f.deleted_at IS NULL AND f.firma_path IS NOT NULL AND f.firma_path<>'' ORDER BY f.apellidos,f.nombres LIMIT 1)) firma_path_snapshot,COALESCE(cf.nombre_snapshot,(SELECT CONCAT(f.nombres,' ',f.apellidos) FROM firmantes f WHERE f.estado='activo' AND f.deleted_at IS NULL ORDER BY f.apellidos,f.nombres LIMIT 1)) firmante_nombre FROM certificados c INNER JOIN participantes p ON p.id=c.participante_id INNER JOIN cursos cu ON cu.id=c.curso_id INNER JOIN tipos_certificado t ON t.id=c.tipo_certificado_id LEFT JOIN plantillas pl ON pl.id=c.plantilla_id LEFT JOIN certificado_firmantes cf ON cf.certificado_id=c.id AND cf.orden=1 WHERE c.id IN ($marks) AND c.deleted_at IS NULL ORDER BY FIELD(c.id,$marks)");
             $q->execute(array_merge($ids, $ids));
             $certificates = $q->fetchAll();
+            $signerQuery = $db->prepare("SELECT firma_path,CONCAT(nombres,' ',apellidos),cargo FROM firmantes WHERE curso_id=:curso_id AND estado='activo' AND deleted_at IS NULL AND firma_path IS NOT NULL AND firma_path<>'' ORDER BY apellidos,nombres LIMIT 1");
+            foreach ($certificates as &$certificate) { $signerQuery->execute(['curso_id' => (int)$certificate['curso_id']]); $signer = $signerQuery->fetch(PDO::FETCH_NUM); if ($signer) { $certificate['firma_path_snapshot'] = $signer[0]; $certificate['firmante_nombre'] = $signer[1]; $certificate['firmante_cargo'] = $signer[2]; } }
+            unset($certificate);
             $pdf = new \setasign\Fpdi\Fpdi();
             $root = dirname(__DIR__, 2);
             $action = !empty($_GET['download']) ? 'descarga_pdf' : 'generacion_pdf';
@@ -185,6 +202,9 @@ final class ConfiguredCertificatePdfController
             http_response_code(404);
             exit('Certificado no encontrado');
         }
+        $signerQuery = $db->prepare("SELECT firma_path,CONCAT(nombres,' ',apellidos),cargo FROM firmantes WHERE curso_id=:curso_id AND estado='activo' AND deleted_at IS NULL AND firma_path IS NOT NULL AND firma_path<>'' ORDER BY apellidos,nombres LIMIT 1");
+        $signerQuery->execute(['curso_id' => (int)$c['curso_id']]);
+        if ($signer = $signerQuery->fetch(PDO::FETCH_NUM)) { $c['firma_path_snapshot'] = $signer[0]; $c['firmante_nombre'] = $signer[1]; $c['firmante_cargo'] = $signer[2]; }
         $action = !empty($_GET['download']) ? 'descarga_pdf' : 'generacion_pdf';
         $this->recordPdfAction($db, (int)$c['id'], $publicVerification ? 0 : (int)$_SESSION['auth_user']['id'], $action);
         $root = dirname(__DIR__, 2);
@@ -216,18 +236,7 @@ final class ConfiguredCertificatePdfController
         $pdf->useTemplate($tpl);
         if (!empty($fields['firma']['visible']) && !empty($c['firma_path_snapshot'])) {
             $signaturePath = $root . '/' . ltrim((string)$c['firma_path_snapshot'], '/');
-            if (is_file($signaturePath)) {
-                $f = $fields['firma']; $x = (float)($f['x'] ?? 35); $y = (float)($f['y'] ?? 100);
-                $cw = (float)($cfg['canvas_width'] ?? 842); $ch = (float)($cfg['canvas_height'] ?? 595);
-                if (empty($cfg['coordinate_system']) && $x <= 100 && $y <= 100) { $x = $x * $s['width'] / 100; $y = $y * $s['height'] / 100; } else { $x = $x * $s['width'] / $cw; $y = $y * $s['height'] / $ch; }
-                $imageWidth = (float)($f['ancho'] ?? 42);
-                $imageHeight = (float)($f['alto'] ?? 22);
-                $imageWidth = $imageWidth * $s['width'] / $cw;
-                $imageHeight = $imageHeight * $s['height'] / $ch;
-                $x -= $imageWidth / 2;
-                $y -= $imageHeight / 2;
-                $pdf->Image($signaturePath, $x, $y, $imageWidth, $imageHeight);
-            }
+            $this->renderSignature($pdf, $signaturePath, $fields['firma'], $cfg, $s);
         }
         $font = in_array(($cfg['fuente'] ?? 'Helvetica'), ['Helvetica', 'Courier', 'Times'], true) ? $cfg['fuente'] : 'Helvetica';
         $pdf->SetFont($font, '', max(6, min(72, (float)($cfg['tamano'] ?? 12))));
@@ -282,6 +291,14 @@ final class ConfiguredCertificatePdfController
                 $lineHeight = max(3.5, $fontSize * 0.35278 * 1.20);
                 $pdf->SetXY($centerX - $areaWidth / 2, $y - $lineHeight / 2);
                 $pdf->Cell($areaWidth, $lineHeight, $encoded, 0, 0, 'C');
+            } elseif ($key === 'firmante' && trim((string)($v['firmante_cargo'] ?? '')) !== '') {
+                $cellWidth = $pdf->GetStringWidth($encoded) + 1;
+                $pdf->SetXY($x - $cellWidth / 2, $y - $lineHeight / 2);
+                $pdf->Cell($cellWidth, $lineHeight, $encoded, 0, 0, 'C');
+                $cargo = iconv('UTF-8', 'windows-1252//TRANSLIT', trim((string)$v['firmante_cargo'])) ?: trim((string)$v['firmante_cargo']);
+                $cargoWidth = $pdf->GetStringWidth($cargo) + 1;
+                $pdf->SetXY($x - $cargoWidth / 2, $y + $lineHeight * 0.65);
+                $pdf->Cell($cargoWidth, $lineHeight, $cargo, 0, 0, 'C');
             } else {
                 $cellWidth = $pdf->GetStringWidth($encoded) + 1;
                 $pdf->SetXY($x - $cellWidth / 2, $y - $lineHeight / 2);

@@ -144,72 +144,6 @@ input {
     box-shadow: none !important;
 }
 
-.form-alert {
-    position: fixed;
-    inset: 0;
-    z-index: 1000;
-    display: grid;
-    place-items: center;
-    padding: 20px;
-    background: rgba(5, 22, 42, .58);
-    font-size: 14px;
-}
-
-.form-alert strong,
-.form-alert span {
-    display: block;
-}
-
-.form-alert::before {
-    content: "";
-    position: absolute;
-    width: min(360px, calc(100% - 40px));
-    height: 150px;
-    border-radius: 14px;
-    background: #fff;
-    box-shadow: 0 20px 55px rgba(3, 24, 52, .3);
-}
-
-.form-alert button {
-    position: relative;
-    z-index: 1;
-    justify-self: end;
-    width: 28px;
-    height: 28px;
-    margin: -78px calc((100% - min(360px, calc(100% - 40px))) / 2) 0 0;
-    border: 0;
-    border-radius: 50%;
-    color: #64748b;
-    background: transparent;
-    font-size: 22px;
-    line-height: 1;
-    cursor: pointer;
-}
-
-.form-alert strong,
-.form-alert span {
-    position: relative;
-    z-index: 1;
-    width: min(300px, calc(100% - 80px));
-    margin-left: auto;
-    margin-right: auto;
-    color: #102d61;
-}
-
-.form-alert strong {
-    margin-top: -45px;
-    margin-bottom: 8px;
-    font-size: 18px;
-}
-
-.form-alert span {
-    line-height: 1.45;
-}
-
-.form-alert::before {
-    display: none;
-}
-
 .alert-card {
     position: relative;
     z-index: 1;
@@ -283,6 +217,9 @@ input {
 
 /* Modal de validación con composición horizontal */
 .form-alert {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
     display: flex !important;
     align-items: center;
     justify-content: center;
@@ -714,6 +651,17 @@ body::after {
     display: inline-flex;
     align-items: center;
     line-height: 1;
+}
+
+/* During login, the second span is the status text, not an icon. */
+.primary-button.is-loading > span:last-child {
+    width: auto;
+    height: auto;
+    flex: 0 1 auto;
+    display: inline-block;
+    line-height: 1.2;
+    white-space: nowrap;
+    font-size: 16px;
 }
 
 .toggle-password::before {
