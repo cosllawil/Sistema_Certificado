@@ -178,6 +178,17 @@ final class ConfiguredCertificatePdfController
             $q = $db->prepare("SELECT c.*,CONCAT(p.nombres,' ',p.apellidos) participante,p.nro_registro_cas registro_cas,cu.nombre curso,cu.horas_academicas curso_horas,cu.fecha_inicio curso_inicio,cu.fecha_fin curso_fin,t.nombre tipo,pl.fondo_path,pl.configuracion_json AS plantilla_configuracion_json,COALESCE(cf.firma_path_snapshot,(SELECT f.firma_path FROM firmantes f WHERE f.estado='activo' AND f.deleted_at IS NULL AND f.firma_path IS NOT NULL AND f.firma_path<>'' ORDER BY f.apellidos,f.nombres LIMIT 1)) firma_path_snapshot,COALESCE(cf.nombre_snapshot,(SELECT CONCAT(f.nombres,' ',f.apellidos) FROM firmantes f WHERE f.estado='activo' AND f.deleted_at IS NULL ORDER BY f.apellidos,f.nombres LIMIT 1)) firmante_nombre FROM certificados c INNER JOIN participantes p ON p.id=c.participante_id INNER JOIN cursos cu ON cu.id=c.curso_id INNER JOIN tipos_certificado t ON t.id=c.tipo_certificado_id LEFT JOIN plantillas pl ON pl.id=c.plantilla_id LEFT JOIN certificado_firmantes cf ON cf.certificado_id=c.id AND cf.orden=1 WHERE c.id IN ($marks) AND c.deleted_at IS NULL ORDER BY FIELD(c.id,$marks)");
             $q->execute(array_merge($ids, $ids));
             $certificates = $q->fetchAll();
+            $notConfigured = [];
+            foreach ($certificates as $certificate) {
+                $config = json_decode((string)($certificate['plantilla_configuracion_json'] ?? '{}'), true) ?: [];
+                $fields = $config['campos'] ?? [];
+                $configured = is_array($fields) && (bool)array_filter($fields, static fn($field): bool => $field === true || (is_array($field) && ($field['visible'] ?? true)));
+                if (!$configured) $notConfigured[] = (string)($certificate['participante'] ?? ('#' . (int)$certificate['id']));
+            }
+            if ($notConfigured) {
+                http_response_code(422);
+                exit('Configura primero la plantilla antes de imprimir: ' . implode(', ', $notConfigured) . '.');
+            }
             $signerQuery = $db->prepare("SELECT firma_path,CONCAT(nombres,' ',apellidos),cargo FROM firmantes WHERE curso_id=:curso_id AND estado='activo' AND deleted_at IS NULL AND firma_path IS NOT NULL AND firma_path<>'' ORDER BY apellidos,nombres LIMIT 1");
             foreach ($certificates as &$certificate) { $signerQuery->execute(['curso_id' => (int)$certificate['curso_id']]); $signer = $signerQuery->fetch(PDO::FETCH_NUM); if ($signer) { $certificate['firma_path_snapshot'] = $signer[0]; $certificate['firmante_nombre'] = $signer[1]; $certificate['firmante_cargo'] = $signer[2]; } }
             unset($certificate);

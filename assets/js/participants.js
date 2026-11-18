@@ -1,3 +1,10 @@
+function certificateTemplateIsConfigured(value) {
+  try {
+    const fields = (typeof value === "string" ? JSON.parse(value) : value)?.campos;
+    return !!fields && typeof fields === "object" && Object.values(fields).some((field) => field === true || (field && field.visible !== false));
+  } catch (_) { return false; }
+}
+
 document.addEventListener("click", (event) => {
   const clickedTypeRow = event.target.closest(".type-row");
   if (
@@ -362,6 +369,14 @@ document.addEventListener("click", (event) => {
     return;
   }
   if (event.target.closest("#bulk-print-button")) {
+    const invalidRows = [...document.querySelectorAll("input[name='ids[]']:checked")]
+      .map((box) => box.closest(".certificate-row"))
+      .filter((row) => row && !certificateTemplateIsConfigured(row.dataset.config));
+    if (invalidRows.length) {
+      const names = invalidRows.map((row) => row.querySelector("td:nth-child(3)")?.textContent.trim()).filter(Boolean);
+      showParticipantAlert(`Configura primero la plantilla antes de imprimir: ${names.join(", ")}.`);
+      return;
+    }
     const ids = [
       ...document.querySelectorAll("input[name='ids[]']:checked"),
     ].map((box) => box.value);
@@ -1153,6 +1168,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const selectAll = document.querySelector("#certificate-select-all");
   const emitButton = document.querySelector("#bulk-emit-button");
   const printButton = document.querySelector("#bulk-print-button");
+  const emitForm = document.querySelector("#bulk-emit-form");
+  emitForm?.addEventListener("submit", (event) => {
+    const invalid = [...document.querySelectorAll("input[name='ids[]']:checked")]
+      .map((box) => box.closest(".certificate-row"))
+      .filter((row) => row && !certificateTemplateIsConfigured(row.dataset.config));
+    if (!invalid.length) return;
+    event.preventDefault();
+    const names = invalid.map((row) => row.querySelector("td:nth-child(3)")?.textContent.trim()).filter(Boolean);
+    showParticipantAlert(`Configura primero la plantilla antes de emitir: ${names.join(", ")}.`);
+  });
   const updateEmitButton = () => {
     const selected = [
       ...document.querySelectorAll("input[name='ids[]']:checked"),
@@ -2070,19 +2095,13 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
     const saveButton = form.querySelector('button[type="submit"]');
-    let status = form.querySelector(".template-save-feedback");
-    if (!status) {
-      status = document.createElement("span");
-      status.className = "template-save-feedback";
-      status.setAttribute("role", "status");
-      status.setAttribute("aria-live", "polite");
-      const actions = form.querySelector(".form-actions");
-      if (actions) actions.prepend(status);
-    }
+    const originalButtonHtml = saveButton?.innerHTML || "";
     saving = true;
     if (saveButton) saveButton.disabled = true;
-    status.textContent = "Guardando configuración...";
-    status.style.color = "#93c5fd";
+    if (saveButton) {
+      saveButton.classList.add("template-submit-loading");
+      saveButton.innerHTML = '<span class="template-submit-spinner" aria-hidden="true"></span><span>Guardando...</span>';
+    }
     try {
       const response = await fetch(form.action, {
         method: "POST",
@@ -2096,22 +2115,20 @@ document.addEventListener("DOMContentLoaded", () => {
       const payload = await response.json();
       if (!response.ok || !payload.success)
         throw new Error(payload.message || "No se pudo guardar.");
-      status.textContent =
-        "✓ Guardado. Puedes seguir configurando otros campos.";
-      status.remove();
       showSuccessAlert(
         payload.message || "Guardado. Puedes seguir configurando otros campos.",
       );
 
       modal.dataset.config = form.elements.configuracion_json.value;
     } catch (error) {
-      status.textContent =
-        "No se guardó: " + (error.message || "Error de conexión");
-      status.style.color = "#fca5a5";
       showParticipantAlert(error.message || "No se pudo guardar la configuración.");
     } finally {
       saving = false;
-      if (saveButton) saveButton.disabled = false;
+      if (saveButton) {
+        saveButton.disabled = false;
+        saveButton.classList.remove("template-submit-loading");
+        saveButton.innerHTML = originalButtonHtml;
+      }
     }
   });
   buildOptions();

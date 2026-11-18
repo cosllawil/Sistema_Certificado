@@ -4,6 +4,7 @@
     <div>
       <h1>Certificados</h1>
       <p class="intro">Consulta los certificados registrados en el sistema.</p>
+      <?php if (!empty($_SESSION['certificate_error'])): ?><div class="server-form-alert" data-message="<?= e((string)$_SESSION['certificate_error']) ?>"></div><?php unset($_SESSION['certificate_error']); endif; ?>
       <div class="participant-actions"><a class="participant-action participant-action-new" href="registrar_certificado"><svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M12 5v14M5 12h14" />
           </svg>Nuevo certificado</a><button type="button" class="participant-action participant-action-edit certificate-edit" disabled><svg viewBox="0 0 24 24" aria-hidden="true">
@@ -35,7 +36,7 @@
             <th>Estado</th>
           </tr>
         </thead>
-        <tbody><?php foreach ($certificates as $index => $certificate): ?><tr class="certificate-row" data-certificate-id="<?= (int)$certificate['id'] ?>" data-state="<?= htmlspecialchars($certificate['estado'], ENT_QUOTES, 'UTF-8') ?>" data-course="<?= htmlspecialchars((string)$certificate['curso'], ENT_QUOTES, 'UTF-8') ?>">
+        <tbody><?php foreach ($certificates as $index => $certificate): ?><tr class="certificate-row" data-certificate-id="<?= (int)$certificate['id'] ?>" data-state="<?= htmlspecialchars($certificate['estado'], ENT_QUOTES, 'UTF-8') ?>" data-course="<?= htmlspecialchars((string)$certificate['curso'], ENT_QUOTES, 'UTF-8') ?>" data-config="<?= htmlspecialchars((string)($certificate['configuracion_json'] ?? '{}'), ENT_QUOTES, 'UTF-8') ?>">
               <td><input type="checkbox" name="ids[]" value="<?= (int)$certificate['id'] ?>" form="bulk-emit-form"></td>
               <td><?= $index + 1 ?></td>
               <td><?= htmlspecialchars($certificate['participante'], ENT_QUOTES, 'UTF-8') ?></td>
