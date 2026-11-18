@@ -11,6 +11,8 @@ final class ParticipantsController
             exit;
         }
         $db = databaseConnection();
+        $participantTypes = $db->query('SELECT id,nombre FROM tipos_participante WHERE activo=1 ORDER BY nombre')->fetchAll();
+        $professions = $db->query('SELECT id,nombre FROM profesiones WHERE activo=1 ORDER BY nombre')->fetchAll();
         require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
         require_once dirname(__DIR__) . '/Services/ParticipantImportService.php';
         $userId = (int)$_SESSION['auth_user']['id'];
@@ -47,7 +49,7 @@ final class ParticipantsController
                 $count = 0;
                 foreach ($rows as $row) {
                     if (!empty($row['_errors'])) continue;
-                    $model->create(['tipo' => $row['tipo_documento'], 'numero' => $row['numero_documento'], 'nombres' => $row['nombres'], 'apellidos' => $row['apellidos'], 'email' => $row['email'] ?: null, 'telefono' => $row['telefono'] ?: null, 'cas' => $row['nro_registro_cas'] ?: null]);
+                    $model->create(['tipo' => $row['tipo_documento'], 'numero' => $row['numero_documento'], 'nombres' => $row['nombres'], 'apellidos' => $row['apellidos'], 'email' => $row['email'] ?: null, 'telefono' => $row['telefono'] ?: null, 'cas' => $row['nro_registro_cas'] ?: null, 'tipo_participante_id' => $row['_tipo_participante_id'], 'profesion_id' => $row['_profesion_id']]);
                     $count++;
                 }
                 unset($_SESSION['participant_import_rows']);
@@ -77,6 +79,8 @@ final class ParticipantsController
                 'email' => strtoupper(trim((string) ($_POST['email'] ?? ''))) ?: null,
                 'telefono' => trim((string) ($_POST['telefono'] ?? '')) ?: null,
                 'cas' => trim((string) ($_POST['nro_registro_cas'] ?? '')) ?: null,
+                'tipo_participante_id' => (int) ($_POST['tipo_participante_id'] ?? 0),
+                'profesion_id' => (int) ($_POST['profesion_id'] ?? 0),
             ];
             $documentValid = match ($data['tipo']) {
                 'DNI' => preg_match('/^\d{8}$/', $data['numero']) === 1,
@@ -86,8 +90,12 @@ final class ParticipantsController
             };
             $phoneValid = $data['telefono'] === null || preg_match('/^\d{9}$/', $data['telefono']) === 1;
             $emailValid = $data['email'] === null || filter_var($data['email'], FILTER_VALIDATE_EMAIL) !== false;
-            $casValid = $data['cas'] !== null && preg_match('/^\d+$/', (string) $data['cas']) === 1;
-            if (!$documentValid || !$phoneValid || !$emailValid || !$casValid || $data['nombres'] === '' || $data['apellidos'] === '') {
+            $profession = $db->prepare('SELECT nombre FROM profesiones WHERE id=:id AND activo=1');
+            $profession->execute(['id' => $data['profesion_id']]);
+            $professionName = (string) ($profession->fetchColumn() ?: '');
+            $isLawyer = str_starts_with(strtoupper(trim($professionName)), 'ABOGADO');
+            $casValid = !$isLawyer || ($data['cas'] !== null && preg_match('/^\d+$/', (string) $data['cas']) === 1);
+            if ($data['tipo_participante_id'] < 1 || $data['profesion_id'] < 1 || !$documentValid || !$phoneValid || !$emailValid || !$casValid || $data['nombres'] === '' || $data['apellidos'] === '') {
                 $error = 'Verifica el tipo y número de documento y completa los campos obligatorios.';
                 $error = 'Completa los campos obligatorios: número de documento, nombres, apellidos y registro CAS.';
             } else {

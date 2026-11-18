@@ -14,13 +14,13 @@ final class Participant
     }
     public function create(array $data): int
     {
-        $query = $this->db->prepare('INSERT INTO participantes (tipo_documento, numero_documento, nombres, apellidos, email, telefono, nro_registro_cas) VALUES (:tipo, :numero, :nombres, :apellidos, :email, :telefono, :cas)');
+        $query = $this->db->prepare('INSERT INTO participantes (tipo_documento, numero_documento, nombres, apellidos, email, telefono, nro_registro_cas, tipo_participante_id, profesion_id) VALUES (:tipo, :numero, :nombres, :apellidos, :email, :telefono, :cas, :tipo_participante_id, :profesion_id)');
         $query->execute($data);
         return (int) $this->db->lastInsertId();
     }
     public function update(int $id, array $data): void
     {
-        $query = $this->db->prepare('UPDATE participantes SET tipo_documento=:tipo, numero_documento=:numero, nombres=:nombres, apellidos=:apellidos, email=:email, telefono=:telefono, nro_registro_cas=:cas WHERE id=:id');
+        $query = $this->db->prepare('UPDATE participantes SET tipo_documento=:tipo, numero_documento=:numero, nombres=:nombres, apellidos=:apellidos, email=:email, telefono=:telefono, nro_registro_cas=:cas, tipo_participante_id=:tipo_participante_id, profesion_id=:profesion_id WHERE id=:id');
         $data['id'] = $id;
         $query->execute($data);
     }

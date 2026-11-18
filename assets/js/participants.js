@@ -263,6 +263,9 @@ document.addEventListener("click", (event) => {
       .elements.tipo_documento.dispatchEvent(
         new Event("change", { bubbles: true }),
       );
+    document
+      .querySelector(".participant-form")
+      .elements.profesion_id.dispatchEvent(new Event("change", { bubbles: true }));
     document.querySelector("#participant-modal-title").innerHTML =
       '<svg class="modal-title-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4 20a8 8 0 0 1 16 0"/></svg>Nuevo participante';
     modal.removeAttribute("hidden");
@@ -509,6 +512,10 @@ document.addEventListener("click", (event) => {
       form.elements.tipo_documento.dispatchEvent(
         new Event("change", { bubbles: true }),
       );
+      form.elements.tipo_participante_id.value = selected.dataset.tipoParticipanteId || "";
+      form.elements.tipo_participante_id.dispatchEvent(new Event("change", { bubbles: true }));
+      form.elements.profesion_id.value = selected.dataset.profesionId || "";
+      form.elements.profesion_id.dispatchEvent(new Event("change", { bubbles: true }));
       const participantFields = {
         "tipo-documento": "tipo_documento",
         "numero-documento": "numero_documento",
@@ -620,6 +627,17 @@ document.addEventListener("click", (event) => {
       .forEach((item) => item.classList.remove("selected"));
     document.querySelector(".certificate-edit")?.setAttribute("disabled", "");
   }
+});
+
+document.addEventListener("change", (event) => {
+  if (!event.target.matches('.participant-form select[name="profesion_id"]')) return;
+  const form = event.target.form;
+  const isLawyer = (event.target.selectedOptions[0]?.dataset.professionName || "").trim().toUpperCase().startsWith("ABOGADO");
+  const field = form.querySelector("[data-cas-field]");
+  const input = form.elements.nro_registro_cas;
+  field.hidden = !isLawyer;
+  input.required = isLawyer;
+  if (!isLawyer) input.value = "";
 });
 
 
@@ -810,13 +828,18 @@ document.addEventListener("submit", (event) => {
     nombres: "nombres",
     apellidos: "apellidos",
     nro_registro_cas: "registro CAS",
+    profesion_id: "profesión",
+    tipo_participante_id: "tipo de participante",
   };
+  const professionName = (form.elements.profesion_id?.selectedOptions[0]?.dataset.professionName || "").trim().toUpperCase();
   const missing = [
     "tipo_documento",
     "numero_documento",
     "nombres",
     "apellidos",
-    "nro_registro_cas",
+    ...(professionName.startsWith("ABOGADO") ? ["nro_registro_cas"] : []),
+    "profesion_id",
+    "tipo_participante_id",
   ].find((name) => !form.elements[name].value.trim());
   if (!missing) {
     const saveButton = form.querySelector('button[type="submit"]');
@@ -837,6 +860,14 @@ document.addEventListener("submit", (event) => {
   document.body.append(message);
   message.querySelector("button").onclick = () => message.remove();
   form.elements[missing].focus();
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".template-config-view").forEach((view) => {
+    const field = view.querySelector(".template-participant-type-field");
+    const fields = view.querySelector(".template-fields");
+    if (field && fields && !fields.contains(field)) fields.insertBefore(field, fields.firstElementChild);
+  });
 });
 
 document.addEventListener("keydown", (event) => {
@@ -1349,6 +1380,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const visibleFields = configForm?.querySelector(".template-fields");
   if (signatureToggle && visibleFields) visibleFields.append(signatureToggle);
   if (configForm) {
+    configForm.noValidate = true;
     const configModal = document.querySelector("#template-config-modal");
     const templateFields = configForm.querySelector(".template-fields");
     const signerField = templateFields?.querySelector('input[value="firmante"]');
@@ -1371,6 +1403,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       if (key === "codigo_verificacion") return true;
       if (key === "participante") return hasPreviewValue(configModal?.dataset.previewParticipant);
+      if (key === "tipo_participante") return hasPreviewValue(document.querySelector("#template-preview-participant-type")?.textContent);
       if (key === "registro_cas") return hasPreviewValue(configModal?.dataset.previewCas);
       if (key === "fecha_sesion") return hasPreviewValue(configModal?.dataset.previewSession);
       if (key === "fecha_sistema") return hasPreviewValue(configModal?.dataset.previewSystem);
@@ -1761,6 +1794,7 @@ function renderTemplatePreview(modal) {
   };
   const samples = {
     participante: modal.dataset.previewParticipant || "PARTICIPANTE",
+    tipo_participante: (() => { try { return JSON.parse(document.querySelector("#template-preview-participant-type")?.textContent || '""') || "TIPO DE PARTICIPANTE"; } catch (_) { return "TIPO DE PARTICIPANTE"; } })(),
     registro_cas: modal.dataset.previewCas || "",
     fecha_sesion:
       formatTemplateDate(templateData.fecha_sesion) || "Fecha de sesión",
@@ -2059,6 +2093,12 @@ document.addEventListener("DOMContentLoaded", () => {
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (saving) return;
+    const invalidNumber = [...form.querySelectorAll('input[type="number"]')].find((input) => input.value !== "" && !input.checkValidity());
+    if (invalidNumber) {
+      showParticipantAlert(`El valor de ${invalidNumber.name === "tamano" ? "tamaño" : invalidNumber.name === "firma_ancho" ? "ancho de firma" : "alto de firma"} debe estar dentro del rango permitido.`);
+      invalidNumber.focus();
+      return;
+    }
     readControls();
     let data = {};
     try { data = JSON.parse(modal.dataset.config || "{}"); } catch (_) {}

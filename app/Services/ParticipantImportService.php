@@ -7,7 +7,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 final class ParticipantImportService
 {
-    public const HEADERS = ['tipo_documento', 'numero_documento', 'nombres', 'apellidos', 'email', 'telefono', 'nro_registro_cas'];
+    public const HEADERS = ['tipo_documento', 'numero_documento', 'nombres', 'apellidos', 'email', 'telefono', 'profesion', 'nro_registro_cas', 'tipo_participante'];
 
     private function normalizeHeader(mixed $header): string
     {
@@ -48,7 +48,17 @@ final class ParticipantImportService
             if ($row['nombres'] === '' || $row['apellidos'] === '') $errors[] = 'Nombres y apellidos obligatorios';
             if ($row['email'] !== '' && !filter_var($row['email'], FILTER_VALIDATE_EMAIL)) $errors[] = 'Correo inválido';
             if ($row['telefono'] !== '' && !preg_match('/^\d{9}$/', $row['telefono'])) $errors[] = 'Teléfono inválido';
-            if ($row['nro_registro_cas'] === '' || !preg_match('/^\d+$/', $row['nro_registro_cas'])) $errors[] = 'Registro CAS obligatorio';
+            $professionQuery = $db->prepare('SELECT id,nombre FROM profesiones WHERE UPPER(nombre)=UPPER(:nombre) AND activo=1 LIMIT 1');
+            $professionQuery->execute(['nombre' => $row['profesion']]);
+            $profession = $professionQuery->fetch() ?: null;
+            $typeQuery = $db->prepare('SELECT id,nombre FROM tipos_participante WHERE UPPER(nombre)=UPPER(:nombre) AND activo=1 LIMIT 1');
+            $typeQuery->execute(['nombre' => $row['tipo_participante']]);
+            $participantType = $typeQuery->fetch() ?: null;
+            if (!$profession) $errors[] = 'ProfesiÃ³n invÃ¡lida';
+            if (!$participantType) $errors[] = 'Tipo de participante invÃ¡lido';
+            if ($profession && str_starts_with(strtoupper((string)$profession['nombre']), 'ABOGADO') && ($row['nro_registro_cas'] === '' || !preg_match('/^\d+$/', $row['nro_registro_cas']))) $errors[] = 'Registro CAS obligatorio para abogados';
+            $row['_profesion_id'] = (int)($profession['id'] ?? 0);
+            $row['_tipo_participante_id'] = (int)($participantType['id'] ?? 0);
             if (isset($seen[$key])) $errors[] = 'Duplicado dentro del archivo';
             $q = $db->prepare('SELECT COUNT(*) FROM participantes WHERE tipo_documento=:tipo AND numero_documento=:numero');
             $q->execute(['tipo' => $type, 'numero' => $row['numero_documento']]);
@@ -63,9 +73,9 @@ final class ParticipantImportService
     public function template(): Spreadsheet
     {
         $sheet = (new Spreadsheet())->getActiveSheet();
-        $sheet->fromArray([self::HEADERS, ['DNI', '00000000', 'NOMBRES', 'APELLIDOS', 'correo@ejemplo.com', '999999999', '12345']]);
-        $sheet->getStyle('A1:G1')->getFont()->setBold(true);
-        foreach (range('A', 'G') as $column) $sheet->getColumnDimension($column)->setAutoSize(true);
+        $sheet->fromArray([self::HEADERS, ['DNI', '00000000', 'NOMBRES', 'APELLIDOS', 'correo@ejemplo.com', '999999999', 'ABOGADO (A)', '12345', 'ASISTENTE']]);
+        $sheet->getStyle('A1:I1')->getFont()->setBold(true);
+        foreach (range('A', 'I') as $column) $sheet->getColumnDimension($column)->setAutoSize(true);
         return $sheet->getParent();
     }
 }

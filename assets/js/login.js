@@ -243,8 +243,9 @@
           window.location.href = "dashboard";
         }, 1000);
       })
-      .catch(() =>
-        showAlert("Error de conexión", "No se pudo contactar al servidor."),
-      );
+      .catch((error) => {
+        setLoading(false);
+        showAlert("Error de conexión", error?.message || "No se pudo contactar al servidor.");
+      });
   });
 })();

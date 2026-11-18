@@ -36,7 +36,7 @@
                         <th>Estado</th>
                     </tr>
                 </thead>
-                <tbody><?php foreach ($participants as $participant): ?><tr class="participant-row" data-participant-id="<?= (int) $participant['id'] ?>" data-tipo-documento="<?= htmlspecialchars($participant['tipo_documento'], ENT_QUOTES, 'UTF-8') ?>" data-numero-documento="<?= htmlspecialchars($participant['numero_documento'], ENT_QUOTES, 'UTF-8') ?>" data-nombres="<?= htmlspecialchars($participant['nombres'], ENT_QUOTES, 'UTF-8') ?>" data-apellidos="<?= htmlspecialchars($participant['apellidos'], ENT_QUOTES, 'UTF-8') ?>" data-email="<?= htmlspecialchars((string)($participant['email'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" data-telefono="<?= htmlspecialchars((string)($participant['telefono'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" data-cas="<?= htmlspecialchars((string)($participant['nro_registro_cas'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
+                <tbody><?php foreach ($participants as $participant): ?><tr class="participant-row" data-participant-id="<?= (int) $participant['id'] ?>" data-tipo-documento="<?= htmlspecialchars($participant['tipo_documento'], ENT_QUOTES, 'UTF-8') ?>" data-tipo-participante-id="<?= (int)($participant['tipo_participante_id'] ?? 0) ?>" data-profesion-id="<?= (int)($participant['profesion_id'] ?? 0) ?>" data-numero-documento="<?= htmlspecialchars($participant['numero_documento'], ENT_QUOTES, 'UTF-8') ?>" data-nombres="<?= htmlspecialchars($participant['nombres'], ENT_QUOTES, 'UTF-8') ?>" data-apellidos="<?= htmlspecialchars($participant['apellidos'], ENT_QUOTES, 'UTF-8') ?>" data-email="<?= htmlspecialchars((string)($participant['email'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" data-telefono="<?= htmlspecialchars((string)($participant['telefono'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" data-cas="<?= htmlspecialchars((string)($participant['nro_registro_cas'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
                             <td><?= htmlspecialchars($participant['tipo_documento'] . ' ' . $participant['numero_documento'], ENT_QUOTES, 'UTF-8') ?></td>
                             <td><?= htmlspecialchars($participant['apellidos'] . ', ' . $participant['nombres'], ENT_QUOTES, 'UTF-8') ?></td>
                             <td><?= htmlspecialchars((string)($participant['email'] ?? '—'), ENT_QUOTES, 'UTF-8') ?></td>
@@ -77,7 +77,9 @@
                 <div class="field"><label>Apellidos </label><input name="apellidos"></div>
                 <div class="field"><label>Correo</label><input name="email" type="text"></div>
                 <div class="field"><label>Teléfono</label><input name="telefono" maxlength="9" inputmode="numeric"></div>
-                <div class="field"><label>Registro CAS </label><input name="nro_registro_cas" inputmode="numeric"></div>
+                <div class="field"><label>Profesión</label><select name="profesion_id" required><option value="">Seleccionar profesión</option><?php foreach ($professions as $profession): ?><option value="<?= (int)$profession['id'] ?>" data-profession-name="<?= e($profession['nombre']) ?>"><?= e($profession['nombre']) ?></option><?php endforeach; ?></select></div>
+                <div class="field" data-cas-field hidden><label>Registro CAS </label><input name="nro_registro_cas" inputmode="numeric"></div>
+                <div class="field"><label>Tipo de participante</label><select name="tipo_participante_id" required><option value="">Seleccionar tipo</option><?php foreach ($participantTypes as $type): ?><option value="<?= (int)$type['id'] ?>"><?= e($type['nombre']) ?></option><?php endforeach; ?></select></div>
             </div>
             <div class="form-actions"><button type="button" class="participant-modal-cancel"><svg viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M6 6l12 12M18 6 6 18" />

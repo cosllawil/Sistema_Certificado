@@ -85,9 +85,15 @@ document.addEventListener("DOMContentLoaded", () => {
         characterData: true,
       });
       select.addEventListener("change", sync);
-      trigger.addEventListener("click", () =>
-        dropdown.classList.toggle("open"),
-      );
+      trigger.addEventListener("click", () => {
+        const willOpen = !dropdown.classList.contains("open");
+        dropdown.classList.toggle("open", willOpen);
+        if (willOpen) {
+          const card = wrapper.closest(".participant-modal-card");
+          const roomBelow = card ? card.getBoundingClientRect().bottom - wrapper.getBoundingClientRect().bottom : window.innerHeight - wrapper.getBoundingClientRect().bottom;
+          dropdown.classList.toggle("drop-up", roomBelow < 285);
+        }
+      });
       search.addEventListener("input", sync);
       document.querySelectorAll('input[name="assignment_mode"]').forEach((input) => input.addEventListener("change", () => {
         if (input.value === "single" && input.checked) {

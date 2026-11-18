@@ -2,6 +2,7 @@
 $pdfUrl = 'plantillas?pdf_template=' . (int)$template['id']; ?>
 <script type="application/json" id="template-preview-signers"><?= json_encode(array_values($previewSigners ?? []), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?></script>
 <script type="application/json" id="template-available-fields"><?= json_encode($availableFields ?? [], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?></script>
+<script type="application/json" id="template-preview-participant-type"><?= json_encode((string)($previewParticipantType ?? ''), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?></script>
 <section class="form-page template-config-view">
   <div class="panel-heading">
     <div>
@@ -13,6 +14,7 @@ $pdfUrl = 'plantillas?pdf_template=' . (int)$template['id']; ?>
     <form class="template-config-form form-grid" method="post" action="plantillas?config=<?= (int)$template['id'] ?>"><input type="hidden" name="_token" value="<?= htmlspecialchars((string)($_SESSION['template_csrf'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"><input type="hidden" name="config_template_id" value="<?= (int)$template['id'] ?>"><input type="hidden" name="configuracion_json">
       <div class="field wide"><label>Campos visibles</label>
         <label class="template-signature-toggle"><input type="checkbox" name="mostrar_firma" value="firma" <?= !empty($cfg['campos']['firma']) ? 'checked' : '' ?>> Firma 1</label>
+        <?php if (!empty($availableFields['tipo_participante'])): ?><label class="template-participant-type-field"><input type="checkbox" value="tipo_participante" <?= !empty($cfg['campos']['tipo_participante']) ? 'checked' : '' ?>> Tipo de participante</label><?php endif; ?>
         <div class="template-fields"><?php foreach ([['participante', 'Participante'], ['registro_cas', 'Registro CAS'], ['curso', 'Curso'], ['tipo', 'Tipo de certificado'], ['fecha_sesion', 'Fecha de sesión'], ['fecha_inicio', 'Fecha de inicio'], ['fecha_fin', 'Fecha de fin'], ['fecha_sistema', 'Fecha del sistema'], ['horas', 'Horas académicas'], ['firmante', 'Firmante']] as [$key, $label]): ?><label <?= empty($availableFields[$key]) ? 'hidden' : '' ?>><input type="checkbox" value="<?= $key ?>" <?= !empty($cfg['campos'][$key]) ? 'checked' : '' ?>> <?= $label ?></label><?php endforeach; ?></div>
       </div>
       <div class="template-preview-wrap"><label>Vista previa del certificado</label>

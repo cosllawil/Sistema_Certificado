@@ -1372,6 +1372,11 @@
     display: block;
 }
 
+.select2-dropdown.drop-up {
+    top: auto;
+    bottom: calc(100% + 5px);
+}
+
 .select2-dropdown input {
     width: 100%;
     box-sizing: border-box;

@@ -7,7 +7,7 @@ final class AuthController
     public function login(): void
     {
         header('Content-Type: application/json; charset=utf-8');
-        if (session_status() !== PHP_SESSION_ACTIVE) session_start();
+        require_once dirname(__DIR__) . '/bootstrap.php';
         $payload = json_decode(file_get_contents('php://input'), true) ?? $_POST;
         $identity = trim((string) ($payload['username'] ?? ''));
         $password = (string) ($payload['password'] ?? '');

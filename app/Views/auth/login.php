@@ -46,7 +46,7 @@
         </section>
     </main>
     <script src="assets/js/security.js" defer></script>
-    <script src="assets/js/login.js?v=16" defer></script>
+    <script src="assets/js/login.js?v=23" defer></script>
 </body>
 
 </html>

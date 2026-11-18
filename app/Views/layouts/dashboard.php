@@ -23,12 +23,12 @@ try { foreach (databaseConnection()->query("SELECT clave,valor FROM configuracio
     <link rel="stylesheet" href="assets/css/dashboard-menu.css?v=logo-62">
     <script src="assets/js/dashboard.js?v=32" defer></script>
     <script src="assets/js/security.js?v=2" defer></script>
-    <link rel="stylesheet" href="assets/css/participants.css?v=176">
+    <link rel="stylesheet" href="assets/css/participants.css?v=177">
     <link rel="stylesheet" href="assets/css/configuration.css?v=17">
     <link rel="stylesheet" href="assets/css/responsive-cleanup.css?v=19">
     <link rel="stylesheet" href="assets/css/users.css?v=1">
-    <script src="assets/js/participants.js?v=229" defer></script>
-    <script src="assets/js/select2-lite.js?v=10" defer></script>
+    <script src="assets/js/participants.js?v=237" defer></script>
+    <script src="assets/js/select2-lite.js?v=11" defer></script>
     <script src="assets/js/users.js?v=7" defer></script>
     <script src="assets/js/configuration.js?v=21" defer></script>
     <script src="assets/js/roles.js?v=2" defer></script>

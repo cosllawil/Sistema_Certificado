@@ -45,6 +45,7 @@ final class ConfiguredCertificatePdfController
     }
     private function renderCertificatePage(\setasign\Fpdi\Fpdi $pdf, array $c, string $root): void
     {
+        $db = databaseConnection();
         $source = $root . '/' . ltrim((string)$c['fondo_path'], '/');
         if (!is_file($source)) return;
         $cfg = json_decode((string)($c['plantilla_configuracion_json'] ?? '{}'), true);
@@ -55,7 +56,10 @@ final class ConfiguredCertificatePdfController
         if ($hours <= 0) $hours = (float)($c['curso_horas'] ?? 0);
         $startDate = $c['fecha_inicio'] ?: ($c['curso_inicio'] ?? null);
         $endDate = $c['fecha_fin'] ?: ($c['curso_fin'] ?? null);
-        $v = ['participante' => (string)$c['participante'], 'registro_cas' => (string)($c['registro_cas'] ?? ''), 'curso' => (string)$c['curso'], 'tipo' => (string)$c['tipo'], 'fecha_sesion' => $this->spanishDate($c['fecha_sesion'] ?? null), 'fecha_inicio' => $this->spanishDate($startDate), 'fecha_fin' => $this->spanishDate($endDate), 'fecha_sistema' => $this->spanishDate(date('Y-m-d')), 'horas' => $hours > 0 ? rtrim(rtrim(number_format($hours, 2, '.', ''), '0'), '.') : '', 'codigo_verificacion' => (string)($c['codigo_verificacion'] ?? ''), 'firmante' => (string)($c['firmante_nombre'] ?? ''), 'firmante_cargo' => (string)($c['firmante_cargo'] ?? '')];
+        $typeQuery = $db->prepare('SELECT tp.nombre FROM participantes p LEFT JOIN tipos_participante tp ON tp.id=p.tipo_participante_id WHERE p.id=:id');
+        $typeQuery->execute(['id' => (int)$c['participante_id']]);
+        $c['tipo_participante'] = (string)($typeQuery->fetchColumn() ?: '');
+        $v = ['participante' => (string)$c['participante'], 'tipo_participante' => (string)($c['tipo_participante'] ?? ''), 'registro_cas' => (string)($c['registro_cas'] ?? ''), 'curso' => (string)$c['curso'], 'tipo' => (string)$c['tipo'], 'fecha_sesion' => $this->spanishDate($c['fecha_sesion'] ?? null), 'fecha_inicio' => $this->spanishDate($startDate), 'fecha_fin' => $this->spanishDate($endDate), 'fecha_sistema' => $this->spanishDate(date('Y-m-d')), 'horas' => $hours > 0 ? rtrim(rtrim(number_format($hours, 2, '.', ''), '0'), '.') : '', 'codigo_verificacion' => (string)($c['codigo_verificacion'] ?? ''), 'firmante' => (string)($c['firmante_nombre'] ?? ''), 'firmante_cargo' => (string)($c['firmante_cargo'] ?? '')];
         $templateData = is_array($cfg['datos'] ?? null) ? $cfg['datos'] : [];
         foreach (['horas', 'fecha_sesion', 'fecha_inicio', 'fecha_fin'] as $dataKey) if (array_key_exists($dataKey, $templateData) && trim((string)$templateData[$dataKey]) !== '') $v[$dataKey] = $dataKey === 'horas' ? (string)$templateData[$dataKey] : $this->spanishDate((string)$templateData[$dataKey]);
         $pdf->setSourceFile($source);
@@ -213,6 +217,9 @@ final class ConfiguredCertificatePdfController
             http_response_code(404);
             exit('Certificado no encontrado');
         }
+        $participantTypeQuery = $db->prepare('SELECT tp.nombre FROM participantes p LEFT JOIN tipos_participante tp ON tp.id=p.tipo_participante_id WHERE p.id=:id');
+        $participantTypeQuery->execute(['id' => (int)$c['participante_id']]);
+        $c['tipo_participante'] = (string)($participantTypeQuery->fetchColumn() ?: '');
         $signerQuery = $db->prepare("SELECT firma_path,CONCAT(nombres,' ',apellidos),cargo FROM firmantes WHERE curso_id=:curso_id AND estado='activo' AND deleted_at IS NULL AND firma_path IS NOT NULL AND firma_path<>'' ORDER BY apellidos,nombres LIMIT 1");
         $signerQuery->execute(['curso_id' => (int)$c['curso_id']]);
         if ($signer = $signerQuery->fetch(PDO::FETCH_NUM)) { $c['firma_path_snapshot'] = $signer[0]; $c['firmante_nombre'] = $signer[1]; $c['firmante_cargo'] = $signer[2]; }
@@ -233,7 +240,7 @@ final class ConfiguredCertificatePdfController
         if ($hours <= 0) $hours = (float)($c['curso_horas'] ?? 0);
         $startDate = $c['fecha_inicio'] ?: ($c['curso_inicio'] ?? null);
         $endDate = $c['fecha_fin'] ?: ($c['curso_fin'] ?? null);
-        $v = ['participante' => (string)$c['participante'], 'registro_cas' => (string)($c['registro_cas'] ?? ''), 'curso' => (string)$c['curso'], 'tipo' => (string)$c['tipo'], 'fecha_sesion' => $this->spanishDate($c['fecha_sesion'] ?? null), 'fecha_inicio' => $this->spanishDate($startDate), 'fecha_fin' => $this->spanishDate($endDate), 'fecha_sistema' => $this->spanishDate(date('Y-m-d')), 'horas' => $hours > 0 ? rtrim(rtrim(number_format($hours, 2, '.', ''), '0'), '.') : '', 'codigo_verificacion' => (string)($c['codigo_verificacion'] ?? ''), 'firmante' => (string)($c['firmante_nombre'] ?? '')];
+        $v = ['participante' => (string)$c['participante'], 'tipo_participante' => (string)($c['tipo_participante'] ?? ''), 'registro_cas' => (string)($c['registro_cas'] ?? ''), 'curso' => (string)$c['curso'], 'tipo' => (string)$c['tipo'], 'fecha_sesion' => $this->spanishDate($c['fecha_sesion'] ?? null), 'fecha_inicio' => $this->spanishDate($startDate), 'fecha_fin' => $this->spanishDate($endDate), 'fecha_sistema' => $this->spanishDate(date('Y-m-d')), 'horas' => $hours > 0 ? rtrim(rtrim(number_format($hours, 2, '.', ''), '0'), '.') : '', 'codigo_verificacion' => (string)($c['codigo_verificacion'] ?? ''), 'firmante' => (string)($c['firmante_nombre'] ?? '')];
         $templateData = is_array($cfg['datos'] ?? null) ? $cfg['datos'] : [];
         foreach (['horas', 'fecha_sesion', 'fecha_inicio', 'fecha_fin'] as $dataKey) {
             if (array_key_exists($dataKey, $templateData) && trim((string)$templateData[$dataKey]) !== '') $v[$dataKey] = $dataKey === 'horas' ? (string)$templateData[$dataKey] : $this->spanishDate((string)$templateData[$dataKey]);

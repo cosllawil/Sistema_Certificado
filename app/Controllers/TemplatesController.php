@@ -109,7 +109,7 @@ final class TemplatesController
                 exit;
             }
             $cfg = json_decode((string)($template['configuracion_json'] ?? '{}'), true) ?: [];
-            $previewQuery = $db->prepare('SELECT c.id,c.curso_id,c.fecha_sesion,c.fecha_inicio,c.fecha_fin,c.horas_academicas,CONCAT(p.nombres," ",p.apellidos) participante,p.nro_registro_cas registro_cas,cu.nombre curso,cu.horas_academicas curso_horas,cu.fecha_inicio curso_inicio,cu.fecha_fin curso_fin,t.nombre tipo FROM certificados c INNER JOIN participantes p ON p.id=c.participante_id INNER JOIN cursos cu ON cu.id=c.curso_id INNER JOIN tipos_certificado t ON t.id=c.tipo_certificado_id WHERE c.plantilla_id=:id AND c.deleted_at IS NULL ORDER BY c.id LIMIT 1');
+            $previewQuery = $db->prepare('SELECT c.id,c.curso_id,c.fecha_sesion,c.fecha_inicio,c.fecha_fin,c.horas_academicas,CONCAT(p.nombres," ",p.apellidos) participante,p.nro_registro_cas registro_cas,tp.nombre tipo_participante,cu.nombre curso,cu.horas_academicas curso_horas,cu.fecha_inicio curso_inicio,cu.fecha_fin curso_fin,t.nombre tipo FROM certificados c INNER JOIN participantes p ON p.id=c.participante_id LEFT JOIN tipos_participante tp ON tp.id=p.tipo_participante_id INNER JOIN cursos cu ON cu.id=c.curso_id INNER JOIN tipos_certificado t ON t.id=c.tipo_certificado_id WHERE c.plantilla_id=:id AND c.deleted_at IS NULL ORDER BY c.id LIMIT 1');
             $previewQuery->execute(['id' => $id]);
             $previewCertificate = $previewQuery->fetch() ?: [];
             if (!empty($previewCertificate['fecha_sesion'])) {
@@ -118,12 +118,13 @@ final class TemplatesController
             $availableQuery = $db->prepare('SELECT COUNT(*) total, MAX(p.nro_registro_cas IS NOT NULL AND p.nro_registro_cas <> "") has_cas, MAX(c.fecha_sesion IS NOT NULL) has_session, MAX(COALESCE(c.fecha_inicio,cu.fecha_inicio) IS NOT NULL) has_start, MAX(COALESCE(c.fecha_fin,cu.fecha_fin) IS NOT NULL) has_end, MAX(COALESCE(NULLIF(c.horas_academicas,0),cu.horas_academicas) > 0) has_hours FROM certificados c INNER JOIN participantes p ON p.id=c.participante_id INNER JOIN cursos cu ON cu.id=c.curso_id WHERE c.plantilla_id=:id AND c.deleted_at IS NULL');
             $availableQuery->execute(['id' => $id]);
             $available = $availableQuery->fetch() ?: [];
-            $availableFields = ['participante' => (int)($available['total'] ?? 0) > 0, 'registro_cas' => !empty($available['has_cas']), 'curso' => (int)($available['total'] ?? 0) > 0, 'tipo' => (int)($available['total'] ?? 0) > 0, 'fecha_sesion' => !empty($available['has_session']), 'fecha_inicio' => !empty($available['has_start']), 'fecha_fin' => !empty($available['has_end']), 'fecha_sistema' => (int)($available['total'] ?? 0) > 0, 'horas' => !empty($available['has_hours']), 'codigo_verificacion' => (int)($available['total'] ?? 0) > 0];
+            $availableFields = ['participante' => (int)($available['total'] ?? 0) > 0, 'tipo_participante' => (int)($available['total'] ?? 0) > 0, 'registro_cas' => !empty($available['has_cas']), 'curso' => (int)($available['total'] ?? 0) > 0, 'tipo' => (int)($available['total'] ?? 0) > 0, 'fecha_sesion' => !empty($available['has_session']), 'fecha_inicio' => !empty($available['has_start']), 'fecha_fin' => !empty($available['has_end']), 'fecha_sistema' => (int)($available['total'] ?? 0) > 0, 'horas' => !empty($available['has_hours']), 'codigo_verificacion' => (int)($available['total'] ?? 0) > 0];
             $templateData = is_array($cfg['datos'] ?? null) ? $cfg['datos'] : [];
             foreach (['fecha_sesion', 'fecha_inicio', 'fecha_fin', 'horas'] as $dataKey) {
                 if (trim((string)($templateData[$dataKey] ?? '')) !== '') $availableFields[$dataKey] = true;
             }
             $previewParticipant = (string)($previewCertificate['participante'] ?? '');
+            $previewParticipantType = (string)($previewCertificate['tipo_participante'] ?? '');
             $previewCas = (string)($previewCertificate['registro_cas'] ?? '');
             $previewTypeName = (string)($previewCertificate['tipo'] ?? '');
             $previewCourseName = (string)($previewCertificate['curso'] ?? '');
