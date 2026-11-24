@@ -2800,11 +2800,13 @@ form:has(button.template-submit-loading) {
     }
 
     .participant-modal .signer-form .field>input,
+    .participant-modal .signer-form .field>select,
     .participant-modal .signer-form .field>textarea,
     .participant-modal .signer-form .file-upload {
-        width: calc(100% - 28px) !important;
-        max-width: calc(100% - 28px) !important;
+        width: 100% !important;
+        max-width: 100% !important;
         box-sizing: border-box !important;
+        min-width: 0;
     }
 
     .participant-modal .signer-form {
@@ -2816,6 +2818,33 @@ form:has(button.template-submit-loading) {
     .participant-modal .signer-form .form-actions {
         width: 100%;
         box-sizing: border-box;
+    }
+
+    #signer-modal .participant-modal-card {
+        width: min(100%, 360px);
+        max-width: calc(100vw - 28px);
+        box-sizing: border-box;
+        overflow-x: hidden;
+    }
+
+    #signer-modal .signer-form .form-grid,
+    #signer-modal .signer-form .field {
+        min-width: 0;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    #signer-modal .signer-form select[name="tipo_documento"] {
+        height: 48px;
+        min-height: 48px;
+        padding-left: 12px;
+        padding-top: 0;
+        padding-bottom: 0;
+        padding-right: 38px;
+        font-size: 12px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .participant-form .select2-trigger {

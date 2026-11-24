@@ -66,7 +66,7 @@
             <input type="hidden" name="action" value="save">
             <div class="form-grid">
                 <div class="field"><label>Tipo de documento </label><select name="tipo_documento">
-                        <option value="">---Seleccione Tipo de documento---</option>
+                        <option value="">Seleccionar&nbsp;Tipo&nbsp;documento</option>
                         <option value="DNI">DNI</option>
                         <option value="CE">CE</option>
                         <option value="PASAPORTE">PASAPORTE</option>

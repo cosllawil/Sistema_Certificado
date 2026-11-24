@@ -53,12 +53,12 @@
         </div>
         <form class="signer-form" method="post" action="firmantes" enctype="multipart/form-data" autocomplete="off" novalidate><input type="hidden" name="signer_id">
             <div class="form-grid">
-                <div class="field"><label>Tipo de documento</label><select class="user-document-type" name="tipo_documento"><option value="">---Seleccione Tipo de documento---</option><option value="DNI">DNI</option><option value="CE">CE</option><option value="PASAPORTE">PASAPORTE</option><option value="OTRO">OTRO</option></select></div>
+                <div class="field"><label>Tipo de documento</label><select class="user-document-type" name="tipo_documento"><option value="">Seleccionar&nbsp;Tipo&nbsp;documento</option><option value="DNI">DNI</option><option value="CE">CE</option><option value="PASAPORTE">PASAPORTE</option><option value="OTRO">OTRO</option></select></div>
                 <div class="field"><label>Número de documento</label><input name="numero_documento" inputmode="numeric" autocomplete="off" disabled></div>
                 <div class="field"><label>Nombres </label><input name="nombres" required></div>
                 <div class="field"><label>Apellidos </label><input name="apellidos" required></div>
                 <div class="field"><label>Cargo </label><input name="cargo" required></div>
-                <div class="field"><label>Curso</label><select name="curso_id" required><option value="">---Seleccione curso---</option><?php foreach ($courses as $course): ?><option value="<?= (int)$course['id'] ?>"><?= htmlspecialchars($course['nombre'], ENT_QUOTES, 'UTF-8') ?></option><?php endforeach; ?></select></div>
+                <div class="field"><label>Curso</label><select name="curso_id" required><option value="">Seleccionar&nbsp;curso</option><?php foreach ($courses as $course): ?><option value="<?= (int)$course['id'] ?>"><?= htmlspecialchars($course['nombre'], ENT_QUOTES, 'UTF-8') ?></option><?php endforeach; ?></select></div>
                 <div class="field signature-field"><label>Firma</label><label class="file-upload"><input type="file" name="firma" accept="image/png,image/jpeg,image/svg+xml"><span class="file-upload-button"><svg viewBox="0 0 24 24">
                                 <path d="M12 16V4M7 9l5-5 5 5M5 20h14" />
                             </svg>Subir firma</span><span class="file-upload-name">Ningún archivo seleccionado</span></label></div>
