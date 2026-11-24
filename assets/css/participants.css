@@ -74,6 +74,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
+    min-width: 0;
     min-height: 58px;
     padding: 10px 16px;
     border: 1px dashed #4b79a8;
@@ -102,9 +103,12 @@
 
 .participant-import-picker strong {
     color: #fff;
+    flex: 0 0 auto;
 }
 
 .participant-import-name {
+    min-width: 0;
+    flex: 1 1 auto;
     overflow: hidden;
     color: #94afd0;
     text-overflow: ellipsis;
@@ -2818,6 +2822,110 @@ form:has(button.template-submit-loading) {
     .participant-modal .signer-form .form-actions {
         width: 100%;
         box-sizing: border-box;
+    }
+
+    #participant-import-modal .participant-modal-card {
+        width: min(100%, 360px);
+        max-width: calc(100vw - 28px);
+        box-sizing: border-box;
+        overflow-x: hidden;
+        padding: 16px;
+    }
+
+    #participant-import-modal .participant-import-picker {
+        width: 100%;
+        box-sizing: border-box;
+        gap: 8px;
+        padding: 8px 10px;
+    }
+
+    #participant-import-modal .participant-import-file,
+    #participant-import-modal .participant-import-form,
+    #participant-import-modal .participant-import-form .form-actions {
+        min-width: 0;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    #participant-import-modal .participant-import-form .form-actions button {
+        max-width: 100%;
+    }
+
+    #participant-import-modal .participant-import-count {
+        display: none !important;
+    }
+
+    #participant-import-modal .participant-import-pagination {
+        justify-content: flex-end;
+    }
+
+    #participant-import-modal .participant-import-preview {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    #participant-import-modal .participant-import-preview .table-wrap {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100%;
+        overflow-x: scroll !important;
+        overflow-y: hidden !important;
+        padding-bottom: 8px;
+        overscroll-behavior-x: contain;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+    }
+
+    #participant-import-modal .participant-import-preview .table-wrap::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    #participant-import-modal .participant-import-preview .table-wrap::-webkit-scrollbar-track {
+        border-radius: 999px;
+        background: #0b1d33;
+    }
+
+    #participant-import-modal .participant-import-preview .table-wrap::-webkit-scrollbar-thumb {
+        border-radius: 999px;
+        background: #4b79a8;
+    }
+
+
+    #participant-import-modal #participant-import-table {
+        display: table !important;
+        width: 680px !important;
+        min-width: 680px !important;
+        table-layout: auto !important;
+    }
+
+    #participant-import-modal #participant-import-table th,
+    #participant-import-modal #participant-import-table td {
+        white-space: nowrap !important;
+        overflow-wrap: normal;
+        word-break: normal;
+        padding: 9px 10px;
+    }
+
+    #participant-import-modal #participant-import-table td:nth-child(3) {
+        white-space: normal !important;
+        min-width: 170px;
+    }
+
+    #participant-import-modal #participant-import-table td:nth-child(4) {
+        width: 170px !important;
+        min-width: 170px !important;
+        text-align: center;
+    }
+
+    #participant-import-modal .participant-import-badge {
+        display: flex !important;
+        width: 140px !important;
+        max-width: 140px !important;
+        box-sizing: border-box;
+        white-space: normal;
+        justify-content: center;
+        text-align: center;
+        line-height: 1.25;
     }
 
     #signer-modal .participant-modal-card {
